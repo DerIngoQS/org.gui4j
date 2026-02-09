@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jRefreshTable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">Gui4jRefreshTable.java</span></div><h1>Gui4jRefreshTable.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing;
+
+import java.awt.EventQueue;
+import java.util.Map;
+import javax.swing.table.AbstractTableModel;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.Gui4jGetValue;
+import org.gui4j.core.Gui4jComponentInstance;
+
+/** Wird verwendet, um einzelne Zellen zu refreshen */
+public class Gui4jRefreshTable implements Gui4jGetValue {
+  private final AbstractTableModel mTableModel;
+  private final int mRow;
+  private final int mCol;
+
+<span class="nc" id="L16">  public Gui4jRefreshTable(AbstractTableModel tableModel, int row, int col) {</span>
+<span class="nc" id="L17">    this.mTableModel = tableModel;</span>
+<span class="nc" id="L18">    this.mRow = row;</span>
+<span class="nc" id="L19">    this.mCol = col;</span>
+<span class="nc" id="L20">  }</span>
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.gui4j.Gui4jGetValue#getValue(org.gui4j.Gui4jCallBase,
+   *      java.util.Map, java.lang.Object)
+   */
+  public Object getValue(Gui4jCallBase gui4jController, Map paramMap, Object defaultValue) {
+    // follow Swing's single thread rule when updating components
+<span class="nc" id="L30">    EventQueue.invokeLater(</span>
+<span class="nc" id="L31">        new Runnable() {</span>
+          public void run() {
+<span class="nc" id="L33">            mTableModel.fireTableCellUpdated(mRow, mCol);</span>
+<span class="nc" id="L34">          }</span>
+        });
+<span class="nc" id="L36">    return null;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.gui4j.Gui4jGetValue#getValueNoErrorChecking(org.gui4j.Gui4jCallBase,
+   *      java.util.Map, java.lang.Object)
+   */
+  public Object getValueNoErrorChecking(
+      Gui4jCallBase gui4jController, Map paramMap, Gui4jComponentInstance componentInstance) {
+<span class="nc" id="L47">    return getValue(gui4jController, paramMap, null);</span>
+  }
+
+  public String toString() {
+<span class="nc" id="L51">    return AbstractTableModel.class.getName() + &quot;.fireTableCellUpdated(&quot; + mRow + &quot;, &quot; + mCol + &quot;)&quot;;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

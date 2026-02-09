@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jWindowImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.impl</a> &gt; <span class="el_source">Gui4jWindowImpl.java</span></div><h1>Gui4jWindowImpl.java</h1><pre class="source lang-java linenums">package org.gui4j.core.impl;
+
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JMenuBar;
+import javax.swing.RootPaneContainer;
+import javax.swing.SwingUtilities;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.Gui4jController;
+import org.gui4j.Gui4jControllerAdvanced;
+import org.gui4j.Gui4jGetValue;
+import org.gui4j.Gui4jWindow;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jComponentManager;
+import org.gui4j.core.Gui4jSwingContainer;
+import org.gui4j.core.Gui4jThreadManager;
+import org.gui4j.core.interfaces.Gui4jWindowInternal;
+import org.gui4j.core.swing.BlockingGlassPane;
+import org.gui4j.exception.ErrorTags;
+import org.gui4j.exception.Gui4jUncheckedException;
+
+abstract class Gui4jWindowImpl extends Gui4jSwingContainer
+    implements ErrorTags, Gui4jWindowInternal {
+<span class="nc" id="L38">  private static final Log mLogger = LogFactory.getLog(Gui4jWindowImpl.class);</span>
+
+  private int workingCount;
+  private boolean created;
+<span class="nc" id="L42">  private boolean center = true;</span>
+<span class="nc" id="L43">  private boolean maximize = false;</span>
+<span class="nc" id="L44">  private boolean maximizeSize = false; // Maximimiert, aber mit Obergrenze</span>
+<span class="nc" id="L45">  private boolean setSize = false;</span>
+  // falls gesetzt, dann wird die Größe des Fenster auf (height, width)
+  // gesetzt
+  private int maximizeMaxHeight;
+  private int maximizeMaxWidth;
+  private int height;
+  private int width;
+  private WindowHandler windowHandler;
+
+  private Window mWindow;
+  private String mTitle;
+  private String mWindowName;
+  private Component mToplevelComponent;
+
+  // private Gui4j gui4j;
+
+  /**
+   * Constructor for Gui4jWindow.
+   *
+   * @param gui4j
+   * @param viewResourceName
+   * @param gui4jController
+   * @param title
+   * @param readOnlyMode
+   */
+  public Gui4jWindowImpl(
+      Gui4jImpl gui4j,
+      String viewResourceName,
+      Gui4jController gui4jController,
+      String title,
+      boolean readOnlyMode) {
+<span class="nc" id="L76">    super(gui4j, viewResourceName, gui4jController, readOnlyMode);</span>
+    // this.gui4j = gui4j;
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    if (gui4j == null) {</span>
+<span class="nc" id="L79">      throw new Gui4jUncheckedException.ProgrammingError(PROGRAMMING_ERROR_parameter_null);</span>
+    }
+
+<span class="nc" id="L82">    this.mTitle = title;</span>
+
+<span class="nc" id="L84">    this.mToplevelComponent = null;</span>
+<span class="nc" id="L85">    String top = getToplevelAttrValue(Gui4jComponentManager.FIELD_Gui4jViewTopComponent);</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">    if (top == null) {</span>
+<span class="nc" id="L87">      top = &quot;TOP&quot;;</span>
+    }
+    try {
+<span class="nc" id="L90">      mToplevelComponent = getComponent(top);</span>
+<span class="nc" id="L91">    } catch (Throwable e) {</span>
+<span class="nc" id="L92">      gui4j.handleException(getGui4jController(), e, null);</span>
+<span class="nc" id="L93">    }</span>
+<span class="nc" id="L94">    Gui4jCall titleCall = getTitleCall();</span>
+<span class="nc bnc" id="L95" title="All 4 branches missed.">    if (titleCall != null &amp;&amp; mTitle == null) {</span>
+<span class="nc" id="L96">      this.mTitle = (String) titleCall.getValueNoParams(gui4jController, &quot;&quot;);</span>
+    }
+<span class="nc" id="L98">    Gui4jCall windowNameCall = getWindowNameCall();</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">    if (windowNameCall != null) {</span>
+<span class="nc" id="L100">      this.mWindowName = (String) windowNameCall.getValueNoParams(gui4jController, &quot;&quot;);</span>
+    }
+<span class="nc" id="L102">  }</span>
+
+  /**
+   * Der Aufruf dieser Methode kehrt erst dann zurueck, wenn alle aktuell anstehenden Swing-Events
+   * abgearbeitet worden sind.
+   */
+  public void waitForGUI() {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">    if (SwingUtilities.isEventDispatchThread()) {</span>
+      // do nothing
+<span class="nc" id="L111">      mLogger.info(&quot;Cannot wait for GUI, because we are in the GUI Thread&quot;);</span>
+    } else {
+      try {
+<span class="nc" id="L114">        SwingUtilities.invokeAndWait(</span>
+<span class="nc" id="L115">            new Runnable() {</span>
+              public void run() {
+                // do nothing
+<span class="nc" id="L118">              }</span>
+            });
+<span class="nc" id="L120">      } catch (Exception e) {</span>
+<span class="nc" id="L121">        mLogger.error(e, e);</span>
+<span class="nc" id="L122">      }</span>
+    }
+<span class="nc" id="L124">  }</span>
+
+  /**
+   * Method prepare. Muss aufgerufen werden, bevor show, hide oder setVisible aufgerufen werden
+   *
+   * @return Gui4jWindow (this Instanz)
+   */
+  public Gui4jWindow prepare() {
+<span class="nc" id="L132">    Gui4jThreadManager.executeInSwingThreadAndWait(</span>
+<span class="nc" id="L133">        new Runnable() {</span>
+          public void run() {
+<span class="nc" id="L135">            prepareImpl();</span>
+<span class="nc" id="L136">          }</span>
+        });
+<span class="nc" id="L138">    return this;</span>
+  }
+
+  private void prepareImpl() {
+<span class="nc bnc" id="L142" title="All 2 branches missed.">    if (created) {</span>
+<span class="nc" id="L143">      throw new IllegalStateException(&quot;Must not call prepare() twice.&quot;);</span>
+    }
+<span class="nc bnc" id="L145" title="All 2 branches missed.">    assert mToplevelComponent != null;</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">    assert mToplevelComponent instanceof Container;</span>
+    try {
+<span class="nc" id="L148">      mWindow = createWindow();</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">      if (mWindowName != null) {</span>
+<span class="nc" id="L150">        mWindow.setName(mWindowName);</span>
+      }
+<span class="nc" id="L152">      getRootPaneContainer().setGlassPane(new BlockingGlassPane(beepWhenBlocked()));</span>
+      {
+<span class="nc" id="L154">        Container container = (Container) mToplevelComponent;</span>
+<span class="nc" id="L155">        getRootPaneContainer().setContentPane(container);</span>
+      }
+
+<span class="nc bnc" id="L158" title="All 2 branches missed.">      if (isDefined(&quot;MENU&quot;)) {</span>
+<span class="nc" id="L159">        getRootPaneContainer().getRootPane().setJMenuBar((JMenuBar) getComponent(&quot;MENU&quot;));</span>
+      }
+<span class="nc" id="L161">      String defaultButtonId =</span>
+<span class="nc" id="L162">          getToplevelAttrValue(Gui4jComponentManager.FIELD_Gui4jViewDefaultButton);</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">      if (defaultButtonId != null) {</span>
+<span class="nc" id="L164">        getRootPaneContainer()</span>
+<span class="nc" id="L165">            .getRootPane()</span>
+<span class="nc" id="L166">            .setDefaultButton((JButton) getComponent(defaultButtonId));</span>
+      }
+
+      // getWindow().pack();
+<span class="nc" id="L170">      setSizeAndLocation();</span>
+<span class="nc" id="L171">      windowHandler = new WindowHandler();</span>
+<span class="nc" id="L172">      getWindow().addWindowListener(windowHandler);</span>
+<span class="nc" id="L173">      defineWindowActions();</span>
+<span class="nc" id="L174">      getGui4j().addToWindowCollector(this);</span>
+<span class="nc" id="L175">      mLogger.debug(&quot;Window with title &quot; + getTitle() + &quot; created&quot;);</span>
+<span class="nc" id="L176">      created = true;</span>
+<span class="nc" id="L177">    } catch (Throwable e) {</span>
+<span class="nc" id="L178">      getGui4j().handleException(getGui4jController(), e, null);</span>
+<span class="nc" id="L179">    }</span>
+<span class="nc" id="L180">  }</span>
+
+  public void setVisible(final boolean show) {
+<span class="nc bnc" id="L183" title="All 2 branches missed.">    if (!isClosed()) {</span>
+      // we need to wait for execution since we want to keep the expected
+      // behaviour of blocking the current thread when displaying a dialog
+<span class="nc" id="L186">      Gui4jThreadManager.executeInSwingThreadAndWait(</span>
+<span class="nc" id="L187">          new Runnable() {</span>
+            public void run() {
+<span class="nc bnc" id="L189" title="All 2 branches missed.">              if (!created) {</span>
+<span class="nc" id="L190">                throw new IllegalStateException(</span>
+                    &quot;You must call prepare() before your first call of setVisible().&quot;);
+              }
+<span class="nc" id="L193">              getWindow().setVisible(show);</span>
+<span class="nc" id="L194">            }</span>
+          });
+    }
+<span class="nc" id="L197">  }</span>
+
+  /** This method closes the view. If the view is not open, nothing happens */
+  public void close() {
+<span class="nc bnc" id="L201" title="All 2 branches missed.">    if (isClosed()) {</span>
+<span class="nc" id="L202">      return;</span>
+    }
+<span class="nc" id="L204">    RootPaneContainer rootPaneContainer = getRootPaneContainer();</span>
+<span class="nc" id="L205">    setVisible(false);</span>
+<span class="nc" id="L206">    waitForGUI();</span>
+<span class="nc" id="L207">    inClosing = true;</span>
+<span class="nc" id="L208">    getGui4j().removeFromWindowCollector(this);</span>
+<span class="nc" id="L209">    Window window = getWindow();</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">    if (window != null) {</span>
+<span class="nc" id="L211">      window.removeWindowListener(windowHandler);</span>
+    }
+<span class="nc" id="L213">    windowHandler = null;</span>
+    try {
+<span class="nc bnc" id="L215" title="All 2 branches missed.">      if (SwingUtilities.isEventDispatchThread()) {</span>
+<span class="nc" id="L216">        getWindow().dispose();</span>
+<span class="nc" id="L217">        setTitle(&quot;&quot;);</span>
+      } else {
+<span class="nc" id="L219">        SwingUtilities.invokeAndWait(</span>
+<span class="nc" id="L220">            new Runnable() {</span>
+              public void run() {
+<span class="nc" id="L222">                Window w = getWindow();</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">                if (w != null) {</span>
+<span class="nc" id="L224">                  w.dispose();</span>
+                }
+<span class="nc" id="L226">                changeWindowTitle(&quot;&quot;);</span>
+<span class="nc" id="L227">              }</span>
+            });
+      }
+<span class="nc" id="L230">    } catch (InvocationTargetException e) {</span>
+<span class="nc" id="L231">      mLogger.error(&quot;Error while disposing window&quot;, e);</span>
+<span class="nc" id="L232">    } catch (InterruptedException e) {</span>
+<span class="nc" id="L233">      mLogger.error(&quot;Error while disposing window&quot;, e);</span>
+<span class="nc" id="L234">    }</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">    if (rootPaneContainer != null) {</span>
+<span class="nc" id="L236">      clear(rootPaneContainer.getContentPane());</span>
+    }
+<span class="nc" id="L238">    super.dispose();</span>
+<span class="nc" id="L239">    mWindow = null;</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">    if (getGui4jController() != null) {</span>
+<span class="nc" id="L241">      getGui4jController().windowClosed();</span>
+    }
+<span class="nc" id="L243">    cleanUp();</span>
+<span class="nc" id="L244">  }</span>
+
+  public void show() {
+<span class="nc" id="L247">    inClosing = false;</span>
+<span class="nc" id="L248">    setVisible(true);</span>
+<span class="nc" id="L249">  }</span>
+
+  public void hide() {
+<span class="nc" id="L252">    setVisible(false);</span>
+<span class="nc" id="L253">  }</span>
+
+  protected final void requestWindowClosing() {
+<span class="nc" id="L256">    windowHandler.windowClosing(null);</span>
+<span class="nc" id="L257">  }</span>
+
+  protected final boolean beepWhenBlocked() {
+<span class="nc" id="L260">    return false;</span>
+  }
+
+  private void clear(Container container) {
+<span class="nc" id="L264">    Component[] components = container.getComponents();</span>
+<span class="nc" id="L265">    container.removeAll();</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">    for (int i = 0; i &lt; components.length; i++) {</span>
+<span class="nc" id="L267">      Component component = components[i];</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">      if (component instanceof Container) {</span>
+<span class="nc" id="L269">        clear((Container) component);</span>
+      }
+    }
+<span class="nc" id="L272">  }</span>
+
+  private void setSizeAndLocation() {
+<span class="nc bnc" id="L275" title="All 2 branches missed.">    assert !created;</span>
+<span class="nc" id="L276">    Window window = getWindow();</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">    assert window != null;</span>
+
+<span class="nc" id="L279">    boolean needToPack = true;</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">    if (setSize) {</span>
+<span class="nc" id="L281">      window.setSize(width, height);</span>
+<span class="nc" id="L282">      needToPack = false;</span>
+    }
+<span class="nc bnc" id="L284" title="All 4 branches missed.">    if (maximize &amp;&amp; !maximizeSize) {</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">      if (needToPack) {</span>
+<span class="nc" id="L286">        window.pack();</span>
+<span class="nc" id="L287">        needToPack = false;</span>
+      }
+<span class="nc" id="L289">      maximizeWindow();</span>
+    }
+<span class="nc bnc" id="L291" title="All 2 branches missed.">    if (maximizeSize) {</span>
+<span class="nc" id="L292">      Toolkit tk = Toolkit.getDefaultToolkit();</span>
+<span class="nc" id="L293">      Dimension screenSize = tk.getScreenSize();</span>
+<span class="nc bnc" id="L294" title="All 4 branches missed.">      if (screenSize.width &gt; maximizeMaxWidth &amp;&amp; screenSize.height &gt; maximizeMaxHeight) {</span>
+<span class="nc" id="L295">        window.setSize(new Dimension(maximizeMaxWidth, maximizeMaxHeight));</span>
+<span class="nc" id="L296">        needToPack = false;</span>
+      } else {
+<span class="nc bnc" id="L298" title="All 2 branches missed.">        if (needToPack) {</span>
+<span class="nc" id="L299">          window.pack();</span>
+<span class="nc" id="L300">          needToPack = false;</span>
+        }
+<span class="nc" id="L302">        maximizeWindow();</span>
+      }
+    }
+<span class="nc bnc" id="L305" title="All 2 branches missed.">    if (needToPack) {</span>
+<span class="nc" id="L306">      window.pack();</span>
+    }
+
+<span class="nc bnc" id="L309" title="All 2 branches missed.">    if (center) {</span>
+<span class="nc" id="L310">      centerWindow();</span>
+    }
+<span class="nc" id="L312">  }</span>
+
+  public boolean isClosed() {
+<span class="nc bnc" id="L315" title="All 2 branches missed.">    return getWindow() == null;</span>
+  }
+
+  /** Method maximizeWindow */
+<span class="nc" id="L319">  protected void maximizeWindow() {}</span>
+
+<span class="nc" id="L321">  protected void restoreWindow() {}</span>
+
+  /** Resizes this view's JFrame so that all components get their preferred sizes. */
+  public void resize() {
+<span class="nc bnc" id="L325" title="All 2 branches missed.">    if (getWindow() != null) {</span>
+      // follow Swing's single thread rule when updating components
+<span class="nc" id="L327">      EventQueue.invokeLater(</span>
+<span class="nc" id="L328">          new Runnable() {</span>
+            public void run() {
+<span class="nc" id="L330">              getWindow().pack();</span>
+<span class="nc" id="L331">            }</span>
+          });
+    }
+<span class="nc" id="L334">  }</span>
+
+  public final Window getWindow() {
+<span class="nc" id="L337">    return mWindow;</span>
+  }
+
+  protected abstract RootPaneContainer getRootPaneContainer();
+
+  protected abstract Window createWindow();
+
+  protected abstract void defineWindowActions();
+
+  protected BlockingGlassPane getBlockingGlassPane() {
+<span class="nc" id="L347">    RootPaneContainer rootPaneContainer = getRootPaneContainer();</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">    if (rootPaneContainer != null) {</span>
+<span class="nc" id="L349">      return (BlockingGlassPane) rootPaneContainer.getGlassPane();</span>
+    } else {
+<span class="nc" id="L351">      return null;</span>
+    }
+  }
+
+  /**
+   * Changes a frame's title
+   *
+   * @deprecated Use {@link #setTitle(String)} instead.
+   * @param title
+   */
+  // Note: this method should be protected and not part of the
+  // Gui4jWindow interface.
+  public abstract void changeWindowTitle(String title);
+
+  public void setTitle(String title) {
+<span class="nc" id="L366">    mTitle = title;</span>
+<span class="nc" id="L367">    changeWindowTitle(title);</span>
+<span class="nc" id="L368">  }</span>
+
+  public String getTitle() {
+<span class="nc" id="L371">    return mTitle;</span>
+  }
+
+  public void maximize() {
+<span class="nc bnc" id="L375" title="All 2 branches missed.">    assert !created;</span>
+<span class="nc" id="L376">    this.maximize = true;</span>
+<span class="nc" id="L377">  }</span>
+
+  public void maximize(int maxWidth, int maxHeight) {
+<span class="nc bnc" id="L380" title="All 2 branches missed.">    assert !created;</span>
+<span class="nc" id="L381">    maximizeSize = true;</span>
+<span class="nc" id="L382">    maximizeMaxHeight = maxHeight;</span>
+<span class="nc" id="L383">    maximizeMaxWidth = maxWidth;</span>
+<span class="nc" id="L384">  }</span>
+
+  public void maximize1024x768() {
+<span class="nc" id="L387">    maximize(1024, 768);</span>
+<span class="nc" id="L388">  }</span>
+
+  public void center(boolean centered) {
+<span class="nc bnc" id="L391" title="All 2 branches missed.">    assert !created;</span>
+<span class="nc" id="L392">    this.center = centered;</span>
+<span class="nc" id="L393">  }</span>
+
+  /**
+   * Convenience method for {@link #setWindowSize(int, int)}
+   *
+   * @param d must not be &lt;code&gt;null&lt;/code&gt;
+   */
+  public void setWindowSize(Dimension d) {
+<span class="nc bnc" id="L401" title="All 2 branches missed.">    assert d != null;</span>
+<span class="nc" id="L402">    setWindowSize(d.width, d.height);</span>
+<span class="nc" id="L403">  }</span>
+
+  public void setWindowSize(int width, int height) {
+<span class="nc bnc" id="L406" title="All 2 branches missed.">    assert !created;</span>
+<span class="nc" id="L407">    this.setSize = true;</span>
+<span class="nc" id="L408">    this.height = height;</span>
+<span class="nc" id="L409">    this.width = width;</span>
+<span class="nc" id="L410">  }</span>
+
+  private void centerWindow() {
+<span class="nc" id="L413">    Window window = getWindow();</span>
+<span class="nc bnc" id="L414" title="All 2 branches missed.">    if (window != null) {</span>
+<span class="nc" id="L415">      Toolkit tk = Toolkit.getDefaultToolkit();</span>
+<span class="nc" id="L416">      Dimension screenDim = tk.getScreenSize();</span>
+<span class="nc" id="L417">      Dimension windowDim = window.getSize();</span>
+<span class="nc" id="L418">      int widthDiff = (screenDim.width - windowDim.width) / 2;</span>
+<span class="nc" id="L419">      int heightDiff = (screenDim.height - windowDim.height) / 2;</span>
+<span class="nc bnc" id="L420" title="All 4 branches missed.">      window.setLocation(widthDiff &gt;= 0 ? widthDiff : 0, heightDiff &gt;= 0 ? heightDiff : 0);</span>
+    }
+<span class="nc" id="L422">  }</span>
+
+  public synchronized void setWorkingCursor() {
+<span class="nc bnc" id="L425" title="All 2 branches missed.">    if (getWindow() != null) {</span>
+<span class="nc" id="L426">      getWindow().setCursor(new Cursor(Cursor.WAIT_CURSOR));</span>
+<span class="nc" id="L427">      workingCount++;</span>
+    }
+<span class="nc" id="L429">  }</span>
+
+  public synchronized void setNormalCursor() {
+<span class="nc bnc" id="L432" title="All 2 branches missed.">    if (getWindow() != null) {</span>
+<span class="nc bnc" id="L433" title="All 2 branches missed.">      if (workingCount &gt; 0) {</span>
+<span class="nc" id="L434">        workingCount--;</span>
+      }
+<span class="nc bnc" id="L436" title="All 2 branches missed.">      if (workingCount == 0) {</span>
+<span class="nc" id="L437">        getWindow().setCursor(Cursor.getDefaultCursor());</span>
+      }
+    }
+<span class="nc" id="L440">  }</span>
+
+  public boolean isBlocked() {
+<span class="nc bnc" id="L443" title="All 2 branches missed.">    if (getBlockingGlassPane() != null) {</span>
+<span class="nc" id="L444">      return getBlockingGlassPane().isBlocked();</span>
+    } else {
+<span class="nc" id="L446">      return false;</span>
+    }
+  }
+
+  public void setBusy(final boolean busy) {
+<span class="nc" id="L451">    final BlockingGlassPane glassPane = getBlockingGlassPane();</span>
+<span class="nc bnc" id="L452" title="All 2 branches missed.">    if (glassPane != null) {</span>
+      // need to execute this in Swing thread, since the glass pane might
+      // cause an invalidate() on its parent component (this has lead to
+      // deadlocks)
+<span class="nc bnc" id="L456" title="All 2 branches missed.">      if (EventQueue.isDispatchThread()) {</span>
+<span class="nc" id="L457">        glassPane.block(busy);</span>
+      } else {
+<span class="nc" id="L459">        Gui4jThreadManager.executeInSwingThreadAndWait(</span>
+<span class="nc" id="L460">            new Runnable() {</span>
+              public void run() {
+<span class="nc" id="L462">                glassPane.block(busy);</span>
+<span class="nc" id="L463">              }</span>
+            });
+      }
+    }
+<span class="nc" id="L467">  }</span>
+
+  public void disable() {
+<span class="nc bnc" id="L470" title="All 2 branches missed.">    if (getWindow() != null) {</span>
+<span class="nc" id="L471">      getWindow().setEnabled(false);</span>
+    }
+<span class="nc" id="L473">  }</span>
+
+  public void enable() {
+<span class="nc bnc" id="L476" title="All 2 branches missed.">    if (getWindow() != null) {</span>
+<span class="nc" id="L477">      getWindow().setEnabled(true);</span>
+    }
+<span class="nc" id="L479">  }</span>
+
+  public void setEnabled(boolean flag) {
+<span class="nc bnc" id="L482" title="All 2 branches missed.">    if (getWindow() != null) {</span>
+<span class="nc" id="L483">      getWindow().setEnabled(flag);</span>
+    }
+<span class="nc" id="L485">  }</span>
+
+  protected void setWindow(Window window) {
+<span class="nc" id="L488">    this.mWindow = window;</span>
+<span class="nc" id="L489">  }</span>
+
+  public JComponent getSwingComponent(String id) {
+<span class="nc" id="L492">    Gui4jComponentInstance instance = getGui4jComponentInstance(id);</span>
+<span class="nc bnc" id="L493" title="All 2 branches missed.">    return instance == null ? null : instance.getSwingComponent();</span>
+  }
+
+  // **********************************************************************************
+
+<span class="nc" id="L498">  private class WindowHandler implements WindowListener {</span>
+<span class="nc" id="L499">    private boolean windowClosingInProgress = false;</span>
+
+    public void windowActivated(WindowEvent e) {
+      // TODO delegate calls to Gui4jControllerAdvanced if super's
+      // mGui4jController is of this type.
+      // see method windowOpened
+<span class="nc" id="L505">    }</span>
+
+    public void windowClosed(WindowEvent e) {
+      // TODO shouldn't this method delegate to
+      // getGui4jController().windowClosed()
+<span class="nc" id="L510">    }</span>
+
+    protected synchronized void windowClosingFinished() {
+<span class="nc" id="L513">      windowClosingInProgress = false;</span>
+<span class="nc" id="L514">    }</span>
+
+    public void windowClosing(WindowEvent e) {
+<span class="nc" id="L517">      synchronized (this) {</span>
+<span class="nc bnc" id="L518" title="All 2 branches missed.">        if (windowClosingInProgress) {</span>
+<span class="nc" id="L519">          return;</span>
+        }
+<span class="nc" id="L521">        windowClosingInProgress = true;</span>
+<span class="nc" id="L522">      }</span>
+<span class="nc" id="L523">      Gui4jGetValue work =</span>
+<span class="nc" id="L524">          new Gui4jGetValue() {</span>
+            public Object getValue(Gui4jCallBase gui4jCallBase, Map paramMap, Object defaultValue) {
+              try {
+<span class="nc bnc" id="L527" title="All 4 branches missed.">                if (getGui4jController() != null &amp;&amp; getGui4jController().onWindowClosing()) {</span>
+<span class="nc" id="L528">                  close();</span>
+                }
+              } finally {
+<span class="nc" id="L531">                windowClosingFinished();</span>
+              }
+<span class="nc" id="L533">              return null;</span>
+            }
+
+            public Object getValueNoErrorChecking(
+                Gui4jCallBase gui4jCallBase,
+                Map paramMap,
+                Gui4jComponentInstance componentInstance) {
+<span class="nc" id="L540">              return getValue(gui4jCallBase, paramMap, null);</span>
+            }
+
+            public String toString() {
+<span class="nc" id="L544">              return getGui4jController().getClass().getName() + &quot;.onWindowClosing()&quot;;</span>
+            }
+          };
+<span class="nc" id="L547">      getGui4j().getGui4jThreadManager().performWork(null, work, null);</span>
+<span class="nc" id="L548">    }</span>
+
+    public void windowDeactivated(WindowEvent e) {
+      // TODO delegate calls to Gui4jControllerAdvanced if super's
+      // mGui4jController is of this type.
+      // see method windowOpened
+<span class="nc" id="L554">    }</span>
+
+    public void windowDeiconified(WindowEvent e) {
+      // TODO delegate calls to Gui4jControllerAdvanced if super's
+      // mGui4jController is of this type.
+      // see method windowOpened
+<span class="nc" id="L560">    }</span>
+
+    public void windowIconified(WindowEvent e) {
+      // TODO delegate calls to Gui4jControllerAdvanced if super's
+      // mGui4jController is of this type.
+      // see method windowOpened
+<span class="nc" id="L566">    }</span>
+
+    public void windowOpened(WindowEvent e) {
+<span class="nc" id="L569">      Gui4jController gui4jController = getGui4jController();</span>
+<span class="nc bnc" id="L570" title="All 2 branches missed.">      if (gui4jController == null) {</span>
+<span class="nc" id="L571">        return;</span>
+      }
+<span class="nc bnc" id="L573" title="All 2 branches missed.">      if (!(gui4jController instanceof Gui4jControllerAdvanced)) {</span>
+<span class="nc" id="L574">        return;</span>
+      }
+
+<span class="nc" id="L577">      final Gui4jControllerAdvanced gui4jControllerAdvanced =</span>
+          (Gui4jControllerAdvanced) gui4jController;
+
+<span class="nc" id="L580">      Gui4jGetValue work =</span>
+<span class="nc" id="L581">          new Gui4jGetValue() {</span>
+            public Object getValue(Gui4jCallBase gui4jCallBase, Map paramMap, Object defaultValue) {
+<span class="nc" id="L583">              gui4jControllerAdvanced.windowOpened();</span>
+<span class="nc" id="L584">              return null;</span>
+            }
+
+            public Object getValueNoErrorChecking(
+                Gui4jCallBase gui4jCallBase,
+                Map paramMap,
+                Gui4jComponentInstance componentInstance) {
+<span class="nc" id="L591">              return getValue(gui4jCallBase, paramMap, null);</span>
+            }
+
+            public String toString() {
+<span class="nc" id="L595">              return gui4jControllerAdvanced.getClass().getName() + &quot;.windowOpened()&quot;;</span>
+            }
+          };
+<span class="nc" id="L598">      getGui4j().getGui4jThreadManager().performWork(null, work, null);</span>
+<span class="nc" id="L599">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

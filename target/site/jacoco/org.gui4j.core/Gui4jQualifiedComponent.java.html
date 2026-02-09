@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jQualifiedComponent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core</a> &gt; <span class="el_source">Gui4jQualifiedComponent.java</span></div><h1>Gui4jQualifiedComponent.java</h1><pre class="source lang-java linenums">package org.gui4j.core;
+
+import java.io.Serializable;
+import org.gui4j.core.util.Extract;
+
+<span class="nc" id="L6">public class Gui4jQualifiedComponent implements Serializable {</span>
+  private final Gui4jComponentPath mPath;
+  private final Gui4jComponent mGui4jComponent;
+
+<span class="nc" id="L10">  public Gui4jQualifiedComponent(Gui4jComponentPath path, Gui4jQualifiedComponent gui4jComponent) {</span>
+<span class="nc bnc" id="L11" title="All 4 branches missed.">    assert path != null &amp;&amp; gui4jComponent != null;</span>
+<span class="nc" id="L12">    this.mPath = path.extend(gui4jComponent.getGui4jComponentPath());</span>
+<span class="nc" id="L13">    this.mGui4jComponent = gui4jComponent.getGui4jComponent();</span>
+<span class="nc" id="L14">  }</span>
+
+  public Gui4jQualifiedComponent(
+      Gui4jComponentContainerInclude include, Gui4jComponent gui4jComponent) {
+<span class="nc" id="L18">    this(new Gui4jComponentPath(include), gui4jComponent);</span>
+<span class="nc" id="L19">  }</span>
+
+  public Gui4jQualifiedComponent(
+      Gui4jComponentContainerInclude include, Gui4jQualifiedComponent path) {
+<span class="nc" id="L23">    this(new Gui4jComponentPath(include), path);</span>
+<span class="nc" id="L24">  }</span>
+
+  public Gui4jQualifiedComponent(
+<span class="nc" id="L27">      Gui4jComponentPath gui4jComponentPath, Gui4jComponent gui4jComponent) {</span>
+<span class="nc bnc" id="L28" title="All 4 branches missed.">    assert gui4jComponentPath != null &amp;&amp; gui4jComponent != null;</span>
+<span class="nc" id="L29">    this.mPath = gui4jComponentPath;</span>
+<span class="nc" id="L30">    this.mGui4jComponent = gui4jComponent;</span>
+<span class="nc" id="L31">  }</span>
+
+  public boolean hasId() {
+<span class="nc bnc" id="L34" title="All 2 branches missed.">    return mGui4jComponent.getId() != null;</span>
+  }
+
+  public String getQualifiedId() {
+<span class="nc" id="L38">    return mPath.getId(mGui4jComponent.getId());</span>
+  }
+
+  public Gui4jComponentPath getGui4jComponentPath() {
+<span class="nc" id="L42">    return mPath;</span>
+  }
+
+  public Gui4jComponent getGui4jComponent() {
+<span class="nc" id="L46">    return mGui4jComponent;</span>
+  }
+
+  public String toString() {
+<span class="nc" id="L50">    return Extract.getClassname(getClass())</span>
+        + &quot;[&quot;
+<span class="nc" id="L52">        + getGui4jComponentPath()</span>
+        + &quot;,&quot;
+        + mGui4jComponent
+        + &quot;]&quot;;
+  }
+
+  /**
+   * @see java.lang.Object#equals(Object)
+   */
+  public boolean equals(Object obj) {
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    if (obj instanceof Gui4jQualifiedComponent) {</span>
+<span class="nc" id="L63">      Gui4jQualifiedComponent path = (Gui4jQualifiedComponent) obj;</span>
+<span class="nc bnc" id="L64" title="All 4 branches missed.">      return mGui4jComponent.equals(path.mGui4jComponent) &amp;&amp; mPath.equals(path.mPath);</span>
+    } else {
+<span class="nc" id="L66">      return false;</span>
+    }
+  }
+
+  /**
+   * @see java.lang.Object#hashCode()
+   */
+  public int hashCode() {
+<span class="nc" id="L74">    return mPath.hashCode() + mGui4jComponent.hashCode();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

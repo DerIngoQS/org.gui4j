@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jAbstractPopupComponent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jAbstractPopupComponent.java</span></div><h1>Gui4jAbstractPopupComponent.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.core.Gui4jAbstractComponent;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jSwingContainer;
+
+public abstract class Gui4jAbstractPopupComponent extends Gui4jAbstractComponent {
+<span class="nc" id="L13">  private static final Log mLogger = LogFactory.getLog(Gui4jAbstractPopupComponent.class);</span>
+
+  /**
+   * @param gui4jComponentContainer
+   * @param componentClass
+   * @param id
+   */
+  public Gui4jAbstractPopupComponent(
+      Gui4jComponentContainer gui4jComponentContainer, Class componentClass, String id) {
+<span class="nc" id="L22">    super(gui4jComponentContainer, componentClass, id);</span>
+<span class="nc" id="L23">  }</span>
+
+  /*
+   * @see de.bea.gui4j.Gui4jComponent#showPopupMenu(de.bea.gui4j.Gui4jComponentInstance, java.awt.event.MouseEvent)
+   */
+  public final void showPopupMenu(
+      Gui4jComponentInstance gui4jComponentInstance, MouseEvent mouseEvent) {
+<span class="nc bnc" id="L30" title="All 2 branches missed.">    if (mPopupMenuInPath == null) {</span>
+<span class="nc" id="L31">      mLogger.warn(&quot;showPopupMenu called but no popup menu defined for: &quot; + gui4jComponentInstance);</span>
+<span class="nc" id="L32">      return;</span>
+    }
+
+    // store current context in swing container's storage
+<span class="nc" id="L36">    Object context = getPopupContext(gui4jComponentInstance, mouseEvent);</span>
+<span class="nc" id="L37">    Gui4jComponentInstance popupInstance =</span>
+<span class="nc" id="L38">        gui4jComponentInstance.getGui4jComponentInstance(mPopupMenuInPath);</span>
+<span class="nc" id="L39">    Gui4jSwingContainer swingContainer = popupInstance.getGui4jSwingContainer();</span>
+<span class="nc" id="L40">    swingContainer.putStorage(Gui4jPopupMenu.class, STORAGE_POPUP_CONTEXT, context);</span>
+<span class="nc" id="L41">    swingContainer.putStorage(Gui4jPopupMenu.class, STORAGE_POPUP_ORIGIN, gui4jComponentInstance);</span>
+
+    // refresh popup menu's attributes and show it
+<span class="nc" id="L44">    popupInstance.refreshComponent();</span>
+<span class="nc" id="L45">    Point location = getPopupLocation(gui4jComponentInstance, mouseEvent, context);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">    if (location != null) {</span>
+<span class="nc" id="L47">      Gui4jPopupMenu popup = (Gui4jPopupMenu) popupInstance.getGui4jComponent();</span>
+<span class="nc" id="L48">      popup.show(popupInstance, gui4jComponentInstance.getComponent(), location.x, location.y);</span>
+    }
+<span class="nc" id="L50">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

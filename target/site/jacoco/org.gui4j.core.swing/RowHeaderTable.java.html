@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RowHeaderTable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">RowHeaderTable.java</span></div><h1>RowHeaderTable.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing;
+
+// Chris's entension of JTable
+//
+// Inspired by the RowHeaderExample by Nobuo Tamemasa.
+//
+// known problems:
+// - Doesn't enable/disable row header when table row selection is
+//   enabled/disabled
+// - Dragging on the list of row headers doesn't scroll the table.  (I
+// - can't figure out a good way to catch list scrolling events.)
+//
+
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Font;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import javax.swing.AbstractListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.ListCellRenderer;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableModel;
+
+public class RowHeaderTable extends Gui4jJTable {
+  protected JList rowHeader;
+  protected RowHeaderTable.RowHeaderListModel rowHeaderModel; // former: ListModel
+
+  // duplicate most of JTable's constructors for convenience
+
+  public RowHeaderTable(RowHeaderTableModel dm, Gui4jTableListener gui4jTableListener) {
+<span class="nc" id="L41">    super(dm, gui4jTableListener);</span>
+<span class="nc" id="L42">    initUI();</span>
+<span class="nc" id="L43">  }</span>
+
+  protected void initUI() {
+<span class="nc" id="L46">    buildRowHeaders();</span>
+<span class="nc" id="L47">  }</span>
+
+  protected TableModel createDefaultDataModel() {
+<span class="nc" id="L50">    return new RowHeaderDefaultTableModel();</span>
+  }
+
+  public RowHeaderTable.RowHeaderListModel getRowHeaderModel() {
+<span class="nc" id="L54">    return rowHeaderModel;</span>
+  }
+
+  protected void buildRowHeaders() {
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (rowHeader == null) {</span>
+<span class="nc" id="L59">      rowHeaderModel = new RowHeaderListModel(); /*AbstractListModel()</span>
+            {
+                private boolean ignoreBackground = false;
+                public int getSize()
+                {
+                    return (getModel() == null) ? 0 : getModel().getRowCount();
+                }
+                public Object getElementAt(int index)
+                {
+                    TableModel dm = getModel();
+                    if (dm == null)
+                    {
+                        return null;
+                    }
+                    return ((RowHeaderTableModel) dm).getRowName(index);
+                }
+                public void setIgnoreBackgound(boolean flag)
+                {
+                    ignoreBackground = flag;
+                }
+                public boolean ignoreBackground(boolean flag)
+                {
+                    return ignoreBackground;
+                }
+            };
+*/
+<span class="nc" id="L85">      rowHeader = new JList(rowHeaderModel);</span>
+<span class="nc" id="L86">      rowHeader.setFocusable(false);</span>
+<span class="nc" id="L87">      rowHeader.setSelectionModel(getSelectionModel());</span>
+<span class="nc" id="L88">      rowHeader.setFixedCellWidth(100);</span>
+<span class="nc" id="L89">      JTableHeader columnHeader = getTableHeader();</span>
+<span class="nc" id="L90">      rowHeader.setForeground(columnHeader.getForeground());</span>
+<span class="nc" id="L91">      rowHeader.setBackground(columnHeader.getBackground());</span>
+<span class="nc" id="L92">      rowHeader.setFont(columnHeader.getFont());</span>
+
+<span class="nc" id="L94">      rowHeader.setFixedCellHeight(</span>
+<span class="nc" id="L95">          getRowHeight() // + getRowMargin()</span>
+          /*+
+          getIntercellSpacing().height*/
+          );
+<span class="nc" id="L99">      rowHeader.setCellRenderer(new RowHeaderRenderer());</span>
+
+<span class="nc" id="L101">      columnHeader.addPropertyChangeListener(</span>
+<span class="nc" id="L102">          new PropertyChangeListener() {</span>
+            public void propertyChange(PropertyChangeEvent event) {
+              try {
+<span class="nc" id="L105">                PropertyDescriptor propDesc =</span>
+<span class="nc" id="L106">                    new PropertyDescriptor(event.getPropertyName(), JList.class);</span>
+<span class="nc" id="L107">                Method writeMethod = propDesc.getWriteMethod();</span>
+<span class="nc" id="L108">                Object[] params = {event.getNewValue()};</span>
+<span class="nc" id="L109">                writeMethod.invoke(rowHeader, params);</span>
+<span class="nc" id="L110">              } catch (Exception e) {</span>
+                /* fail silently
+                System.err.println(&quot;Couldn't forward prop change for prop '&quot; +
+                	       event.getPropertyName() + &quot;':&quot; + e);
+                	       */
+<span class="nc" id="L115">              }</span>
+<span class="nc" id="L116">            }</span>
+          });
+    }
+<span class="nc" id="L119">  }</span>
+
+  protected void configureEnclosingScrollPane() {
+<span class="nc" id="L122">    super.configureEnclosingScrollPane();</span>
+<span class="nc" id="L123">    Container parent = getParent();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">    if (parent instanceof JViewport) {</span>
+<span class="nc" id="L125">      Container grandParent = parent.getParent();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">      if (grandParent instanceof JScrollPane) {</span>
+<span class="nc" id="L127">        JScrollPane scrollPane = (JScrollPane) grandParent;</span>
+        // Make certain we are the viewPort's view and not, for
+        // example, the rowHeaderView of the scrollPane -
+        // an implementor of fixed columns might do this.
+<span class="nc" id="L131">        JViewport viewport = scrollPane.getViewport();</span>
+<span class="nc bnc" id="L132" title="All 4 branches missed.">        if (viewport == null || viewport.getView() != this) {</span>
+<span class="nc" id="L133">          return;</span>
+        }
+<span class="nc" id="L135">        scrollPane.setRowHeaderView(rowHeader);</span>
+<span class="nc" id="L136">        rowHeader.setBackground(scrollPane.getBackground());</span>
+      }
+    }
+<span class="nc" id="L139">  }</span>
+
+  public void setRowHeaderWidth(int width) {
+<span class="nc" id="L142">    rowHeader.setFixedCellWidth(width);</span>
+<span class="nc" id="L143">  }</span>
+
+  public void setRowHeaderHeight(int height) {
+<span class="nc" id="L146">    rowHeader.setFixedCellHeight(height);</span>
+<span class="nc" id="L147">  }</span>
+
+  /*
+  public void setRowPreferredScrollableHeight(int height)
+  {
+  	rowHeader.getPreferredScrollableViewportSize().height = height;
+  }
+  */
+
+  public void setRowHeaderFont(Font font) {
+<span class="nc" id="L157">    rowHeader.setFont(font);</span>
+<span class="nc" id="L158">    ((RowHeaderRenderer) rowHeader.getCellRenderer()).setFont(font);</span>
+<span class="nc" id="L159">  }</span>
+
+  public void refreshRowHeaders() {
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    if (rowHeader != null) {</span>
+<span class="nc" id="L163">      rowHeader.repaint();</span>
+    }
+<span class="nc" id="L165">  }</span>
+
+  // ***************************************************************************
+
+  public class RowHeaderRenderer implements ListCellRenderer {
+
+    private final Border border;
+    private final Color foreground;
+    private Color background;
+    private Font font;
+    private final JLabel label;
+
+<span class="nc" id="L177">    RowHeaderRenderer() {</span>
+<span class="nc" id="L178">      JTableHeader header = RowHeaderTable.this.getTableHeader();</span>
+<span class="nc" id="L179">      border = UIManager.getBorder(&quot;TableHeader.cellBorder&quot;);</span>
+<span class="nc" id="L180">      foreground = header.getForeground();</span>
+<span class="nc" id="L181">      background = header.getBackground();</span>
+<span class="nc" id="L182">      font = header.getFont();</span>
+<span class="nc" id="L183">      label = new JLabel();</span>
+<span class="nc" id="L184">    }</span>
+
+    public void setBackground(Color background) {
+<span class="nc" id="L187">      this.background = background;</span>
+<span class="nc" id="L188">    }</span>
+
+    public Component getListCellRendererComponent(
+        JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+      Component result;
+<span class="nc bnc" id="L193" title="All 2 branches missed.">      if (value instanceof Component) {</span>
+<span class="nc" id="L194">        result = (Component) value;</span>
+      } else {
+<span class="nc bnc" id="L196" title="All 2 branches missed.">        label.setText((value == null) ? &quot;&quot; : value.toString());</span>
+<span class="nc" id="L197">        label.setOpaque(true);</span>
+<span class="nc" id="L198">        label.setHorizontalAlignment(SwingConstants.LEFT);</span>
+<span class="nc" id="L199">        label.setForeground(foreground);</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">        if (!rowHeaderModel.ignoreBackgound()) {</span>
+<span class="nc" id="L201">          label.setBackground(background);</span>
+        } else {
+<span class="nc" id="L203">          label.setBackground(Color.white);</span>
+        }
+<span class="nc" id="L205">        label.setBorder(border);</span>
+<span class="nc" id="L206">        label.setFont(font);</span>
+<span class="nc" id="L207">        result = label;</span>
+      }
+<span class="nc" id="L209">      return result;</span>
+    }
+
+    public void setFont(Font font) {
+<span class="nc" id="L213">      this.font = font;</span>
+<span class="nc" id="L214">    }</span>
+  }
+
+  /**
+   * Returns the rowHeader.
+   *
+   * @return JList
+   */
+  public JList getRowHeader() {
+<span class="nc" id="L223">    return rowHeader;</span>
+  }
+
+<span class="nc" id="L226">  public class RowHeaderListModel extends AbstractListModel {</span>
+<span class="nc" id="L227">    private boolean ignoreBackground = false;</span>
+
+    public int getSize() {
+<span class="nc bnc" id="L230" title="All 2 branches missed.">      return (getModel() == null) ? 0 : getModel().getRowCount();</span>
+    }
+
+    public Object getElementAt(int index) {
+<span class="nc" id="L234">      TableModel dm = getModel();</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">      if (dm == null) {</span>
+<span class="nc" id="L236">        return null;</span>
+      }
+<span class="nc" id="L238">      return ((RowHeaderTableModel) dm).getRowName(index);</span>
+    }
+
+    public void setIgnoreBackgound(boolean flag) {
+<span class="nc" id="L242">      ignoreBackground = flag;</span>
+<span class="nc" id="L243">    }</span>
+
+    public boolean ignoreBackground(boolean flag) {
+<span class="nc" id="L246">      return ignoreBackground;</span>
+    }
+
+    public boolean ignoreBackgound() {
+<span class="nc" id="L250">      return ignoreBackground;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

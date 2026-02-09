@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jSimpleInternalFrame.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jSimpleInternalFrame.java</span></div><h1>Gui4jSimpleInternalFrame.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import java.awt.Container;
+import javax.swing.Icon;
+import javax.swing.JToolBar;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.Gui4jSwingContainer;
+import org.gui4j.core.listener.Gui4jMouseListenerSimpleInternalFrame;
+import org.gui4j.core.swing.IView;
+import org.gui4j.core.swing.IViewListener;
+import org.gui4j.core.swing.SimpleInternalFrame;
+
+public class Gui4jSimpleInternalFrame extends Gui4jJComponent {
+
+  public static final String SELECTED_ALWAYS = &quot;always&quot;;
+  public static final String SELECTED_NEVER = &quot;never&quot;;
+  public static final String SELECTED_ONFOCUS = &quot;whenFocused&quot;;
+
+  private final Gui4jQualifiedComponent content;
+  private final Gui4jQualifiedComponent toolbar;
+  private final String selectionMode;
+
+  private Gui4jCall actionCommand;
+
+  public Gui4jSimpleInternalFrame(
+      Gui4jComponentContainer gui4jComponentContainer,
+      String id,
+      Gui4jQualifiedComponent content,
+      Gui4jQualifiedComponent toolbar,
+      String selectionMode) {
+<span class="nc" id="L35">    super(gui4jComponentContainer, SimpleInternalFrame.class, id);</span>
+<span class="nc" id="L36">    this.content = content;</span>
+<span class="nc" id="L37">    this.selectionMode = selectionMode;</span>
+<span class="nc" id="L38">    this.toolbar = toolbar;</span>
+<span class="nc" id="L39">  }</span>
+
+  protected Gui4jComponentInstance createComponentInstance(
+      Gui4jSwingContainer gui4jSwingContainer,
+      Gui4jCallBase gui4jCallBase,
+      Gui4jQualifiedComponent gui4jComponentInPath) {
+
+    SimpleInternalFrame sif;
+
+<span class="nc bnc" id="L48" title="All 2 branches missed.">    if (SELECTED_ONFOCUS.equals(selectionMode)) {</span>
+<span class="nc" id="L49">      sif = new View(); // create subclass that takes part in focus</span>
+      // change listening
+<span class="nc" id="L51">      sif.setSelected(false);</span>
+    } else {
+<span class="nc" id="L53">      sif = new SimpleInternalFrame();</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">      if (SELECTED_NEVER.equals(selectionMode)) {</span>
+<span class="nc" id="L55">        sif.setSelected(false);</span>
+      } else {
+        // default
+<span class="nc" id="L58">        sif.setSelected(true);</span>
+      }
+    }
+
+<span class="nc" id="L62">    Gui4jComponentInstance gui4jComponentInstance =</span>
+        new Gui4jComponentInstance(gui4jSwingContainer, sif, gui4jComponentInPath);
+
+<span class="nc" id="L65">    return gui4jComponentInstance;</span>
+  }
+
+  protected void setProperties(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L69">    super.setProperties(gui4jComponentInstance);</span>
+
+<span class="nc" id="L71">    SimpleInternalFrame sif = (SimpleInternalFrame) gui4jComponentInstance.getComponent();</span>
+
+    // set content
+<span class="nc" id="L74">    Gui4jComponentInstance contentInstance =</span>
+        gui4jComponentInstance
+<span class="nc" id="L76">            .getGui4jSwingContainer()</span>
+<span class="nc" id="L77">            .getGui4jComponentInstance(</span>
+<span class="nc" id="L78">                gui4jComponentInstance.getGui4jComponentInPath().getGui4jComponentPath(), content);</span>
+<span class="nc" id="L79">    sif.setContent(contentInstance.getComponent());</span>
+
+    // set toolbar
+<span class="nc bnc" id="L82" title="All 2 branches missed.">    if (toolbar != null) {</span>
+<span class="nc" id="L83">      Gui4jComponentInstance toolbarInstance =</span>
+          gui4jComponentInstance
+<span class="nc" id="L85">              .getGui4jSwingContainer()</span>
+<span class="nc" id="L86">              .getGui4jComponentInstance(</span>
+<span class="nc" id="L87">                  gui4jComponentInstance.getGui4jComponentInPath().getGui4jComponentPath(),</span>
+                  toolbar);
+<span class="nc" id="L89">      sif.setToolBar((JToolBar) toolbarInstance.getComponent());</span>
+    }
+
+<span class="nc bnc" id="L92" title="All 2 branches missed.">    if (actionCommand != null) {</span>
+<span class="nc" id="L93">      Gui4jMouseListenerSimpleInternalFrame listener =</span>
+          new Gui4jMouseListenerSimpleInternalFrame(gui4jComponentInstance);
+<span class="nc" id="L95">      listener.setOnDoubleClick(actionCommand);</span>
+<span class="nc" id="L96">      sif.addHeaderListener(listener);</span>
+    }
+<span class="nc" id="L98">  }</span>
+
+  public void setTitle(SimpleInternalFrame sif, String title) {
+<span class="nc" id="L101">    sif.setTitle(title);</span>
+<span class="nc" id="L102">  }</span>
+
+  public void setTabText(SimpleInternalFrame sif, String tabText) {
+<span class="nc" id="L105">    sif.setTabText(tabText);</span>
+<span class="nc" id="L106">  }</span>
+
+  public void setInfoText(SimpleInternalFrame sif, String infoText) {
+<span class="nc" id="L109">    sif.setInfoText(infoText);</span>
+<span class="nc" id="L110">  }</span>
+
+  public void setIcon(SimpleInternalFrame sif, Icon icon) {
+<span class="nc" id="L113">    sif.setFrameIcon(icon);</span>
+<span class="nc" id="L114">  }</span>
+
+  public void setTabIcon(SimpleInternalFrame sif, Icon icon) {
+<span class="nc" id="L117">    sif.setTabIcon(icon);</span>
+<span class="nc" id="L118">  }</span>
+
+  public void setActionCommand(Gui4jCall actionCommand) {
+<span class="nc" id="L121">    this.actionCommand = actionCommand;</span>
+<span class="nc" id="L122">  }</span>
+
+  // ******
+
+  private static class View extends SimpleInternalFrame implements IView {
+
+    public View() {
+<span class="nc" id="L129">      super();</span>
+<span class="nc" id="L130">      IViewListener.prime();</span>
+<span class="nc" id="L131">    }</span>
+
+    public Container getContainer() {
+<span class="nc" id="L134">      return this;</span>
+    }
+
+    public boolean isActive() {
+<span class="nc" id="L138">      return isSelected();</span>
+    }
+
+    public void setActive(boolean active) {
+<span class="nc" id="L142">      setSelected(active);</span>
+<span class="nc" id="L143">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

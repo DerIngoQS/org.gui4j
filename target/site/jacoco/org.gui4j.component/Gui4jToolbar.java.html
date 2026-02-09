@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jToolbar.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jToolbar.java</span></div><h1>Gui4jToolbar.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import javax.swing.JComponent;
+import javax.swing.JToolBar;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.Gui4jSwingContainer;
+
+public class Gui4jToolbar extends Gui4jJComponent {
+
+  private final List mSubcomponents;
+  private final int mOrientation;
+  private final float mHAlignment;
+  private final float mVAlignment;
+
+  public Gui4jToolbar(
+      Gui4jComponentContainer gui4jComponentContainer,
+      String id,
+      int orientation,
+      float vAlignment,
+      float hAlignment) {
+<span class="nc" id="L27">    super(gui4jComponentContainer, JToolBar.class, id);</span>
+
+<span class="nc" id="L29">    mSubcomponents = new ArrayList();</span>
+<span class="nc" id="L30">    mOrientation = orientation;</span>
+<span class="nc" id="L31">    mHAlignment = hAlignment;</span>
+<span class="nc" id="L32">    mVAlignment = vAlignment;</span>
+<span class="nc" id="L33">  }</span>
+
+  protected Gui4jComponentInstance createComponentInstance(
+      Gui4jSwingContainer gui4jSwingContainer,
+      Gui4jCallBase gui4jCallBase,
+      Gui4jQualifiedComponent gui4jComponentInPath) {
+
+<span class="nc" id="L40">    JToolBar toolbar = new JToolBar(gui4jComponentInPath.getQualifiedId(), mOrientation);</span>
+<span class="nc" id="L41">    toolbar.setFloatable(false);</span>
+<span class="nc" id="L42">    toolbar.setRollover(true);</span>
+
+<span class="nc" id="L44">    Gui4jComponentInstance gui4jComponentInstance =</span>
+        new Gui4jComponentInstance(gui4jSwingContainer, toolbar, gui4jComponentInPath);
+<span class="nc" id="L46">    return gui4jComponentInstance;</span>
+  }
+
+  public void addButton(Gui4jQualifiedComponent gui4jSubComponent) {
+<span class="nc" id="L50">    mSubcomponents.add(gui4jSubComponent);</span>
+<span class="nc" id="L51">  }</span>
+
+  public void addSeparator() {
+<span class="nc" id="L54">    mSubcomponents.add(null);</span>
+<span class="nc" id="L55">  }</span>
+
+  protected void setProperties(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L58">    super.setProperties(gui4jComponentInstance);</span>
+
+<span class="nc" id="L60">    JToolBar toolbar = (JToolBar) gui4jComponentInstance.getComponent();</span>
+<span class="nc" id="L61">    Gui4jSwingContainer gui4jSwingContainer = gui4jComponentInstance.getGui4jSwingContainer();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    for (Iterator it = mSubcomponents.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L63">      Gui4jQualifiedComponent gui4jSubComponent = (Gui4jQualifiedComponent) it.next();</span>
+      JComponent component;
+<span class="nc bnc" id="L65" title="All 2 branches missed.">      if (gui4jSubComponent == null) {</span>
+<span class="nc" id="L66">        toolbar.addSeparator();</span>
+        // need to get hold of separator component to set alignment
+        // properties
+<span class="nc" id="L69">        component = (JComponent) toolbar.getComponent(toolbar.getComponentCount() - 1);</span>
+      } else {
+<span class="nc" id="L71">        Gui4jComponentInstance subInstance =</span>
+<span class="nc" id="L72">            gui4jSwingContainer.getGui4jComponentInstance(</span>
+<span class="nc" id="L73">                gui4jComponentInstance.getGui4jComponentInPath().getGui4jComponentPath(),</span>
+                gui4jSubComponent);
+<span class="nc" id="L75">        component = subInstance.getSwingComponent();</span>
+<span class="nc" id="L76">        toolbar.add(component);</span>
+      }
+<span class="nc" id="L78">      component.setAlignmentX(mHAlignment);</span>
+<span class="nc" id="L79">      component.setAlignmentY(mVAlignment);</span>
+<span class="nc" id="L80">    }</span>
+<span class="nc" id="L81">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

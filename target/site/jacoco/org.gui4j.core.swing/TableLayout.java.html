@@ -1,0 +1,1507 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TableLayout.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">TableLayout.java</span></div><h1>TableLayout.java</h1><pre class="source lang-java linenums">/*
+ * June 2006: This is the original file except of this paragraph and
+ * for consistency, the original package name info.clearthought
+ * was renamed.
+ */
+/*
+ * ====================================================================
+ *
+ * The Clearthought Software License, Version 1.0
+ *
+ * Copyright (c) 2001 Daniel Barbalace.  All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *
+ * 2. The original software may not be altered.  However, the classes
+ *    provided may be subclasses as long as the subclasses are not
+ *    packaged in the info.clearthought package or any subpackage of
+ *    info.clearthought.
+ *
+ * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESSED OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR, AFFILATED BUSINESSES,
+ * OR ANYONE ELSE BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF
+ * USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+ * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * ====================================================================
+ */
+
+package org.gui4j.core.swing;
+
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.util.LinkedList;
+import java.util.ListIterator;
+
+/**
+ * TableLayout is a layout manager that arranges components in rows and columns like a spreadsheet.
+ * TableLayout allows each row or column to be a different size. A row or column can be given an
+ * absolute size in pixels, a percentage of the available space, or it can grow and shrink to fill
+ * the remaining space after other rows and columns have been resized.
+ *
+ * &lt;p&gt;Using spreadsheet terminology, a cell is the intersection of a row and column. Cells have
+ * finite, non-negative sizes measured in pixels. The dimensions of a cell depend solely upon the
+ * dimensions of its row and column.
+ *
+ * &lt;p&gt;A component occupies a rectangular group of one or more cells. The component can be aligned in
+ * four ways within that cell.
+ *
+ * &lt;p&gt;A component can be stretched horizontally to fit the cell set (full justification), or it can
+ * be placed in the center of the cell. The component could also be left justified or right
+ * justified. Similarly, the component can be full, center, top, or bottom justified along the
+ *
+ * &lt;pre&gt;
+ * public static void main (String args[])
+ * {
+ *     // Create a frame
+ *     Frame frame = new Frame(&quot;Example of TableLayout&quot;);
+ *     frame.setBounds (100, 100, 300, 300);
+ * &lt;spc&gt;
+ *     // Create a TableLayout for the frame
+ *     double border = 10;
+ *     double size[][] =
+ *         {{border, 0.10, 20, TableLayout.FILL, 20, 0.20, border},  // Columns
+ *          {border, 0.20, 20, TableLayout.FILL, 20, 0.20, border}}; // Rows
+ * &lt;spc&gt;
+ *     frame.setLayout (new TableLayout(size));
+ * &lt;spc&gt;
+ *     // Create some buttons
+ *     String label[] = {&quot;Top&quot;, &quot;Bottom&quot;, &quot;Left&quot;, &quot;Right&quot;, &quot;Center&quot;, &quot;Overlap&quot;};
+ *     Button button[] = new Button[label.length];
+ * &lt;spc&gt;
+ *     for (int i = 0; i &lt; label.length; i++)
+ *         button[i] = new Button(label[i]);
+ * &lt;spc&gt;
+ *     // Add buttons
+ *     frame.add (button[0], &quot;1, 1, 5, 1&quot;); // Top
+ *     frame.add (button[1], &quot;1, 5, 5, 5&quot;); // Bottom
+ *     frame.add (button[2], &quot;1, 3      &quot;); // Left
+ *     frame.add (button[3], &quot;5, 3      &quot;); // Right
+ *     frame.add (button[4], &quot;3, 3, c, c&quot;); // Center
+ *     frame.add (button[5], &quot;3, 3, 3, 5&quot;); // Overlap
+ * &lt;spc&gt;
+ *     // Allow user to close the window to terminate the program
+ *     frame.addWindowListener
+ *         (new WindowListener()
+ *             {
+ *                 public void windowClosing (WindowEvent e)
+ *                 {
+ *                     System.exit (0);
+ *                 }
+ * &lt;spc&gt;
+ *                 public void windowOpened (WindowEvent e) {}
+ *                 public void windowClosed (WindowEvent e) {}
+ *                 public void windowIconified (WindowEvent e) {}
+ *                 public void windowDeiconified (WindowEvent e) {}
+ *                 public void windowActivated (WindowEvent e) {}
+ *                 public void windowDeactivated (WindowEvent e) {}
+ *             }
+ *         );
+ * &lt;spc&gt;
+ *     // Show frame
+ *     frame.show();
+ * }
+ * &lt;/pre&gt;
+ *
+ * @version 2.1 4/26/02
+ * @author Daniel E. Barbalace
+ */
+public class TableLayout
+    implements java.awt.LayoutManager2, java.io.Serializable, TableLayoutConstants {
+
+  /*
+      Note: In this file, a cr refers to either a column or a row.  cr[C] always
+      means column and cr[R] always means row.  A cr size is either a column
+      width or a row Height.  TableLayout views columns and rows as being
+      conceptually symmetric.  Therefore, much of the code applies to both
+      columns and rows, and the use of the cr terminology eliminates redundancy.
+      Also, for ease of reading, z always indicates a parameter whose value is
+      either C or R.
+  */
+
+  /** Default row/column size */
+<span class="nc" id="L136">  protected static final double defaultSize[][] = {{}, {}};</span>
+
+  /** Indicates a column */
+  protected static final int C = 0;
+
+  /** Indicates a row */
+  protected static final int R = 1;
+
+  /** Sizes of crs expressed in absolute and relative terms */
+<span class="nc" id="L145">  protected double crSpec[][] = {null, null};</span>
+
+  /** Sizes of crs in pixels */
+<span class="nc" id="L148">  protected int crSize[][] = {null, null};</span>
+
+  /**
+   * Offsets of crs in pixels. The left boarder of column n is at crOffset[C][n] and the right
+   * boarder is at cr[C][n + 1] for all columns including the last one. crOffset[C].length =
+   * crSize[C].length + 1
+   */
+<span class="nc" id="L155">  protected int crOffset[][] = {null, null};</span>
+
+  /** List of components and their sizes */
+  protected LinkedList list;
+
+  /**
+   * Indicates whether or not the size of the cells are known for the last known size of the
+   * container. If dirty is true or the container has been resized, the cell sizes must be
+   * recalculated using calculateSize.
+   */
+  protected boolean dirty;
+
+  /** Previous known width of the container */
+  protected int oldWidth;
+
+  /** Previous known height of the container */
+  protected int oldHeight;
+
+  /** Horizontal gap between columns */
+  protected int hGap;
+
+  /** Vertical gap between rows */
+  protected int vGap;
+
+  // ******************************************************************************
+  // ** Constructors                                                            ***
+  // ******************************************************************************
+
+  /** Constructs an instance of TableLayout. This TableLayout will have one row and one column. */
+  public TableLayout() {
+<span class="nc" id="L185">    this(defaultSize);</span>
+<span class="nc" id="L186">  }</span>
+
+  /**
+   * Constructs an instance of TableLayout.
+   *
+   * @param size widths of columns and heights of rows in the format, {{col0, col1, col2, ...,
+   *     colN}, {row0, row1, row2, ..., rowM}} If this parameter is invalid, the TableLayout will
+   *     have exactly one row and one column.
+   */
+<span class="nc" id="L195">  public TableLayout(double size[][]) {</span>
+    // Make sure rows and columns and nothing else is specified
+<span class="nc bnc" id="L197" title="All 4 branches missed.">    if ((size != null) &amp;&amp; (size.length == 2)) {</span>
+      // Get the rows and columns
+<span class="nc" id="L199">      double tempCol[] = size[0];</span>
+<span class="nc" id="L200">      double tempRow[] = size[1];</span>
+
+      // Create new rows and columns
+<span class="nc" id="L203">      crSpec[C] = new double[tempCol.length];</span>
+<span class="nc" id="L204">      crSpec[R] = new double[tempRow.length];</span>
+
+      // Copy rows and columns
+<span class="nc" id="L207">      System.arraycopy(tempCol, 0, crSpec[C], 0, crSpec[C].length);</span>
+<span class="nc" id="L208">      System.arraycopy(tempRow, 0, crSpec[R], 0, crSpec[R].length);</span>
+
+      // Make sure rows and columns are valid
+<span class="nc bnc" id="L211" title="All 2 branches missed.">      for (int counter = 0; counter &lt; crSpec[C].length; counter++)</span>
+<span class="nc bnc" id="L212" title="All 8 branches missed.">        if ((crSpec[C][counter] &lt; 0.0)</span>
+            &amp;&amp; (crSpec[C][counter] != FILL)
+            &amp;&amp; (crSpec[C][counter] != PREFERRED)
+            &amp;&amp; (crSpec[C][counter] != MINIMUM)) {
+<span class="nc" id="L216">          crSpec[C][counter] = 0.0;</span>
+        }
+
+<span class="nc bnc" id="L219" title="All 2 branches missed.">      for (int counter = 0; counter &lt; crSpec[R].length; counter++)</span>
+<span class="nc bnc" id="L220" title="All 8 branches missed.">        if ((crSpec[R][counter] &lt; 0.0)</span>
+            &amp;&amp; (crSpec[R][counter] != FILL)
+            &amp;&amp; (crSpec[R][counter] != PREFERRED)
+            &amp;&amp; (crSpec[R][counter] != MINIMUM)) {
+<span class="nc" id="L224">          crSpec[R][counter] = 0.0;</span>
+        }
+<span class="nc" id="L226">    } else {</span>
+<span class="nc" id="L227">      throw new IllegalArgumentException(</span>
+          &quot;Parameter size should be an array, a[2], where a[0] is the &quot;
+              + &quot;is an array of column widths and a[1] is an array or row &quot;
+              + &quot;heights.&quot;);
+    }
+
+    // Create an empty list of components
+<span class="nc" id="L234">    list = new LinkedList();</span>
+
+    // Indicate that the cell sizes are not known
+<span class="nc" id="L237">    dirty = true;</span>
+<span class="nc" id="L238">  }</span>
+
+  // ******************************************************************************
+  // ** Get/Set methods                                                         ***
+  // ******************************************************************************
+
+  /**
+   * Gets the constraints of a given component.
+   *
+   * @param component desired component
+   * @return If the given component is found, the constraints associated with that component. If the
+   *     given component is null or is not found, null is returned.
+   */
+  public TableLayoutConstraints getConstraints(Component component) {
+<span class="nc" id="L252">    ListIterator iterator = list.listIterator(0);</span>
+
+<span class="nc bnc" id="L254" title="All 2 branches missed.">    while (iterator.hasNext()) {</span>
+<span class="nc" id="L255">      Entry entry = (Entry) iterator.next();</span>
+
+<span class="nc bnc" id="L257" title="All 2 branches missed.">      if (entry.component == component)</span>
+<span class="nc" id="L258">        return new TableLayoutConstraints(</span>
+            entry.cr1[C],
+            entry.cr1[R],
+            entry.cr2[C],
+            entry.cr2[R],
+            entry.alignment[C],
+            entry.alignment[R]);
+<span class="nc" id="L265">    }</span>
+
+<span class="nc" id="L267">    return null;</span>
+  }
+
+  /**
+   * Sets the constraints of a given component.
+   *
+   * @param component desired component. This parameter cannot be null.
+   * @param constraint new set of constraints. This parameter cannot be null.
+   */
+  public void setConstraints(Component component, TableLayoutConstraints constraint) {
+    // Check parameters
+<span class="nc bnc" id="L278" title="All 2 branches missed.">    if (component == null)</span>
+<span class="nc" id="L279">      throw new IllegalArgumentException(&quot;Parameter component cannot be null.&quot;);</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">    else if (constraint == null)</span>
+<span class="nc" id="L281">      throw new IllegalArgumentException(&quot;Parameter constraint cannot be null.&quot;);</span>
+
+    // Find and update constraints for the given component
+<span class="nc" id="L284">    ListIterator iterator = list.listIterator(0);</span>
+
+<span class="nc bnc" id="L286" title="All 2 branches missed.">    while (iterator.hasNext()) {</span>
+<span class="nc" id="L287">      Entry entry = (Entry) iterator.next();</span>
+
+<span class="nc bnc" id="L289" title="All 2 branches missed.">      if (entry.component == component) iterator.set(new Entry(component, constraint));</span>
+<span class="nc" id="L290">    }</span>
+<span class="nc" id="L291">  }</span>
+
+  /**
+   * Adjusts the number and sizes of rows in this layout. After calling this method, the caller
+   * should request this layout manager to perform the layout. This can be done with the following
+   * code:
+   *
+   * &lt;pre&gt;
+   *     layout.layoutContainer(container);
+   *     container.repaint();
+   * &lt;/pre&gt;
+   *
+   * or
+   *
+   * &lt;pre&gt;
+   *     window.pack()
+   * &lt;/pre&gt;
+   *
+   * If this is not done, the changes in the layout will not be seen until the container is resized.
+   *
+   * @param column heights of each of the columns
+   */
+  public void setColumn(double column[]) {
+<span class="nc" id="L314">    setCr(C, column);</span>
+<span class="nc" id="L315">  }</span>
+
+  /**
+   * Adjusts the number and sizes of rows in this layout. After calling this method, the caller
+   * should request this layout manager to perform the layout. This can be done with the following
+   * code: &lt;code&gt;
+   *     layout.layoutContainer(container);
+   *     container.repaint();
+   * &lt;/code&gt; or
+   *
+   * &lt;pre&gt;
+   *     window.pack()
+   * &lt;/pre&gt;
+   *
+   * If this is not done, the changes in the layout will not be seen until the container is resized.
+   *
+   * @param row widths of each of the rows. This parameter cannot be null.
+   */
+  public void setRow(double row[]) {
+<span class="nc" id="L334">    setCr(R, row);</span>
+<span class="nc" id="L335">  }</span>
+
+  /**
+   * Sets the sizes of rows or columns for the methods setRow or setColumn.
+   *
+   * @param z indicates row or column
+   * @param size new cr size
+   */
+  protected void setCr(int z, double size[]) {
+    // Copy crs
+<span class="nc" id="L345">    crSpec[z] = new double[size.length];</span>
+<span class="nc" id="L346">    System.arraycopy(size, 0, crSpec[z], 0, crSpec[z].length);</span>
+
+    // Make sure rows are valid
+<span class="nc bnc" id="L349" title="All 2 branches missed.">    for (int counter = 0; counter &lt; crSpec[z].length; counter++)</span>
+<span class="nc bnc" id="L350" title="All 8 branches missed.">      if ((crSpec[z][counter] &lt; 0.0)</span>
+          &amp;&amp; (crSpec[z][counter] != FILL)
+          &amp;&amp; (crSpec[z][counter] != PREFERRED)
+          &amp;&amp; (crSpec[z][counter] != MINIMUM)) {
+<span class="nc" id="L354">        crSpec[z][counter] = 0.0;</span>
+      }
+
+    // Indicate that the cell sizes are not known
+<span class="nc" id="L358">    dirty = true;</span>
+<span class="nc" id="L359">  }</span>
+
+  /**
+   * Adjusts the width of a single column in this layout. After calling this method, the caller
+   * should request this layout manager to perform the layout. This can be done with the following
+   * code: &lt;code&gt;
+   *     layout.layoutContainer(container);
+   *     container.repaint();
+   * &lt;/code&gt; or
+   *
+   * &lt;pre&gt;
+   *     window.pack()
+   * &lt;/pre&gt;
+   *
+   * If this is not done, the changes in the layout will not be seen until the container is resized.
+   *
+   * @param i zero-based index of column to set. If this parameter is not valid, an
+   *     ArrayOutOfBoundsException will be thrown.
+   * @param size width of the column. This parameter cannot be null.
+   */
+  public void setColumn(int i, double size) {
+<span class="nc" id="L380">    setCr(C, i, size);</span>
+<span class="nc" id="L381">  }</span>
+
+  /**
+   * Adjusts the height of a single row in this layout. After calling this method, the caller should
+   * request this layout manager to perform the layout. This can be done with the following code:
+   * &lt;code&gt;
+   *     layout.layoutContainer(container);
+   *     container.repaint();
+   * &lt;/code&gt; or
+   *
+   * &lt;pre&gt;
+   *     window.pack()
+   * &lt;/pre&gt;
+   *
+   * If this is not done, the changes in the layout will not be seen until the container is resized.
+   *
+   * @param i zero-based index of row to set. If this parameter is not valid, an
+   *     ArrayOutOfBoundsException will be thrown.
+   * @param size height of the row. This parameter cannot be null.
+   */
+  public void setRow(int i, double size) {
+<span class="nc" id="L402">    setCr(R, i, size);</span>
+<span class="nc" id="L403">  }</span>
+
+  /**
+   * Sets the sizes of rows or columns for the methods setRow or setColumn.
+   *
+   * @param z indicates row or column
+   * @param i indicates which cr to resize
+   * @param size new cr size
+   */
+  protected void setCr(int z, int i, double size) {
+    // Make sure size is valid
+<span class="nc bnc" id="L414" title="All 8 branches missed.">    if ((size &lt; 0.0) &amp;&amp; (size != FILL) &amp;&amp; (size != PREFERRED) &amp;&amp; (size != MINIMUM)) {</span>
+<span class="nc" id="L415">      size = 0.0;</span>
+    }
+
+    // Copy new size
+<span class="nc" id="L419">    crSpec[z][i] = size;</span>
+
+    // Indicate that the cell sizes are not known
+<span class="nc" id="L422">    dirty = true;</span>
+<span class="nc" id="L423">  }</span>
+
+  /**
+   * Gets the sizes of columns in this layout.
+   *
+   * @return widths of each of the columns
+   */
+  public double[] getColumn() {
+    // Copy columns
+<span class="nc" id="L432">    double column[] = new double[crSpec[C].length];</span>
+<span class="nc" id="L433">    System.arraycopy(crSpec[C], 0, column, 0, column.length);</span>
+
+<span class="nc" id="L435">    return column;</span>
+  }
+
+  /**
+   * Gets the height of a single row in this layout.
+   *
+   * @return height of the requested row
+   */
+  public double[] getRow() {
+    // Copy rows
+<span class="nc" id="L445">    double row[] = new double[crSpec[R].length];</span>
+<span class="nc" id="L446">    System.arraycopy(crSpec[R], 0, row, 0, row.length);</span>
+
+<span class="nc" id="L448">    return row;</span>
+  }
+
+  /**
+   * Gets the width of a single column in this layout.
+   *
+   * @param i zero-based index of row to get. If this parameter is not valid, an
+   *     ArrayOutOfBoundsException will be thrown.
+   * @return width of the requested column
+   */
+  public double getColumn(int i) {
+<span class="nc" id="L459">    return crSpec[C][i];</span>
+  }
+
+  /**
+   * Gets the sizes of a row in this layout.
+   *
+   * @param i zero-based index of row to get. If this parameter is not valid, an
+   *     ArrayOutOfBoundsException will be thrown.
+   * @return height of each of the requested row
+   */
+  public double getRow(int i) {
+<span class="nc" id="L470">    return crSpec[R][i];</span>
+  }
+
+  /**
+   * Gets the number of columns in this layout.
+   *
+   * @return the number of columns
+   */
+  public int getNumColumn() {
+<span class="nc" id="L479">    return crSpec[C].length;</span>
+  }
+
+  /**
+   * Gets the number of rows in this layout.
+   *
+   * @return the number of rows
+   */
+  public int getNumRow() {
+<span class="nc" id="L488">    return crSpec[R].length;</span>
+  }
+
+  /**
+   * Gets the horizontal gap between colunns.
+   *
+   * @return the horizontal gap in pixels
+   */
+  public int getHGap() {
+<span class="nc" id="L497">    return hGap;</span>
+  }
+
+  /**
+   * Gets the vertical gap between rows.
+   *
+   * @return the vertical gap in pixels
+   */
+  public int getVGap() {
+<span class="nc" id="L506">    return vGap;</span>
+  }
+
+  /**
+   * Sets the horizontal gap between colunns.
+   *
+   * @param hGap the horizontal gap in pixels
+   */
+  public void setHGap(int hGap) {
+<span class="nc bnc" id="L515" title="All 2 branches missed.">    if (hGap &gt;= 0) this.hGap = hGap;</span>
+<span class="nc" id="L516">    else throw new IllegalArgumentException(&quot;Parameter hGap must be non-negative.&quot;);</span>
+<span class="nc" id="L517">  }</span>
+
+  /**
+   * Sets the vertical gap between rows.
+   *
+   * @param vGap the horizontal gap in pixels
+   */
+  public void setVGap(int vGap) {
+<span class="nc bnc" id="L525" title="All 2 branches missed.">    if (vGap &gt;= 0) this.vGap = vGap;</span>
+<span class="nc" id="L526">    else throw new IllegalArgumentException(&quot;Parameter vGap must be non-negative.&quot;);</span>
+<span class="nc" id="L527">  }</span>
+
+  // ******************************************************************************
+  // ** Insertion/Deletion methods                                              ***
+  // ******************************************************************************
+
+  /**
+   * Inserts a column in this layout. All components to the right of the insertion point are moved
+   * right one column. The container will need to be laid out after this method returns. See &lt;code&gt;
+   * setColumn&lt;/code&gt;.
+   *
+   * @param i zero-based index at which to insert the column
+   * @param size size of the column to be inserted
+   */
+  public void insertColumn(int i, double size) {
+<span class="nc" id="L542">    insertCr(C, i, size);</span>
+<span class="nc" id="L543">  }</span>
+
+  /**
+   * Inserts a row in this layout. All components below the insertion point are moved down one row.
+   * The container will need to be laid out after this method returns. See &lt;code&gt;setRow&lt;/code&gt;.
+   *
+   * @param i zero-based index at which to insert the row
+   * @param size size of the row to be inserted
+   */
+  public void insertRow(int i, double size) {
+<span class="nc" id="L553">    insertCr(R, i, size);</span>
+<span class="nc" id="L554">  }</span>
+
+  /**
+   * Inserts a cr for the methods insertRow or insertColumn.
+   *
+   * @param z indicates row or column
+   * @param i zero-based index at which to insert the cr
+   * @param size size of cr being inserted
+   */
+  public void insertCr(int z, int i, double size) {
+    // Make sure position is valid
+<span class="nc bnc" id="L565" title="All 4 branches missed.">    if ((i &lt; 0) || (i &gt; crSpec[z].length))</span>
+<span class="nc" id="L566">      throw new IllegalArgumentException(</span>
+          &quot;Parameter i is invalid.  i = &quot; + i + &quot;.  Valid range is [0, &quot; + crSpec[z].length + &quot;].&quot;);
+
+    // Make sure row size is valid
+<span class="nc bnc" id="L570" title="All 8 branches missed.">    if ((size &lt; 0.0) &amp;&amp; (size != FILL) &amp;&amp; (size != PREFERRED) &amp;&amp; (size != MINIMUM)) {</span>
+<span class="nc" id="L571">      size = 0.0;</span>
+    }
+
+    // Copy crs
+<span class="nc" id="L575">    double cr[] = new double[crSpec[z].length + 1];</span>
+<span class="nc" id="L576">    System.arraycopy(crSpec[z], 0, cr, 0, i);</span>
+<span class="nc" id="L577">    System.arraycopy(crSpec[z], i, cr, i + 1, crSpec[z].length - i);</span>
+
+    // Insert cr
+<span class="nc" id="L580">    cr[i] = size;</span>
+<span class="nc" id="L581">    crSpec[z] = cr;</span>
+
+    // Move all components that are below the new cr
+<span class="nc" id="L584">    ListIterator iterator = list.listIterator(0);</span>
+
+<span class="nc bnc" id="L586" title="All 2 branches missed.">    while (iterator.hasNext()) {</span>
+      // Get next entry
+<span class="nc" id="L588">      Entry entry = (Entry) iterator.next();</span>
+
+      // Is the first cr below the new cr
+<span class="nc bnc" id="L591" title="All 2 branches missed.">      if (entry.cr1[z] &gt;= i)</span>
+        // Move first cr
+<span class="nc" id="L593">        entry.cr1[z]++;</span>
+
+      // Is the second cr below the new cr
+<span class="nc bnc" id="L596" title="All 2 branches missed.">      if (entry.cr2[z] &gt;= i)</span>
+        // Move second cr
+<span class="nc" id="L598">        entry.cr2[z]++;</span>
+<span class="nc" id="L599">    }</span>
+
+    // Indicate that the cell sizes are not known
+<span class="nc" id="L602">    dirty = true;</span>
+<span class="nc" id="L603">  }</span>
+
+  /**
+   * Deletes a column in this layout. All components to the right of the deletion point are moved
+   * left one column. The container will need to be laid out after this method returns. See &lt;code&gt;
+   * setColumn&lt;/code&gt;.
+   *
+   * @param i zero-based index of column to delete
+   */
+  public void deleteColumn(int i) {
+<span class="nc" id="L613">    deleteCr(C, i);</span>
+<span class="nc" id="L614">  }</span>
+
+  /**
+   * Deletes a row in this layout. All components below the deletion point are moved up one row. The
+   * container will need to be laid out after this method returns. See &lt;code&gt;setRow&lt;/code&gt;. There
+   * must be at least two rows in order to delete a row.
+   *
+   * @param i zero-based index of row to delete
+   */
+  public void deleteRow(int i) {
+<span class="nc" id="L624">    deleteCr(R, i);</span>
+<span class="nc" id="L625">  }</span>
+
+  /**
+   * Deletes a cr for the methods deleteRow or deleteColumn.
+   *
+   * @param z indicates row or column
+   * @param i zero-based index of cr to delete
+   */
+  protected void deleteCr(int z, int i) {
+    // Make sure position is valid
+<span class="nc bnc" id="L635" title="All 4 branches missed.">    if ((i &lt; 0) || (i &gt;= crSpec[z].length))</span>
+<span class="nc" id="L636">      throw new IllegalArgumentException(</span>
+          &quot;Parameter i is invalid.  i = &quot;
+              + i
+              + &quot;.  Valid range is [0, &quot;
+              + (crSpec[z].length - 1)
+              + &quot;].&quot;);
+
+    // Copy rows
+<span class="nc" id="L644">    double cr[] = new double[crSpec[z].length - 1];</span>
+<span class="nc" id="L645">    System.arraycopy(crSpec[z], 0, cr, 0, i);</span>
+<span class="nc" id="L646">    System.arraycopy(crSpec[z], i + 1, cr, i, crSpec[z].length - i - 1);</span>
+
+    // Delete row
+<span class="nc" id="L649">    crSpec[z] = cr;</span>
+
+    // Move all components that are to below the row deleted
+<span class="nc" id="L652">    ListIterator iterator = list.listIterator(0);</span>
+
+<span class="nc bnc" id="L654" title="All 2 branches missed.">    while (iterator.hasNext()) {</span>
+      // Get next entry
+<span class="nc" id="L656">      Entry entry = (Entry) iterator.next();</span>
+
+      // Is the first row below the new row
+<span class="nc bnc" id="L659" title="All 2 branches missed.">      if (entry.cr1[z] &gt; i)</span>
+        // Move first row
+<span class="nc" id="L661">        entry.cr1[z]--;</span>
+
+      // Is the second row below the new row
+<span class="nc bnc" id="L664" title="All 2 branches missed.">      if (entry.cr2[z] &gt; i)</span>
+        // Move second row
+<span class="nc" id="L666">        entry.cr2[z]--;</span>
+<span class="nc" id="L667">    }</span>
+
+    // Indicate that the cell sizes are not known
+<span class="nc" id="L670">    dirty = true;</span>
+<span class="nc" id="L671">  }</span>
+
+  // ******************************************************************************
+  // ** Misc methods                                                            ***
+  // ******************************************************************************
+
+  /**
+   * Converts this TableLayout to a string.
+   *
+   * @return a string representing the columns and row sizes in the form &quot;{{col0, col1, col2, ...,
+   *     colN}, {row0, row1, row2, ..., rowM}}&quot;
+   */
+  public String toString() {
+    int counter;
+
+<span class="nc" id="L686">    String value = &quot;TableLayout {{&quot;;</span>
+
+<span class="nc bnc" id="L688" title="All 2 branches missed.">    if (crSpec[C].length &gt; 0) {</span>
+<span class="nc bnc" id="L689" title="All 2 branches missed.">      for (counter = 0; counter &lt; crSpec[C].length - 1; counter++)</span>
+<span class="nc" id="L690">        value += crSpec[C][counter] + &quot;, &quot;;</span>
+
+<span class="nc" id="L692">      value += crSpec[C][crSpec[C].length - 1] + &quot;}, {&quot;;</span>
+<span class="nc" id="L693">    } else value += &quot;}, {&quot;;</span>
+
+<span class="nc bnc" id="L695" title="All 2 branches missed.">    if (crSpec[R].length &gt; 0) {</span>
+<span class="nc bnc" id="L696" title="All 2 branches missed.">      for (counter = 0; counter &lt; crSpec[R].length - 1; counter++)</span>
+<span class="nc" id="L697">        value += crSpec[R][counter] + &quot;, &quot;;</span>
+
+<span class="nc" id="L699">      value += crSpec[R][crSpec[R].length - 1] + &quot;}}&quot;;</span>
+<span class="nc" id="L700">    } else value += &quot;}}&quot;;</span>
+
+<span class="nc" id="L702">    return value;</span>
+  }
+
+  /**
+   * Determines whether or not there are any components with invalid constraints. An invalid
+   * constraint is one that references a non-existing row or column. For example, on a table with
+   * five rows, row -1 and row 5 are both invalid. Valid rows are 0 through 4, inclusively.
+   *
+   * @return an array of zero or more Component instances
+   */
+  public Component[] getInvalidEntry() {
+<span class="nc" id="L713">    LinkedList listInvalid = new LinkedList();</span>
+<span class="nc" id="L714">    ListIterator iterator = list.listIterator(0);</span>
+
+<span class="nc bnc" id="L716" title="All 2 branches missed.">    while (iterator.hasNext()) {</span>
+<span class="nc" id="L717">      Entry entry = (Entry) iterator.next();</span>
+
+<span class="nc bnc" id="L719" title="All 8 branches missed.">      if ((entry.cr1[R] &lt; 0)</span>
+          || (entry.cr1[C] &lt; 0)
+          || (entry.cr2[R] &gt;= crSpec[R].length)
+          || (entry.cr2[C] &gt;= crSpec[C].length)) {
+<span class="nc" id="L723">        listInvalid.add(entry.component);</span>
+      }
+<span class="nc" id="L725">    }</span>
+
+<span class="nc" id="L727">    return (Component[]) listInvalid.toArray(new Component[listInvalid.size()]);</span>
+  }
+
+  /**
+   * Gets a list of overlapping components. Two components overlap if they cover at least one common
+   * cell.
+   *
+   * @return a list of zero or more Component instances
+   */
+  public Component[] getOverlappingEntry() {
+<span class="nc" id="L737">    LinkedList listOverlapping = new LinkedList();</span>
+<span class="nc" id="L738">    int numEntry = list.size();</span>
+<span class="nc" id="L739">    Entry entry[] = (Entry[]) list.toArray(new Entry[numEntry]);</span>
+
+<span class="nc bnc" id="L741" title="All 2 branches missed.">    for (int knowUnique = 1; knowUnique &lt; numEntry; knowUnique++)</span>
+<span class="nc bnc" id="L742" title="All 2 branches missed.">      for (int checking = knowUnique - 1; checking &gt;= 0; checking--)</span>
+<span class="nc bnc" id="L743" title="All 16 branches missed.">        if (((entry[checking].cr1[C] &gt;= entry[knowUnique].cr1[C])</span>
+                &amp;&amp; (entry[checking].cr1[C] &lt;= entry[knowUnique].cr2[C])
+                &amp;&amp; (entry[checking].cr1[R] &gt;= entry[knowUnique].cr1[R])
+                &amp;&amp; (entry[checking].cr1[R] &lt;= entry[knowUnique].cr2[R]))
+            || ((entry[checking].cr2[C] &gt;= entry[knowUnique].cr1[C])
+                &amp;&amp; (entry[checking].cr2[C] &lt;= entry[knowUnique].cr2[C])
+                &amp;&amp; (entry[checking].cr2[R] &gt;= entry[knowUnique].cr1[R])
+                &amp;&amp; (entry[checking].cr2[R] &lt;= entry[knowUnique].cr2[R]))) {
+<span class="nc" id="L751">          listOverlapping.add(entry[checking].component);</span>
+        }
+
+<span class="nc" id="L754">    return (Component[]) listOverlapping.toArray(new Component[listOverlapping.size()]);</span>
+  }
+
+  // ******************************************************************************
+  // ** Calculation methods                                                     ***
+  // ******************************************************************************
+
+  /**
+   * Calculates the sizes of the rows and columns based on the absolute and relative sizes specified
+   * in &lt;code&gt;crSpec[R]&lt;/code&gt; and &lt;code&gt;crSpec[C]&lt;/code&gt; and the size of the container. The result
+   * is stored in &lt;code&gt;crSize[R]&lt;/code&gt; and &lt;code&gt;crSize[C]&lt;/code&gt;.
+   *
+   * @param container container using this TableLayout
+   */
+  protected void calculateSize(Container container) {
+    // Get the container's insets
+<span class="nc" id="L770">    Insets inset = container.getInsets();</span>
+
+    // Get the size of the container's available space
+<span class="nc" id="L773">    Dimension d = container.getSize();</span>
+<span class="nc" id="L774">    int availableWidth = d.width - inset.left - inset.right;</span>
+<span class="nc" id="L775">    int availableHeight = d.height - inset.top - inset.bottom;</span>
+
+    // Compensate for horiztonal and vertical gaps
+<span class="nc bnc" id="L778" title="All 2 branches missed.">    if (crSpec[C].length &gt; 0) availableWidth -= hGap * (crSpec[C].length - 1);</span>
+
+<span class="nc bnc" id="L780" title="All 2 branches missed.">    if (crSpec[R].length &gt; 0) availableHeight -= vGap * (crSpec[R].length - 1);</span>
+
+    // Create array to hold actual sizes in pixels
+<span class="nc" id="L783">    crSize[C] = new int[crSpec[C].length];</span>
+<span class="nc" id="L784">    crSize[R] = new int[crSpec[R].length];</span>
+
+    // Assign absolute sizes
+<span class="nc" id="L787">    availableWidth = assignAbsoluteSize(C, availableWidth);</span>
+<span class="nc" id="L788">    availableHeight = assignAbsoluteSize(R, availableHeight);</span>
+
+    // Assign preferred and minimum sizes
+<span class="nc" id="L791">    availableWidth = assignPrefMinSize(C, availableWidth, MINIMUM);</span>
+<span class="nc" id="L792">    availableWidth = assignPrefMinSize(C, availableWidth, PREFERRED);</span>
+<span class="nc" id="L793">    availableHeight = assignPrefMinSize(R, availableHeight, MINIMUM);</span>
+<span class="nc" id="L794">    availableHeight = assignPrefMinSize(R, availableHeight, PREFERRED);</span>
+
+    // Assign relative sizes
+<span class="nc" id="L797">    availableWidth = assignRelativeSize(C, availableWidth);</span>
+<span class="nc" id="L798">    availableHeight = assignRelativeSize(R, availableHeight);</span>
+
+    // Assign fill sizes
+<span class="nc" id="L801">    assignFillSize(C, availableWidth);</span>
+<span class="nc" id="L802">    assignFillSize(R, availableHeight);</span>
+
+    // Calculate cr offsets for effeciency
+<span class="nc" id="L805">    calculateOffset(C, inset);</span>
+<span class="nc" id="L806">    calculateOffset(R, inset);</span>
+
+    // Indicate that the size of the cells are known for the container's
+    // current size
+<span class="nc" id="L810">    dirty = false;</span>
+<span class="nc" id="L811">    oldWidth = d.width;</span>
+<span class="nc" id="L812">    oldHeight = d.height;</span>
+<span class="nc" id="L813">  }</span>
+
+  /**
+   * Assigns absolute sizes.
+   *
+   * @param z indicates row or column
+   * @param availableSize amount of space available in the container
+   * @return the amount of space available after absolute crs have been assigned sizes
+   */
+  protected int assignAbsoluteSize(int z, int availableSize) {
+<span class="nc" id="L823">    int numCr = crSpec[z].length;</span>
+
+<span class="nc bnc" id="L825" title="All 2 branches missed.">    for (int counter = 0; counter &lt; numCr; counter++)</span>
+<span class="nc bnc" id="L826" title="All 4 branches missed.">      if ((crSpec[z][counter] &gt;= 1.0) || (crSpec[z][counter] == 0.0)) {</span>
+<span class="nc" id="L827">        crSize[z][counter] = (int) (crSpec[z][counter] + 0.5);</span>
+<span class="nc" id="L828">        availableSize -= crSize[z][counter];</span>
+      }
+
+<span class="nc" id="L831">    return availableSize;</span>
+  }
+
+  /**
+   * Assigns relative sizes.
+   *
+   * @param z indicates row or column
+   * @param availableSize amount of space available in the container
+   * @return the amount of space available after relative crs have been assigned sizes
+   */
+  protected int assignRelativeSize(int z, int availableSize) {
+<span class="nc bnc" id="L842" title="All 2 branches missed.">    int relativeSize = (availableSize &lt; 0) ? 0 : availableSize;</span>
+<span class="nc" id="L843">    int numCr = crSpec[z].length;</span>
+
+<span class="nc bnc" id="L845" title="All 2 branches missed.">    for (int counter = 0; counter &lt; numCr; counter++)</span>
+<span class="nc bnc" id="L846" title="All 4 branches missed.">      if ((crSpec[z][counter] &gt; 0.0) &amp;&amp; (crSpec[z][counter] &lt; 1.0)) {</span>
+<span class="nc" id="L847">        crSize[z][counter] = (int) (crSpec[z][counter] * relativeSize + 0.5);</span>
+
+<span class="nc" id="L849">        availableSize -= crSize[z][counter];</span>
+      }
+
+<span class="nc" id="L852">    return availableSize;</span>
+  }
+
+  /**
+   * Assigns FILL sizes.
+   *
+   * @param z indicates row or column
+   * @param availableSize amount of space available in the container
+   */
+  protected void assignFillSize(int z, int availableSize) {
+    // Skip if there is no more space to allocate
+<span class="nc bnc" id="L863" title="All 2 branches missed.">    if (availableSize &lt;= 0) return;</span>
+
+    // Count the number of &quot;fill&quot; cells
+<span class="nc" id="L866">    int numFillSize = 0;</span>
+<span class="nc" id="L867">    int numCr = crSpec[z].length;</span>
+
+<span class="nc bnc" id="L869" title="All 4 branches missed.">    for (int counter = 0; counter &lt; numCr; counter++) if (crSpec[z][counter] == FILL) numFillSize++;</span>
+
+    // If numFillSize is zero, the if statement below will always evaluate to
+    // false and the division will not occur.
+
+    // If there are more than one &quot;fill&quot; cell, slack may occur due to rounding
+    // errors
+<span class="nc" id="L876">    int slackSize = availableSize;</span>
+
+    // Assign &quot;fill&quot; cells equal amounts of the remaining space
+<span class="nc bnc" id="L879" title="All 2 branches missed.">    for (int counter = 0; counter &lt; numCr; counter++)</span>
+<span class="nc bnc" id="L880" title="All 2 branches missed.">      if (crSpec[z][counter] == FILL) {</span>
+<span class="nc" id="L881">        crSize[z][counter] = availableSize / numFillSize;</span>
+<span class="nc" id="L882">        slackSize -= crSize[z][counter];</span>
+      }
+
+    // Assign one pixel of slack to each FILL cr, starting at the last one,
+    // until all slack has been consumed
+<span class="nc bnc" id="L887" title="All 4 branches missed.">    for (int counter = numCr - 1; (counter &gt;= 0) &amp;&amp; (slackSize &gt; 0); counter--) {</span>
+<span class="nc bnc" id="L888" title="All 2 branches missed.">      if (crSpec[z][counter] == FILL) {</span>
+<span class="nc" id="L889">        crSize[z][counter]++;</span>
+<span class="nc" id="L890">        slackSize--;</span>
+      }
+    }
+<span class="nc" id="L893">  }</span>
+
+  /**
+   * Calculates the offset of each cr.
+   *
+   * @param z indicates row or column
+   * @param inset
+   */
+  protected void calculateOffset(int z, Insets inset) {
+<span class="nc" id="L902">    int numCr = crSpec[z].length;</span>
+
+<span class="nc" id="L904">    crOffset[z] = new int[numCr + 1];</span>
+<span class="nc bnc" id="L905" title="All 2 branches missed.">    crOffset[z][0] = (z == C) ? inset.left : inset.top;</span>
+
+<span class="nc bnc" id="L907" title="All 2 branches missed.">    for (int counter = 0; counter &lt; numCr; counter++)</span>
+<span class="nc" id="L908">      crOffset[z][counter + 1] = crOffset[z][counter] + crSize[z][counter];</span>
+<span class="nc" id="L909">  }</span>
+
+  /**
+   * Assigned widths to preferred and minimum size columns and rows. This reduces the available
+   * width and height. Minimum widths/heights must be calculated first because they affect preferred
+   * widths/heights, but not vice versa. The end result is that any component contained wholly or
+   * partly in a column/row of minimum/preferred width will get at least its minimum/preferred
+   * width, respectively.
+   *
+   * @param z indicates row or column
+   * @param availableSize amount of space available in the container
+   * @param typeOfSize indicates preferred or minimum
+   * @return the amount of space available after absolute crs have been assigned sizes
+   */
+  protected int assignPrefMinSize(int z, int availableSize, double typeOfSize) {
+    // Get variables referring to columns or rows (crs)
+<span class="nc" id="L925">    int numCr = crSpec[z].length;</span>
+
+    // Address every cr
+<span class="nc bnc" id="L928" title="All 2 branches missed.">    for (int counter = 0; counter &lt; numCr; counter++)</span>
+      // Is the current cr a preferred/minimum (based on typeOfSize) size
+<span class="nc bnc" id="L930" title="All 2 branches missed.">      if (crSpec[z][counter] == typeOfSize) {</span>
+        // Assume a maximum width of zero
+<span class="nc" id="L932">        int maxSize = 0;</span>
+
+        // Find maximum preferred/min width of all components completely
+        // or partially contained within this cr
+<span class="nc" id="L936">        ListIterator iterator = list.listIterator(0);</span>
+
+        nextComponent:
+<span class="nc bnc" id="L939" title="All 2 branches missed.">        while (iterator.hasNext()) {</span>
+<span class="nc" id="L940">          Entry entry = (Entry) iterator.next();</span>
+
+          // Skip invalid entries
+<span class="nc bnc" id="L943" title="All 4 branches missed.">          if ((entry.cr1[z] &lt; 0) || (entry.cr2[z] &gt;= numCr)) continue nextComponent;</span>
+
+          // Find the maximum desired size of this cr based on all crs
+          // the current component occupies
+<span class="nc bnc" id="L947" title="All 4 branches missed.">          if ((entry.cr1[z] &lt;= counter) &amp;&amp; (entry.cr2[z] &gt;= counter)) {</span>
+            // Setup size and number of adjustable crs
+            Dimension p =
+<span class="nc bnc" id="L950" title="All 2 branches missed.">                (typeOfSize == PREFERRED)</span>
+<span class="nc" id="L951">                    ? entry.component.getPreferredSize()</span>
+<span class="nc" id="L952">                    : entry.component.getMinimumSize();</span>
+
+<span class="nc bnc" id="L954" title="All 4 branches missed.">            int size = (p == null) ? 0 : ((z == C) ? p.width : p.height);</span>
+<span class="nc" id="L955">            int numAdjustable = 0;</span>
+
+            // Calculate for preferred size
+<span class="nc bnc" id="L958" title="All 2 branches missed.">            if (typeOfSize == PREFERRED)</span>
+              // Consider all crs this component occupies
+<span class="nc bnc" id="L960" title="All 2 branches missed.">              for (int entryCr = entry.cr1[z]; entryCr &lt;= entry.cr2[z]; entryCr++) {</span>
+                // Subtract absolute, relative, and minumum cr
+                // sizes, which have already been calculated
+<span class="nc bnc" id="L963" title="All 4 branches missed.">                if ((crSpec[z][entryCr] &gt;= 0.0) || (crSpec[z][entryCr] == MINIMUM)) {</span>
+<span class="nc" id="L964">                  size -= crSize[z][entryCr];</span>
+                }
+                // Count preferred/min width columns
+<span class="nc bnc" id="L967" title="All 2 branches missed.">                else if (crSpec[z][entryCr] == PREFERRED) numAdjustable++;</span>
+                // Skip any component that occupies a fill cr
+                // because the fill should fulfill the size
+                // requirements
+<span class="nc bnc" id="L971" title="All 2 branches missed.">                else if (crSpec[z][entryCr] == FILL) continue nextComponent;</span>
+              }
+            // Calculate for minimum size
+            else
+              // Consider all crs this component occupies
+<span class="nc bnc" id="L976" title="All 2 branches missed.">              for (int entryCr = entry.cr1[z]; entryCr &lt;= entry.cr2[z]; entryCr++) {</span>
+                // Subtract absolute and relative cr sizes, which
+                // have already been calculated
+<span class="nc bnc" id="L979" title="All 2 branches missed.">                if (crSpec[z][entryCr] &gt;= 0.0) size -= crSize[z][entryCr];</span>
+                // Count preferred/min width columns
+<span class="nc bnc" id="L981" title="All 4 branches missed.">                else if ((crSpec[z][entryCr] == PREFERRED) || (crSpec[z][entryCr] == MINIMUM)) {</span>
+<span class="nc" id="L982">                  numAdjustable++;</span>
+                }
+                // Skip any component that occupies a fill cr
+                // because the fill should fulfill the size
+                // requirements
+<span class="nc bnc" id="L987" title="All 2 branches missed.">                else if (crSpec[z][entryCr] == FILL) continue nextComponent;</span>
+              }
+
+            // Divide the size evenly among the adjustable crs
+<span class="nc" id="L991">            size = (int) Math.ceil(size / (double) numAdjustable);</span>
+
+            // Take the maximumn size
+<span class="nc bnc" id="L994" title="All 2 branches missed.">            if (maxSize &lt; size) maxSize = size;</span>
+          }
+<span class="nc" id="L996">        }</span>
+
+        // Assign preferred size
+<span class="nc" id="L999">        crSize[z][counter] = maxSize;</span>
+
+        // Reduce available size
+<span class="nc" id="L1002">        availableSize -= maxSize;</span>
+      }
+
+<span class="nc" id="L1005">    return availableSize;</span>
+  }
+
+  // ******************************************************************************
+  // ** java.awt.event.LayoutManager methods                                    ***
+  // ******************************************************************************
+
+  /**
+   * To lay out the specified container using this layout. This method reshapes the components in
+   * the specified target container in order to satisfy the constraints of all components.
+   *
+   * &lt;p&gt;User code should not have to call this method directly.
+   *
+   * @param container container being served by this layout manager
+   */
+  public void layoutContainer(Container container) {
+    // Calculate sizes if container has changed size or components were added
+<span class="nc" id="L1022">    Dimension d = container.getSize();</span>
+
+<span class="nc bnc" id="L1024" title="All 6 branches missed.">    if (dirty || (d.width != oldWidth) || (d.height != oldHeight)) calculateSize(container);</span>
+
+    // Get components
+<span class="nc" id="L1027">    Component component[] = container.getComponents();</span>
+
+    // Layout components
+<span class="nc bnc" id="L1030" title="All 2 branches missed.">    for (int counter = 0; counter &lt; component.length; counter++) {</span>
+      try {
+        // Get the entry for the next component
+<span class="nc" id="L1033">        ListIterator iterator = list.listIterator(0);</span>
+<span class="nc" id="L1034">        Entry entry = null;</span>
+
+<span class="nc bnc" id="L1036" title="All 2 branches missed.">        while (iterator.hasNext()) {</span>
+<span class="nc" id="L1037">          entry = (Entry) iterator.next();</span>
+
+<span class="nc bnc" id="L1039" title="All 2 branches missed.">          if (entry.component == component[counter]) break;</span>
+<span class="nc" id="L1040">          else entry = null;</span>
+        }
+
+        // Skip any components that have not been place in a specific cell,
+        // setting the skip component's bounds to zero
+<span class="nc bnc" id="L1045" title="All 2 branches missed.">        if (entry == null) {</span>
+<span class="nc" id="L1046">          component[counter].setBounds(0, 0, 0, 0);</span>
+<span class="nc" id="L1047">          continue;</span>
+        }
+
+        // The following block of code has been optimized so that the
+        // preferred size of the component is only obtained if it is
+        // needed.  There are components in which the getPreferredSize
+        // method is extremely expensive, such as data driven controls
+        // with a large amount of data.
+
+        // Get the preferred size of the component
+<span class="nc" id="L1057">        int preferredWidth = 0;</span>
+<span class="nc" id="L1058">        int preferredHeight = 0;</span>
+
+<span class="nc bnc" id="L1060" title="All 4 branches missed.">        if ((entry.alignment[C] != FULL) || (entry.alignment[R] != FULL)) {</span>
+<span class="nc" id="L1061">          Dimension preferredSize = component[counter].getPreferredSize();</span>
+
+<span class="nc" id="L1063">          preferredWidth = preferredSize.width;</span>
+<span class="nc" id="L1064">          preferredHeight = preferredSize.height;</span>
+        }
+
+        // Calculate the coordinates and size of the component
+<span class="nc" id="L1068">        int value[] = calculateSizeAndOffset(entry, preferredWidth, true);</span>
+<span class="nc" id="L1069">        int x = value[0];</span>
+<span class="nc" id="L1070">        int w = value[1];</span>
+<span class="nc" id="L1071">        value = calculateSizeAndOffset(entry, preferredHeight, false);</span>
+<span class="nc" id="L1072">        int y = value[0];</span>
+<span class="nc" id="L1073">        int h = value[1];</span>
+
+        // Move and resize component
+<span class="nc" id="L1076">        component[counter].setBounds(x, y, w, h);</span>
+<span class="nc" id="L1077">      } catch (Exception error) {</span>
+        // If any error occurs, set the bounds of this component to zero
+        // and continue
+<span class="nc" id="L1080">        component[counter].setBounds(0, 0, 0, 0);</span>
+<span class="nc" id="L1081">        continue;</span>
+<span class="nc" id="L1082">      }</span>
+    }
+<span class="nc" id="L1084">  }</span>
+
+  /**
+   * Calculates the vertical/horizontal offset and size of a component.
+   *
+   * @param entry entry containing component and contraints
+   * @param preferredSize previously calculated preferred width/height of component
+   * @param isColumn if true, this method is being called to calculate the offset/size of a column.
+   *     if false,... of a row.
+   * @return an array, a, of two integers such that a[0] is the offset and a[1] is the size
+   */
+  protected int[] calculateSizeAndOffset(Entry entry, int preferredSize, boolean isColumn) {
+    // Get references to cr properties
+<span class="nc bnc" id="L1097" title="All 2 branches missed.">    int lCrOffset[] = isColumn ? this.crOffset[C] : this.crOffset[R];</span>
+<span class="nc bnc" id="L1098" title="All 2 branches missed.">    int entryAlignment = isColumn ? entry.alignment[C] : entry.alignment[R];</span>
+
+    // Determine cell set size
+    int cellSetSize =
+<span class="nc bnc" id="L1102" title="All 2 branches missed.">        isColumn</span>
+<span class="nc" id="L1103">            ? lCrOffset[entry.cr2[C] + 1] - lCrOffset[entry.cr1[C]]</span>
+<span class="nc" id="L1104">            : lCrOffset[entry.cr2[R] + 1] - lCrOffset[entry.cr1[R]];</span>
+
+    // Determine the size of the component
+    int size;
+
+<span class="nc bnc" id="L1109" title="All 4 branches missed.">    if ((entryAlignment == FULL) || (cellSetSize &lt; preferredSize)) size = cellSetSize;</span>
+<span class="nc" id="L1110">    else size = preferredSize;</span>
+
+    // Determine offset
+    int offset;
+
+<span class="nc bnc" id="L1115" title="All 5 branches missed.">    switch (entryAlignment) {</span>
+      case LEFT: // Align left/top side along left edge of cell
+<span class="nc bnc" id="L1117" title="All 2 branches missed.">        offset = lCrOffset[isColumn ? entry.cr1[C] : entry.cr1[R]];</span>
+<span class="nc" id="L1118">        break;</span>
+
+      case RIGHT: // Align right/bottom side along right edge of cell
+<span class="nc bnc" id="L1121" title="All 2 branches missed.">        offset = lCrOffset[(isColumn ? entry.cr2[C] : entry.cr2[R]) + 1] - size;</span>
+<span class="nc" id="L1122">        break;</span>
+
+      case CENTER: // Center justify component
+<span class="nc bnc" id="L1125" title="All 2 branches missed.">        offset = lCrOffset[isColumn ? entry.cr1[C] : entry.cr1[R]] + ((cellSetSize - size) &gt;&gt; 1);</span>
+<span class="nc" id="L1126">        break;</span>
+
+      case FULL: // Align left/top side along left/top edge of cell
+<span class="nc bnc" id="L1129" title="All 2 branches missed.">        offset = lCrOffset[isColumn ? entry.cr1[C] : entry.cr1[R]];</span>
+<span class="nc" id="L1130">        break;</span>
+
+      default: // This is a never should happen case, but just in case
+<span class="nc" id="L1133">        offset = 0;</span>
+    }
+
+    // Compensate for gaps
+<span class="nc bnc" id="L1137" title="All 2 branches missed.">    if (isColumn) {</span>
+<span class="nc" id="L1138">      offset += hGap * entry.cr1[C];</span>
+<span class="nc" id="L1139">      size += hGap * (entry.cr2[C] - entry.cr1[C]);</span>
+    } else {
+<span class="nc" id="L1141">      offset += vGap * entry.cr1[R];</span>
+<span class="nc" id="L1142">      size += hGap * (entry.cr2[R] - entry.cr1[R]);</span>
+    }
+
+    // Package return values
+<span class="nc" id="L1146">    int value[] = {offset, size};</span>
+<span class="nc" id="L1147">    return value;</span>
+  }
+
+  /**
+   * Determines the preferred size of the container argument using this layout. The preferred size
+   * is the smallest size that, if used for the container's size, will ensure that all components
+   * are at least as large as their preferred size. This method cannot guarantee that all components
+   * will be their preferred size. For example, if component A and component B are each allocate
+   * half of the container's width and component A wants to be 10 pixels wide while component B
+   * wants to be 100 pixels wide, they cannot both be accommodated. Since in general components
+   * rather be larger than their preferred size instead of smaller, component B's request will be
+   * fulfilled. The preferred size of the container would be 200 pixels.
+   *
+   * @param container container being served by this layout manager
+   * @return a dimension indicating the container's preferred size
+   */
+  public Dimension preferredLayoutSize(Container container) {
+<span class="nc" id="L1164">    return calculateLayoutSize(container, PREFERRED);</span>
+  }
+
+  /**
+   * Determines the minimum size of the container argument using this layout. The minimum size is
+   * the smallest size that, if used for the container's size, will ensure that all components are
+   * at least as large as their minimum size. This method cannot guarantee that all components will
+   * be their minimum size. For example, if component A and component B are each allocate half of
+   * the container's width and component A wants to be 10 pixels wide while component B wants to be
+   * 100 pixels wide, they cannot both be accommodated. Since in general components rather be larger
+   * than their minimum size instead of smaller, component B's request will be fulfilled. The
+   * minimum size of the container would be 200 pixels.
+   *
+   * @param container container being served by this layout manager
+   * @return a dimension indicating the container's minimum size
+   */
+  public Dimension minimumLayoutSize(Container container) {
+<span class="nc" id="L1181">    return calculateLayoutSize(container, MINIMUM);</span>
+  }
+
+  /**
+   * Calculates the preferred or minimum size for the methods preferredLayoutSize and
+   * minimumLayoutSize.
+   *
+   * @param container container whose size is being calculated
+   * @param typeOfSize indicates preferred or minimum
+   * @return a dimension indicating the container's preferred or minimum size
+   */
+  protected Dimension calculateLayoutSize(Container container, double typeOfSize) {
+    //  Get preferred/minimum sizes
+<span class="nc" id="L1194">    Entry entryList[] = (Entry[]) list.toArray(new Entry[list.size()]);</span>
+<span class="nc" id="L1195">    int numEntry = entryList.length;</span>
+<span class="nc" id="L1196">    Dimension prefMinSize[] = new Dimension[numEntry];</span>
+
+<span class="nc bnc" id="L1198" title="All 2 branches missed.">    for (int i = 0; i &lt; numEntry; i++)</span>
+<span class="nc" id="L1199">      prefMinSize[i] =</span>
+<span class="nc bnc" id="L1200" title="All 2 branches missed.">          (typeOfSize == PREFERRED)</span>
+<span class="nc" id="L1201">              ? entryList[i].component.getPreferredSize()</span>
+<span class="nc" id="L1202">              : entryList[i].component.getMinimumSize();</span>
+
+    // Calculate sizes
+<span class="nc" id="L1205">    int width = calculateLayoutSize(container, C, typeOfSize, entryList, prefMinSize);</span>
+
+<span class="nc" id="L1207">    int height = calculateLayoutSize(container, R, typeOfSize, entryList, prefMinSize);</span>
+
+    // Compensate for container's insets
+<span class="nc" id="L1210">    Insets inset = container.getInsets();</span>
+<span class="nc" id="L1211">    width += inset.left + inset.right;</span>
+<span class="nc" id="L1212">    height += inset.top + inset.bottom;</span>
+
+<span class="nc" id="L1214">    return new Dimension(width, height);</span>
+  }
+
+  /**
+   * Calculates the preferred or minimum size for the method calculateLayoutSize(Container
+   * container, double typeOfSize). This method is passed the preferred/minimum sizes of the
+   * components so that the potentially expensive methods getPreferredSize()/getMinimumSize() are
+   * not called twice for the same component.
+   *
+   * @param container container whose size is being calculated
+   * @param z
+   * @param typeOfSize indicates preferred or minimum
+   * @param entryList list of Entry objects
+   * @param prefMinSize list of preferred or minimum sizes
+   * @return a dimension indicating the container's preferred or minimum size
+   */
+  protected int calculateLayoutSize(
+      Container container, int z, double typeOfSize, Entry entryList[], Dimension prefMinSize[]) {
+    Dimension size; // Preferred/minimum size of current component
+<span class="nc" id="L1233">    int scaledSize = 0; // Preferred/minimum size of scaled components</span>
+    int temp; // Temporary variable used to compare sizes
+    int counter; // Counting variable
+
+    // Get number of crs
+<span class="nc" id="L1238">    int numCr = crSpec[z].length;</span>
+
+    // Determine percentage of space allocated to fill components.  This is
+    // one minus the sum of all scalable components.
+<span class="nc" id="L1242">    double fillSizeRatio = 1.0;</span>
+<span class="nc" id="L1243">    int numFillSize = 0;</span>
+
+<span class="nc bnc" id="L1245" title="All 2 branches missed.">    for (counter = 0; counter &lt; numCr; counter++)</span>
+<span class="nc bnc" id="L1246" title="All 4 branches missed.">      if ((crSpec[z][counter] &gt; 0.0) &amp;&amp; (crSpec[z][counter] &lt; 1.0))</span>
+<span class="nc" id="L1247">        fillSizeRatio -= crSpec[z][counter];</span>
+<span class="nc bnc" id="L1248" title="All 2 branches missed.">      else if (crSpec[z][counter] == FILL) numFillSize++;</span>
+
+    // Adjust fill ratios to reflect number of fill rows/columns
+<span class="nc bnc" id="L1251" title="All 2 branches missed.">    if (numFillSize &gt; 1) fillSizeRatio /= numFillSize;</span>
+
+    // Cap fill ratio bottoms to 0.0
+<span class="nc bnc" id="L1254" title="All 2 branches missed.">    if (fillSizeRatio &lt; 0.0) fillSizeRatio = 0.0;</span>
+
+    // Create array to hold actual sizes in pixels
+<span class="nc" id="L1257">    crSize[z] = new int[numCr];</span>
+
+    // Calculate preferred/minimum cr sizes
+<span class="nc" id="L1260">    assignPrefMinSize(z, 0, typeOfSize);</span>
+
+<span class="nc" id="L1262">    int crPrefMin[] = new int[numCr];</span>
+
+<span class="nc bnc" id="L1264" title="All 2 branches missed.">    for (counter = 0; counter &lt; numCr; counter++)</span>
+<span class="nc bnc" id="L1265" title="All 4 branches missed.">      if ((crSpec[z][counter] == PREFERRED) || (crSpec[z][counter] == MINIMUM)) {</span>
+<span class="nc" id="L1266">        crPrefMin[counter] = crSize[z][counter];</span>
+      }
+
+    // Find maximum preferred/minimum size of all scaled components
+<span class="nc" id="L1270">    int numColumn = crSpec[C].length;</span>
+<span class="nc" id="L1271">    int numRow = crSpec[R].length;</span>
+<span class="nc" id="L1272">    int numEntry = entryList.length;</span>
+
+<span class="nc bnc" id="L1274" title="All 2 branches missed.">    for (int entryCounter = 0; entryCounter &lt; numEntry; entryCounter++) {</span>
+      // Get next entry
+<span class="nc" id="L1276">      Entry entry = entryList[entryCounter];</span>
+
+      // Make sure entry is in valid rows and columns
+<span class="nc bnc" id="L1279" title="All 12 branches missed.">      if ((entry.cr1[C] &lt; 0)</span>
+          || (entry.cr1[C] &gt;= numColumn)
+          || (entry.cr2[C] &gt;= numColumn)
+          || (entry.cr1[R] &lt; 0)
+          || (entry.cr1[R] &gt;= numRow)
+          || (entry.cr2[R] &gt;= numRow)) {
+        // Skip the bad component
+<span class="nc" id="L1286">        continue;</span>
+      }
+
+      // Get preferred/minimum size of current component
+<span class="nc" id="L1290">      size = prefMinSize[entryCounter];</span>
+
+      // ----------------------------------------------------------------------
+
+      // Calculate portion of component that is not absolutely sized
+<span class="nc bnc" id="L1295" title="All 2 branches missed.">      int scalableSize = (z == C) ? size.width : size.height;</span>
+
+<span class="nc bnc" id="L1297" title="All 2 branches missed.">      for (counter = entry.cr1[z]; counter &lt;= entry.cr2[z]; counter++)</span>
+<span class="nc bnc" id="L1298" title="All 2 branches missed.">        if (crSpec[z][counter] &gt;= 1.0) scalableSize -= crSpec[z][counter];</span>
+<span class="nc bnc" id="L1299" title="All 4 branches missed.">        else if ((crSpec[z][counter] == PREFERRED) || (crSpec[z][counter] == MINIMUM)) {</span>
+<span class="nc" id="L1300">          scalableSize -= crPrefMin[counter];</span>
+        }
+
+      // ----------------------------------------------------------------------
+
+      // Determine total percentage of scalable space that the component
+      // occupies by adding the relative columns and the fill columns
+<span class="nc" id="L1307">      double relativeSize = 0.0;</span>
+
+<span class="nc bnc" id="L1309" title="All 2 branches missed.">      for (counter = entry.cr1[z]; counter &lt;= entry.cr2[z]; counter++) {</span>
+        // Cr is scaled
+<span class="nc bnc" id="L1311" title="All 4 branches missed.">        if ((crSpec[z][counter] &gt; 0.0) &amp;&amp; (crSpec[z][counter] &lt; 1.0))</span>
+          // Add scaled size to relativeWidth
+<span class="nc" id="L1313">          relativeSize += crSpec[z][counter];</span>
+        // Cr is fill
+<span class="nc bnc" id="L1315" title="All 4 branches missed.">        else if ((crSpec[z][counter] == FILL) &amp;&amp; (fillSizeRatio != 0.0))</span>
+          // Add fill size to relativeWidth
+<span class="nc" id="L1317">          relativeSize += fillSizeRatio;</span>
+      }
+
+      // Determine the total scaled size as estimated by this component
+<span class="nc bnc" id="L1321" title="All 2 branches missed.">      if (relativeSize == 0) temp = 0;</span>
+<span class="nc" id="L1322">      else temp = (int) (scalableSize / relativeSize + 0.5);</span>
+
+      // ----------------------------------------------------------------------
+
+      // If the container needs to be bigger, make it so
+<span class="nc bnc" id="L1327" title="All 2 branches missed.">      if (scaledSize &lt; temp) scaledSize = temp;</span>
+    }
+
+    // totalSize is the scaledSize plus the sum of all absolute sizes and all
+    // preferred sizes
+<span class="nc" id="L1332">    int totalSize = scaledSize;</span>
+
+<span class="nc bnc" id="L1334" title="All 2 branches missed.">    for (counter = 0; counter &lt; numCr; counter++)</span>
+      // Is the current cr an absolute size
+<span class="nc bnc" id="L1336" title="All 2 branches missed.">      if (crSpec[z][counter] &gt;= 1.0) totalSize += (int) (crSpec[z][counter] + 0.5);</span>
+      // Is the current cr a preferred/minimum size
+<span class="nc bnc" id="L1338" title="All 4 branches missed.">      else if ((crSpec[z][counter] == PREFERRED) || (crSpec[z][counter] == MINIMUM)) {</span>
+        // Add preferred/minimum width
+<span class="nc" id="L1340">        totalSize += crPrefMin[counter];</span>
+      }
+
+    // Compensate for horizontal and vertical gap
+<span class="nc bnc" id="L1344" title="All 4 branches missed.">    if (numCr &gt; 0) totalSize += ((z == C) ? hGap : vGap) * (numCr - 1);</span>
+
+<span class="nc" id="L1346">    return totalSize;</span>
+  }
+
+  /**
+   * Adds the specified component with the specified name to the layout.
+   *
+   * @param name indicates entry's position and anchor
+   * @param component component to add
+   */
+  public void addLayoutComponent(String name, Component component) {
+<span class="nc" id="L1356">    addLayoutComponent(component, name);</span>
+<span class="nc" id="L1357">  }</span>
+
+  // ******************************************************************************
+  // ** java.awt.event.LayoutManager2 methods                                   ***
+  // ******************************************************************************
+
+  /**
+   * Adds the specified component with the specified name to the layout.
+   *
+   * @param component component to add
+   * @param constraint indicates entry's position and alignment
+   */
+  public void addLayoutComponent(Component component, Object constraint) {
+<span class="nc bnc" id="L1370" title="All 2 branches missed.">    if (constraint instanceof String) {</span>
+      // Create an entry to associate component with its constraints
+<span class="nc" id="L1372">      constraint = new TableLayoutConstraints((String) constraint);</span>
+
+      // Add component and constraints to the list
+<span class="nc" id="L1375">      list.add(new Entry(component, (TableLayoutConstraints) constraint));</span>
+
+      // Indicate that the cell sizes are not known
+<span class="nc" id="L1378">      dirty = true;</span>
+<span class="nc bnc" id="L1379" title="All 2 branches missed.">    } else if (constraint instanceof TableLayoutConstraints) {</span>
+      // Add component and constraints to the list
+<span class="nc" id="L1381">      list.add(new Entry(component, (TableLayoutConstraints) constraint));</span>
+
+      // Indicate that the cell sizes are not known
+<span class="nc" id="L1384">      dirty = true;</span>
+<span class="nc bnc" id="L1385" title="All 2 branches missed.">    } else if (constraint == null)</span>
+<span class="nc" id="L1386">      throw new IllegalArgumentException(&quot;No constraint for the component&quot;);</span>
+    else
+<span class="nc" id="L1388">      throw new IllegalArgumentException(</span>
+<span class="nc" id="L1389">          &quot;Cannot accept a constraint of class &quot; + constraint.getClass());</span>
+<span class="nc" id="L1390">  }</span>
+
+  /**
+   * Removes the specified component from the layout.
+   *
+   * @param component component being removed
+   */
+  public void removeLayoutComponent(Component component) {
+    // Remove the component
+<span class="nc" id="L1399">    ListIterator iterator = list.listIterator(0);</span>
+
+<span class="nc bnc" id="L1401" title="All 2 branches missed.">    while (iterator.hasNext()) {</span>
+<span class="nc" id="L1402">      Entry entry = (Entry) iterator.next();</span>
+
+<span class="nc bnc" id="L1404" title="All 2 branches missed.">      if (entry.component == component) iterator.remove();</span>
+<span class="nc" id="L1405">    }</span>
+
+    // Indicate that the cell sizes are not known since
+<span class="nc" id="L1408">    dirty = true;</span>
+<span class="nc" id="L1409">  }</span>
+
+  /**
+   * Returns the maximum dimensions for this layout given the components in the specified target
+   * container.
+   *
+   * @param target the component which needs to be laid out
+   * @return unconditionally, a Dimension of Integer.MAX_VALUE by Integer.MAX_VALUE since
+   *     TableLayout does not limit the maximum size of a container
+   */
+  public Dimension maximumLayoutSize(Container target) {
+<span class="nc" id="L1420">    return new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE);</span>
+  }
+
+  /**
+   * Returns the alignment along the x axis. This specifies how the component would like to be
+   * aligned relative to other components. The value should be a number between 0 and 1 where 0
+   * represents alignment along the origin, 1 is aligned the furthest away from the origin, 0.5 is
+   * centered, etc.
+   *
+   * @param parent
+   * @return unconditionally, 0.5
+   */
+  public float getLayoutAlignmentX(Container parent) {
+<span class="nc" id="L1433">    return 0.5f;</span>
+  }
+
+  /**
+   * Returns the alignment along the y axis. This specifies how the component would like to be
+   * aligned relative to other components. The value should be a number between 0 and 1 where 0
+   * represents alignment along the origin, 1 is aligned the furthest away from the origin, 0.5 is
+   * centered, etc.
+   *
+   * @param parent
+   * @return unconditionally, 0.5
+   */
+  public float getLayoutAlignmentY(Container parent) {
+<span class="nc" id="L1446">    return 0.5f;</span>
+  }
+
+  /**
+   * Invalidates the layout, indicating that if the layout manager has cached information it should
+   * be discarded.
+   *
+   * @param target
+   */
+  public void invalidateLayout(Container target) {
+<span class="nc" id="L1456">    dirty = true;</span>
+<span class="nc" id="L1457">  }</span>
+
+  // ******************************************************************************
+  // *** Inner Class                                                            ***
+  // ******************************************************************************
+
+  // The following inner class is used to bind components to their constraints
+  protected static class Entry implements Cloneable {
+    /** Component bound by the constraints */
+    protected Component component;
+
+    /** Cell in which the upper-left corner of the component lies */
+    protected int cr1[];
+
+    /** Cell in which the lower-right corner of the component lies */
+    protected int cr2[];
+
+    /** Horizontal and vertical alignment */
+    protected int alignment[];
+
+    /**
+     * Constructs an Entry that binds a component to a set of constraints.
+     *
+     * @param component component being bound
+     * @param constraint constraints being applied
+     */
+<span class="nc" id="L1483">    protected Entry(Component component, TableLayoutConstraints constraint) {</span>
+<span class="nc" id="L1484">      int lCr1[] = {constraint.col1, constraint.row1};</span>
+<span class="nc" id="L1485">      int lCr2[] = {constraint.col2, constraint.row2};</span>
+<span class="nc" id="L1486">      int lAlignment[] = {constraint.hAlign, constraint.vAlign};</span>
+
+<span class="nc" id="L1488">      this.cr1 = lCr1;</span>
+<span class="nc" id="L1489">      this.cr2 = lCr2;</span>
+<span class="nc" id="L1490">      this.alignment = lAlignment;</span>
+<span class="nc" id="L1491">      this.component = component;</span>
+<span class="nc" id="L1492">    }</span>
+
+    /**
+     * Gets the string representation of this Entry.
+     *
+     * @return a string in the form &quot;(col1, row1, col2, row2, vAlign, hAlign) component&quot;
+     */
+    public String toString() {
+<span class="nc" id="L1500">      TableLayoutConstraints c =</span>
+          new TableLayoutConstraints(cr1[C], cr1[R], cr2[C], cr2[R], alignment[C], alignment[R]);
+
+<span class="nc" id="L1503">      return &quot;(&quot; + c + &quot;) &quot; + component;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

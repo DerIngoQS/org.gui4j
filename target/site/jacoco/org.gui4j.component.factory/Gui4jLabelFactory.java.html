@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jLabelFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jLabelFactory.java</span></div><h1>Gui4jLabelFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import java.util.List;
+import javax.swing.Icon;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.component.Gui4jLabel;
+import org.gui4j.component.util.Gui4jAlignment;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeEnumeration;
+import org.gui4j.core.definition.AttributeTypeID;
+import org.gui4j.core.definition.AttributeTypeMethodCall;
+import org.gui4j.util.Filter;
+
+<span class="nc" id="L19">public final class Gui4jLabelFactory extends Gui4jJComponentFactory {</span>
+<span class="nc" id="L20">  private final String TEXT = &quot;text&quot;;</span>
+<span class="nc" id="L21">  private final String HALIGNMENT = &quot;hAlignment&quot;;</span>
+<span class="nc" id="L22">  private final String VALIGNMENT = &quot;vAlignment&quot;;</span>
+<span class="nc" id="L23">  private final String VERTICALTEXTPOSITION = &quot;vTextPosition&quot;;</span>
+<span class="nc" id="L24">  private final String HORIZONTALTEXTPOSITION = &quot;hTextPosition&quot;;</span>
+<span class="nc" id="L25">  private final String NAME = &quot;label&quot;;</span>
+<span class="nc" id="L26">  private final String MNEMONIC = &quot;mnemonic&quot;;</span>
+<span class="nc" id="L27">  private final String LABELFOR = &quot;labelFor&quot;;</span>
+<span class="nc" id="L28">  private final String ICON = &quot;icon&quot;;</span>
+<span class="nc" id="L29">  private final String SUFFIX = &quot;suffix&quot;;</span>
+
+<span class="nc" id="L31">  private static final Log mLogger = LogFactory.getLog(Gui4jLabelFactory.class);</span>
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc" id="L34">    super.addToplevelAttributes(attrList, filter);</span>
+<span class="nc bnc" id="L35" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jLabelFactory.class)) {</span>
+<span class="nc" id="L36">      attrList.add(</span>
+          new Attribute(TEXT, new AttributeTypeMethodCall(String.class, true), false, false));
+<span class="nc" id="L38">      attrList.add(</span>
+          new Attribute(
+              HALIGNMENT,
+              new AttributeTypeEnumeration(Gui4jAlignment.mHorizontalAlign, Gui4jAlignment.LEADING),
+              false,
+              false));
+<span class="nc" id="L44">      attrList.add(</span>
+          new Attribute(
+              VALIGNMENT,
+              new AttributeTypeEnumeration(Gui4jAlignment.mVerticalAlign, Gui4jAlignment.CENTER),
+              false,
+              false));
+<span class="nc" id="L50">      attrList.add(</span>
+          new Attribute(
+              VERTICALTEXTPOSITION,
+              new AttributeTypeEnumeration(Gui4jAlignment.mVerticalAlign, Gui4jAlignment.CENTER),
+              false,
+              false));
+<span class="nc" id="L56">      attrList.add(</span>
+          new Attribute(
+              HORIZONTALTEXTPOSITION,
+              new AttributeTypeEnumeration(
+                  Gui4jAlignment.mHorizontalAlign, Gui4jAlignment.TRAILING),
+              false,
+              false));
+<span class="nc" id="L63">      attrList.add(</span>
+          new Attribute(MNEMONIC, new AttributeTypeMethodCall(Character.TYPE), false, false));
+<span class="nc" id="L65">      attrList.add(new Attribute(LABELFOR, new AttributeTypeID(), false, false));</span>
+<span class="nc" id="L66">      attrList.add(new Attribute(ICON, new AttributeTypeMethodCall(Icon.class), false, false));</span>
+<span class="nc" id="L67">      attrList.add(new Attribute(SUFFIX, new AttributeTypeMethodCall(String.class), false, false));</span>
+    }
+<span class="nc" id="L69">  }</span>
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.gui4j.component.factory.Gui4jJComponentFactory#defineGui4jJComponentBy(org.gui4j.core.Gui4jComponentContainer,
+   *      java.lang.String, org.dom4j.LElement)
+   */
+  public Gui4jJComponent defineGui4jJComponentBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e) {
+<span class="nc" id="L79">    Gui4jLabel gui4jLabel = new Gui4jLabel(gui4jComponentContainer, id);</span>
+<span class="nc" id="L80">    gui4jLabel.definePropertySetter(</span>
+<span class="nc" id="L81">        TEXT, getGui4jAccessInstance(String.class, gui4jLabel, e, TEXT));</span>
+<span class="nc" id="L82">    gui4jLabel.definePropertySetter(</span>
+<span class="nc" id="L83">        MNEMONIC, getGui4jAccessInstance(Character.TYPE, gui4jLabel, e, MNEMONIC));</span>
+<span class="nc" id="L84">    gui4jLabel.definePropertySetter(ICON, getGui4jAccessInstance(Icon.class, gui4jLabel, e, ICON));</span>
+<span class="nc" id="L85">    gui4jLabel.setLabelForId(e.attributeValue(LABELFOR));</span>
+    {
+<span class="nc" id="L87">      String hAlign = gui4jComponentContainer.getAttrValue(e, HALIGNMENT);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">      if (hAlign != null) {</span>
+<span class="nc" id="L89">        Integer val = (Integer) Gui4jAlignment.mHorizontalAlign.get(hAlign);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (val != null) {</span>
+<span class="nc" id="L91">          gui4jLabel.setHAlignment(val.intValue());</span>
+        } else {
+<span class="nc" id="L93">          mLogger.warn(&quot;hAlignment &quot; + hAlign + &quot; nicht definiert&quot;);</span>
+        }
+      }
+    }
+    {
+<span class="nc" id="L98">      String vAlign = gui4jComponentContainer.getAttrValue(e, VALIGNMENT);</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      if (vAlign != null) {</span>
+<span class="nc" id="L100">        Integer val = (Integer) Gui4jAlignment.mVerticalAlign.get(vAlign);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (val != null) {</span>
+<span class="nc" id="L102">          gui4jLabel.setVAlignment(val.intValue());</span>
+        } else {
+<span class="nc" id="L104">          mLogger.warn(&quot;vAlignment &quot; + vAlign + &quot; nicht definiert&quot;);</span>
+        }
+      }
+    }
+    {
+<span class="nc" id="L109">      String hTextPosition = gui4jComponentContainer.getAttrValue(e, HORIZONTALTEXTPOSITION);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">      if (hTextPosition != null) {</span>
+<span class="nc" id="L111">        Integer val = (Integer) Gui4jAlignment.mHorizontalAlign.get(hTextPosition);</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (val != null) {</span>
+<span class="nc" id="L113">          gui4jLabel.setHTextPosition(val.intValue());</span>
+        } else {
+<span class="nc" id="L115">          mLogger.warn(&quot;hTextPosition &quot; + hTextPosition + &quot; nicht definiert&quot;);</span>
+        }
+      }
+    }
+    {
+<span class="nc" id="L120">      String vTextPosition = gui4jComponentContainer.getAttrValue(e, VERTICALTEXTPOSITION);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">      if (vTextPosition != null) {</span>
+<span class="nc" id="L122">        Integer val = (Integer) Gui4jAlignment.mVerticalAlign.get(vTextPosition);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if (val != null) {</span>
+<span class="nc" id="L124">          gui4jLabel.setVTextPosition(val.intValue());</span>
+        } else {
+<span class="nc" id="L126">          mLogger.warn(&quot;vTextPosition &quot; + vTextPosition + &quot; nicht definiert&quot;);</span>
+        }
+      }
+    }
+
+    {
+<span class="nc" id="L132">      Gui4jCall suffixCall = getGui4jAccessInstance(String.class, gui4jLabel, e, SUFFIX);</span>
+<span class="nc" id="L133">      gui4jLabel.setSuffixCall(suffixCall);</span>
+    }
+
+<span class="nc" id="L136">    return gui4jLabel;</span>
+  }
+
+  /**
+   * @see org.gui4j.core.Gui4jComponentFactory#getName()
+   */
+  public String getName() {
+<span class="nc" id="L143">    return NAME;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

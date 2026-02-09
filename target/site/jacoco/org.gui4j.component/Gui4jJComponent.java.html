@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jJComponent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jJComponent.java</span></div><h1>Gui4jJComponent.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import java.awt.KeyboardFocusManager;
+import java.util.Map;
+import java.util.Set;
+import javax.swing.JComponent;
+import javax.swing.border.Border;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentFactory;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jMap1;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.Gui4jSwingContainer;
+import org.gui4j.event.Gui4jEventListener;
+import org.gui4j.exception.ErrorTags;
+import org.gui4j.exception.Gui4jUncheckedException;
+
+public abstract class Gui4jJComponent extends Gui4jAbstractPopupComponent implements ErrorTags {
+
+  protected Gui4jCall mGrabFocus;
+  private boolean mHandleReadOnly;
+  private String mKeyMapId;
+  private Set mFocusTraversalKeysForward;
+  private Set mFocusTraversalKeysBackward;
+
+  public Gui4jJComponent(
+      Gui4jComponentContainer gui4jComponentContainer, Class swingClass, String id) {
+<span class="nc" id="L30">    super(gui4jComponentContainer, swingClass, id);</span>
+<span class="nc" id="L31">  }</span>
+
+  protected void setProperties(final Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L34">    super.setProperties(gui4jComponentInstance);</span>
+
+<span class="nc" id="L36">    final JComponent component = gui4jComponentInstance.getSwingComponent();</span>
+
+<span class="nc bnc" id="L38" title="All 2 branches missed.">    if (mKeyMapId != null) {</span>
+<span class="nc" id="L39">      Gui4jQualifiedComponent gui4jComponentInPath =</span>
+          gui4jComponentInstance
+<span class="nc" id="L41">              .getGui4jComponent()</span>
+<span class="nc" id="L42">              .getGui4jComponentContainer()</span>
+<span class="nc" id="L43">              .getGui4jQualifiedComponent(mKeyMapId);</span>
+<span class="nc" id="L44">      Gui4jComponentInstance keyMapInstance =</span>
+<span class="nc" id="L45">          gui4jComponentInstance.getGui4jComponentInstance(gui4jComponentInPath);</span>
+<span class="nc" id="L46">      Gui4jKeyMap.applyDefinitions(keyMapInstance, component);</span>
+    }
+
+<span class="nc bnc" id="L49" title="All 2 branches missed.">    if (mGrabFocus != null) {</span>
+<span class="nc" id="L50">      Gui4jEventListener eventListener =</span>
+<span class="nc" id="L51">          new Gui4jEventListener() {</span>
+            public void eventOccured() {
+<span class="nc" id="L53">              Boolean b = Boolean.TRUE;</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">              if (mGrabFocus.getResultClass() != null) {</span>
+<span class="nc" id="L55">                Map m =</span>
+                    new Gui4jMap1(
+<span class="nc" id="L57">                        Gui4jComponentFactory.CONTEXT, gui4jComponentInstance.getContext());</span>
+<span class="nc" id="L58">                b =</span>
+                    (Boolean)
+<span class="nc" id="L60">                        mGrabFocus.getValue(gui4jComponentInstance.getGui4jCallBase(), m, null);</span>
+              }
+<span class="nc bnc" id="L62" title="All 2 branches missed.">              if (Boolean.TRUE.equals(b)) {</span>
+<span class="nc" id="L63">                JComponent jComponent = gui4jComponentInstance.getSwingComponent();</span>
+<span class="nc" id="L64">                jComponent.grabFocus();</span>
+              }
+<span class="nc" id="L66">            }</span>
+          };
+<span class="nc" id="L68">      registerEvents(</span>
+<span class="nc" id="L69">          gui4jComponentInstance.getGui4jSwingContainer(),</span>
+<span class="nc" id="L70">          gui4jComponentInstance.getGui4jCallBase(),</span>
+<span class="nc" id="L71">          mGrabFocus.getDependantProperties(),</span>
+          eventListener);
+    }
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">    if (mFocusTraversalKeysForward != null) {</span>
+<span class="nc" id="L76">      component.setFocusTraversalKeys(</span>
+          KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, mFocusTraversalKeysForward);
+    }
+
+<span class="nc bnc" id="L80" title="All 2 branches missed.">    if (mFocusTraversalKeysBackward != null) {</span>
+<span class="nc" id="L81">      component.setFocusTraversalKeys(</span>
+          KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, mFocusTraversalKeysBackward);
+    }
+<span class="nc" id="L84">  }</span>
+
+  protected boolean handleReadOnly() {
+<span class="nc" id="L87">    return mHandleReadOnly;</span>
+  }
+
+  protected Gui4jComponentInstance createComponentInstance(
+      Gui4jSwingContainer gui4jSwingContainer,
+      Gui4jCallBase gui4jCallBase,
+      Gui4jQualifiedComponent gui4jComponentInPath) {
+    try {
+<span class="nc" id="L95">      JComponent jComponent = (JComponent) getComponentClass().newInstance();</span>
+<span class="nc" id="L96">      Gui4jComponentInstance gui4jComponentInstance =</span>
+          new Gui4jComponentInstance(gui4jSwingContainer, jComponent, gui4jComponentInPath);
+<span class="nc" id="L98">      return gui4jComponentInstance;</span>
+<span class="nc" id="L99">    } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L100">      throw new Gui4jUncheckedException.ProgrammingError(</span>
+          PROGRAMMING_ERROR_illegal_access_exception, e);
+<span class="nc" id="L102">    } catch (InstantiationException e) {</span>
+<span class="nc" id="L103">      throw new Gui4jUncheckedException.ProgrammingError(</span>
+          PROGRAMMING_ERROR_instantiation_exception, e);
+    }
+  }
+
+  public void setHandleReadOnly(boolean handleReadOnly) {
+<span class="nc" id="L109">    mHandleReadOnly = handleReadOnly;</span>
+<span class="nc" id="L110">  }</span>
+
+  public void setKeyMapId(String id) {
+<span class="nc" id="L113">    mKeyMapId = id;</span>
+<span class="nc" id="L114">  }</span>
+
+  /**
+   * Sets the border.
+   *
+   * @param jComponent
+   * @param border The border to set
+   */
+  public void setBorder(JComponent jComponent, Border border) {
+<span class="nc" id="L123">    jComponent.setBorder(border);</span>
+<span class="nc" id="L124">  }</span>
+
+  /**
+   * Sets the tooltip.
+   *
+   * @param jComponent
+   * @param text The tooltip to set
+   */
+  public void setTooltip(JComponent jComponent, String text) {
+<span class="nc" id="L133">    jComponent.setToolTipText(text);</span>
+<span class="nc" id="L134">  }</span>
+
+  public void setOpaque(JComponent jComponent, boolean opaque) {
+<span class="nc" id="L137">    jComponent.setOpaque(opaque);</span>
+<span class="nc" id="L138">  }</span>
+
+  /**
+   * Sets the grabFocus.
+   *
+   * @param grabFocus The grabFocus to set
+   */
+  public void setGrabFocus(Gui4jCall grabFocus) {
+<span class="nc" id="L146">    mGrabFocus = grabFocus;</span>
+<span class="nc" id="L147">  }</span>
+
+  public void setFocusTraversalKeysForward(Set traversalKeys) {
+<span class="nc" id="L150">    mFocusTraversalKeysForward = traversalKeys;</span>
+<span class="nc" id="L151">  }</span>
+
+  public void setFocusTraversalKeysBackward(Set traversalKeys) {
+<span class="nc" id="L154">    mFocusTraversalKeysBackward = traversalKeys;</span>
+<span class="nc" id="L155">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

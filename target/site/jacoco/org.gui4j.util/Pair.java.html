@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Pair.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.util</a> &gt; <span class="el_source">Pair.java</span></div><h1>Pair.java</h1><pre class="source lang-java linenums">package org.gui4j.util;
+
+import java.io.Serializable;
+
+/**
+ * A Pair is a container for two objects, the &quot;first&quot; and the &quot;second&quot; one. Instances of &lt;code&gt;Pair
+ * &lt;/code&gt; are immutable.
+ */
+<span class="nc" id="L9">public class Pair implements Serializable {</span>
+  private final Object first;
+  private final Object second;
+
+  /**
+   * Constructor for Pair.
+   *
+   * @param first must be different from null
+   * @param second must be different from null
+   */
+<span class="nc" id="L19">  public Pair(Object first, Object second) {</span>
+<span class="nc bnc" id="L20" title="All 2 branches missed.">    assert first != null;</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">    assert second != null;</span>
+<span class="nc" id="L22">    this.first = first;</span>
+<span class="nc" id="L23">    this.second = second;</span>
+<span class="nc" id="L24">  }</span>
+
+  /**
+   * Returns the first.
+   *
+   * @return Object
+   */
+  public Object getFirst() {
+<span class="nc" id="L32">    return first;</span>
+  }
+
+  /**
+   * Returns the second.
+   *
+   * @return Object
+   */
+  public Object getSecond() {
+<span class="nc" id="L41">    return second;</span>
+  }
+
+  /**
+   * @see java.lang.Object#equals(Object)
+   */
+  public boolean equals(Object obj) {
+<span class="nc bnc" id="L48" title="All 2 branches missed.">    if (obj == this) {</span>
+<span class="nc" id="L49">      return true;</span>
+    }
+<span class="nc bnc" id="L51" title="All 2 branches missed.">    if (!(obj instanceof Pair)) {</span>
+<span class="nc" id="L52">      return false;</span>
+    }
+<span class="nc" id="L54">    Pair pair = (Pair) obj;</span>
+<span class="nc bnc" id="L55" title="All 4 branches missed.">    return first.equals(pair.first) &amp;&amp; second.equals(pair.second);</span>
+  }
+
+  /*
+   * @see java.lang.Object#hashCode()
+   * KKB, 17.3.04: hashCode calculated after &quot;Effective Java&quot;, Item 8
+   */
+  public int hashCode() {
+<span class="nc" id="L63">    int result = 17;</span>
+<span class="nc" id="L64">    result = 37 * result + first.hashCode();</span>
+<span class="nc" id="L65">    result = 37 * result + second.hashCode();</span>
+
+<span class="nc" id="L67">    return result;</span>
+  }
+
+  /**
+   * @see java.lang.Object#toString()
+   */
+  public String toString() {
+<span class="nc" id="L74">    return &quot;(&quot; + first + &quot;, &quot; + second + &quot;)&quot;;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultNameable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.dflt</a> &gt; <span class="el_source">DefaultNameable.java</span></div><h1>DefaultNameable.java</h1><pre class="source lang-java linenums">package org.gui4j.dflt;
+
+import java.io.Serializable;
+import java.util.Comparator;
+import org.gui4j.core.util.Extract;
+import org.gui4j.util.Nameable;
+import org.gui4j.util.Translator;
+
+/** Default Implementierung für das Nameable Interface. */
+<span class="nc" id="L10">public class DefaultNameable implements Nameable, Serializable {</span>
+  protected final String nameTag;
+  private final String shortTag;
+
+  /**
+   * Method getTextComparator.
+   *
+   * @param translator
+   * @return Comparator
+   */
+  public static Comparator getTextComparator(final Translator translator) {
+<span class="nc" id="L21">    return new Comparator() {</span>
+      public int compare(Object o1, Object o2) {
+<span class="nc bnc" id="L23" title="All 4 branches missed.">        assert o1 != null &amp;&amp; o2 != null;</span>
+<span class="nc" id="L24">        Nameable n1 = (Nameable) o1;</span>
+<span class="nc" id="L25">        Nameable n2 = (Nameable) o2;</span>
+<span class="nc" id="L26">        return translator</span>
+<span class="nc" id="L27">            .translate(n1.getNameTag(), null)</span>
+<span class="nc" id="L28">            .compareTo(translator.translate(n2.getNameTag(), null));</span>
+      }
+    };
+  }
+
+  /**
+   * Constructor for DefaultNameable.
+   *
+   * @param shortTag
+   */
+<span class="nc" id="L38">  public DefaultNameable(String shortTag) {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">    assert shortTag != null;</span>
+<span class="nc" id="L40">    Class c = getTagClass();</span>
+<span class="nc" id="L41">    nameTag = createTag(shortTag, c);</span>
+<span class="nc" id="L42">    this.shortTag = shortTag;</span>
+<span class="nc" id="L43">  }</span>
+
+  protected Class getTagClass() {
+<span class="nc" id="L46">    return getClass();</span>
+  }
+
+  /*
+   * @see de.bea.util.Nameable#getNameTag()
+   */
+  public String getNameTag() {
+<span class="nc" id="L53">    return nameTag;</span>
+  }
+
+  /*
+   * @see de.bea.util.Nameable#getShortTag()
+   */
+  public String getShortTag() {
+<span class="nc" id="L60">    return shortTag;</span>
+  }
+
+  /**
+   * Method createTag.
+   *
+   * @param tag
+   * @param clazz
+   * @return String
+   */
+  public static String createTag(String tag, Class clazz) {
+<span class="nc" id="L71">    return clazz.getName() + &quot;_&quot; + tag;</span>
+  }
+
+  /**
+   * Method createShortTag.
+   *
+   * @param tag
+   * @param clazz
+   * @return String
+   */
+  public static String createShortTag(String tag, Class clazz) {
+<span class="nc" id="L82">    return Extract.getClassname(clazz) + &quot;_&quot; + tag;</span>
+  }
+
+  /*
+   * @see java.lang.Object#toString()
+   */
+  public String toString() {
+<span class="nc" id="L89">    return Extract.getClassname(getClass()) + &quot;[&quot; + shortTag + &quot;]&quot;;</span>
+  }
+
+  /*
+   * @see java.lang.Object#hashCode()
+   */
+  public int hashCode() {
+<span class="nc" id="L96">    return getNameTag().hashCode();</span>
+  }
+
+  /*
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  public boolean equals(Object o) {
+<span class="nc bnc" id="L103" title="All 4 branches missed.">    if (o == null || !(o instanceof Nameable)) {</span>
+<span class="nc" id="L104">      return false;</span>
+    } else {
+<span class="nc" id="L106">      Nameable arg = (Nameable) o;</span>
+<span class="nc" id="L107">      return getNameTag().equals(arg.getNameTag());</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

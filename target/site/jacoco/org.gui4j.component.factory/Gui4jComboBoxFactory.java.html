@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jComboBoxFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jComboBoxFactory.java</span></div><h1>Gui4jComboBoxFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jComboBox;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.constants.Const;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentContainerManager;
+import org.gui4j.core.Gui4jMap1;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeAlias;
+import org.gui4j.core.definition.AttributeTypeEnumeration;
+import org.gui4j.core.definition.AttributeTypeMethodCall;
+import org.gui4j.core.definition.Param;
+import org.gui4j.exception.Gui4jUncheckedException;
+import org.gui4j.util.Filter;
+
+<span class="nc" id="L24">public final class Gui4jComboBoxFactory extends Gui4jJComponentFactory {</span>
+  private static final String NAME = &quot;comboBox&quot;;
+  private static final String ARRAYCONTENT = &quot;arrayContent&quot;;
+  private static final String CONTENT = &quot;content&quot;;
+  private static final String CONTENTTYPE = &quot;contentType&quot;;
+  private static final String SELECTEDITEM = &quot;selectedItem&quot;;
+  private static final String EDITABLE = &quot;editable&quot;;
+  private static final String ROWVALUE = &quot;value&quot;;
+  private static final String ONSELECT = &quot;onSelect&quot;;
+  private static final String MANUALACTIONONLY = &quot;manualActionOnly&quot;;
+  private static final String STRINGCONVERT = &quot;stringConvert&quot;;
+  private static final String NULLITEM = &quot;nullItem&quot;;
+
+  /* (non-Javadoc)
+   * @see org.gui4j.component.factory.Gui4jJComponentFactory#defineGui4jJComponentBy(org.gui4j.core.Gui4jComponentContainer, java.lang.String, org.dom4j.LElement)
+   */
+  protected Gui4jJComponent defineGui4jJComponentBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e) {
+<span class="nc" id="L42">    String contentTypeAlias = e.attributeValue(CONTENTTYPE);</span>
+<span class="nc" id="L43">    Class contentType = gui4jComponentContainer.getClassForAliasName(contentTypeAlias);</span>
+<span class="nc bnc" id="L44" title="All 4 branches missed.">    if (contentTypeAlias != null &amp;&amp; contentType == null) {</span>
+<span class="nc" id="L45">      Object[] args = {contentTypeAlias, contentTypeAlias};</span>
+<span class="nc" id="L46">      throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L47">          gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L48">          Gui4jComponentContainerManager.getLineNumber(e.attribute(CONTENTTYPE)),</span>
+          RESOURCE_ERROR_alias_not_defined_in_path,
+          args);
+    }
+<span class="nc bnc" id="L52" title="All 2 branches missed.">    if (contentType == null) {</span>
+<span class="nc" id="L53">      contentType = Object.class;</span>
+    }
+<span class="nc" id="L55">    Gui4jComboBox gui4jComboBox = new Gui4jComboBox(gui4jComponentContainer, id);</span>
+    {
+<span class="nc" id="L57">      Map m = new Gui4jMap1(Const.PARAM_ITEM, contentType);</span>
+<span class="nc" id="L58">      Gui4jCall rowValue = getGui4jAccessInstance(Object.class, m, gui4jComboBox, e, ROWVALUE);</span>
+<span class="nc" id="L59">      gui4jComboBox.setRowValue(rowValue);</span>
+    }
+<span class="nc" id="L61">    Gui4jCall stringConvert =</span>
+<span class="nc" id="L62">        getGui4jAccessInstance(contentType, String.class, gui4jComboBox, e, STRINGCONVERT);</span>
+<span class="nc" id="L63">    gui4jComboBox.setStringConvert(stringConvert);</span>
+
+<span class="nc" id="L65">    gui4jComboBox.setNullItem(getGui4jAccessInstance(String.class, gui4jComboBox, e, NULLITEM));</span>
+<span class="nc" id="L66">    gui4jComboBox.setManualActionOnly(</span>
+<span class="nc" id="L67">        gui4jComponentContainer.getBooleanAttrValue(e, MANUALACTIONONLY, false));</span>
+
+<span class="nc" id="L69">    gui4jComboBox.definePropertySetter(</span>
+<span class="nc" id="L70">        ARRAYCONTENT, getGui4jAccessInstance(Object[].class, gui4jComboBox, e, ARRAYCONTENT));</span>
+<span class="nc" id="L71">    gui4jComboBox.definePropertySetter(</span>
+<span class="nc" id="L72">        CONTENT, getGui4jAccessInstance(Collection.class, gui4jComboBox, e, CONTENT));</span>
+
+<span class="nc" id="L74">    Gui4jCall selectedItem = getGui4jAccessInstance(contentType, gui4jComboBox, e, SELECTEDITEM);</span>
+<span class="nc" id="L75">    gui4jComboBox.setSelectedItem(selectedItem);</span>
+<span class="nc" id="L76">    gui4jComboBox.definePropertySetter(SELECTEDITEM, selectedItem);</span>
+    {
+<span class="nc" id="L78">      Gui4jCall editable = getGui4jAccessInstance(Boolean.TYPE, gui4jComboBox, e, EDITABLE);</span>
+<span class="nc" id="L79">      gui4jComboBox.definePropertySetter(EDITABLE, editable);</span>
+<span class="nc bnc" id="L80" title="All 4 branches missed.">      if (editable != null</span>
+          &amp;&amp; stringConvert == null
+<span class="nc bnc" id="L82" title="All 2 branches missed.">          &amp;&amp; !String.class.isAssignableFrom(contentType)) {</span>
+<span class="nc" id="L83">        Object[] args = {};</span>
+<span class="nc" id="L84">        String configurationName = gui4jComponentContainer.getConfigurationName();</span>
+<span class="nc" id="L85">        throw new Gui4jUncheckedException.ResourceError(</span>
+            configurationName,
+<span class="nc" id="L87">            Gui4jComponentContainerManager.getLineNumber(e.attribute(EDITABLE)),</span>
+            RESOURCE_ERROR_attribute_editable_defined,
+            args);
+      }
+    }
+
+    {
+<span class="nc" id="L94">      Map paramMap = new HashMap();</span>
+<span class="nc" id="L95">      paramMap.put(Const.PARAM_ITEM, contentType);</span>
+<span class="nc" id="L96">      paramMap.put(Const.PARAM_INDEX, Integer.TYPE);</span>
+<span class="nc" id="L97">      gui4jComboBox.setOnSelect(getGui4jAccessInstance(null, paramMap, gui4jComboBox, e, ONSELECT));</span>
+    }
+
+<span class="nc" id="L100">    return gui4jComboBox;</span>
+  }
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc" id="L104">    super.addToplevelAttributes(attrList, filter);</span>
+<span class="nc bnc" id="L105" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jComboBoxFactory.class)) {</span>
+<span class="nc" id="L106">      ArrayList paramItem = new ArrayList();</span>
+<span class="nc" id="L107">      paramItem.add(new Param(Const.PARAM_ITEM, CONTENTTYPE));</span>
+
+<span class="nc" id="L109">      ArrayList dfltParam = new ArrayList();</span>
+<span class="nc" id="L110">      dfltParam.add(new Param(&quot;&quot;, String.class));</span>
+
+<span class="nc" id="L112">      ArrayList paramIndex = new ArrayList();</span>
+<span class="nc" id="L113">      paramIndex.add(new Param(Const.PARAM_ITEM, CONTENTTYPE));</span>
+<span class="nc" id="L114">      paramIndex.add(new Param(Const.PARAM_INDEX, Integer.TYPE));</span>
+
+<span class="nc" id="L116">      attrList.add(</span>
+          new Attribute(ARRAYCONTENT, new AttributeTypeMethodCall(Object[].class), IMPLIED, false));
+<span class="nc" id="L118">      attrList.add(</span>
+          new Attribute(
+              CONTENT, new AttributeTypeMethodCall(Collection.class, true), IMPLIED, false));
+<span class="nc" id="L121">      attrList.add(</span>
+          new Attribute(SELECTEDITEM, new AttributeTypeMethodCall(Object.class), IMPLIED, false));
+<span class="nc" id="L123">      attrList.add(</span>
+          new Attribute(EDITABLE, new AttributeTypeMethodCall(Boolean.TYPE), IMPLIED, false));
+<span class="nc" id="L125">      attrList.add(new Attribute(CONTENTTYPE, new AttributeTypeAlias(), IMPLIED, false));</span>
+<span class="nc" id="L126">      attrList.add(</span>
+          new Attribute(
+              ROWVALUE, new AttributeTypeMethodCall(Object.class, paramItem), IMPLIED, false));
+<span class="nc" id="L129">      attrList.add(</span>
+          new Attribute(ONSELECT, new AttributeTypeMethodCall(null, paramIndex), IMPLIED, false));
+<span class="nc" id="L131">      attrList.add(</span>
+          new Attribute(
+              STRINGCONVERT, new AttributeTypeMethodCall(Object.class, dfltParam), IMPLIED, false));
+<span class="nc" id="L134">      attrList.add(</span>
+          new Attribute(NULLITEM, new AttributeTypeMethodCall(String.class), IMPLIED, false));
+<span class="nc" id="L136">      attrList.add(</span>
+          new Attribute(
+              MANUALACTIONONLY,
+<span class="nc" id="L139">              AttributeTypeEnumeration.getBooleanInstance(false),</span>
+              IMPLIED,
+              false));
+    }
+<span class="nc" id="L143">  }</span>
+
+  /**
+   * @see org.gui4j.core.Gui4jComponentFactory#getName()
+   */
+  public String getName() {
+<span class="nc" id="L149">    return NAME;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

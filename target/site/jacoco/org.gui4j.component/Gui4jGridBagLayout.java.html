@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jGridBagLayout.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jGridBagLayout.java</span></div><h1>Gui4jGridBagLayout.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import javax.swing.JPanel;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.Gui4jSwingContainer;
+
+public final class Gui4jGridBagLayout extends Gui4jJComponent {
+
+  private final List mGui4jComponents;
+
+  /**
+   * Constructor for Gui4jGridBagLayout.
+   *
+   * @param gui4jComponentContainer
+   * @param id
+   */
+  public Gui4jGridBagLayout(Gui4jComponentContainer gui4jComponentContainer, String id) {
+<span class="nc" id="L28">    super(gui4jComponentContainer, JPanel.class, id);</span>
+<span class="nc" id="L29">    mGui4jComponents = new Vector();</span>
+<span class="nc" id="L30">  }</span>
+
+  public void addPlacement(
+      Gui4jQualifiedComponent gui4jComponentInPath,
+      int gridX,
+      int gridY,
+      int gridWidth,
+      int gridHeight,
+      int fill,
+      double weightX,
+      double weightY,
+      int anchor,
+      int ipadx,
+      int ipady,
+      int top,
+      int left,
+      int bottom,
+      int right) {
+<span class="nc" id="L48">    Layout l =</span>
+        new Layout(
+            gui4jComponentInPath,
+            gridX,
+            gridY,
+            gridWidth,
+            gridHeight,
+            ipadx,
+            ipady,
+            top,
+            left,
+            bottom,
+            right);
+<span class="nc" id="L61">    l.setFill(fill);</span>
+<span class="nc" id="L62">    l.setWeightX(weightX);</span>
+<span class="nc" id="L63">    l.setWeightY(weightY);</span>
+<span class="nc" id="L64">    l.setAnchor(anchor);</span>
+<span class="nc" id="L65">    mGui4jComponents.add(l);</span>
+<span class="nc" id="L66">  }</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.core.Gui4jAbstractComponent#createComponentInstance(org.gui4j.core.Gui4jSwingContainer, org.gui4j.Gui4jCallBase, org.gui4j.core.Gui4jQualifiedComponent)
+   */
+  protected Gui4jComponentInstance createComponentInstance(
+      Gui4jSwingContainer gui4jSwingContainer,
+      Gui4jCallBase gui4jCallBase,
+      Gui4jQualifiedComponent gui4jComponentInPath) {
+    // mLogger.debug(&quot;Placing component with id &quot;+getId());
+<span class="nc" id="L76">    GridBagLayout gridBagLayout = new GridBagLayout();</span>
+<span class="nc" id="L77">    JPanel panel = new JPanel(gridBagLayout);</span>
+<span class="nc" id="L78">    Gui4jComponentInstance gui4jComponentInstance =</span>
+        new Gui4jComponentInstance(gui4jSwingContainer, panel, gui4jComponentInPath);
+<span class="nc bnc" id="L80" title="All 2 branches missed.">    for (Iterator it = mGui4jComponents.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L81">      GridBagConstraints gridBagConstraints = new GridBagConstraints();</span>
+<span class="nc" id="L82">      Layout l = (Layout) it.next();</span>
+<span class="nc" id="L83">      Gui4jComponentInstance subInstance =</span>
+<span class="nc" id="L84">          gui4jSwingContainer.getGui4jComponentInstance(</span>
+<span class="nc" id="L85">              gui4jComponentInPath.getGui4jComponentPath(), l.getGui4jComponentInPath());</span>
+<span class="nc" id="L86">      gridBagConstraints.gridx = l.getGridX();</span>
+<span class="nc" id="L87">      gridBagConstraints.gridy = l.getGridY();</span>
+<span class="nc" id="L88">      gridBagConstraints.ipadx = l.getIPadX();</span>
+<span class="nc" id="L89">      gridBagConstraints.ipady = l.getIPadY();</span>
+<span class="nc" id="L90">      gridBagConstraints.gridy = l.getGridY();</span>
+<span class="nc" id="L91">      gridBagConstraints.gridwidth = l.getGridWidth();</span>
+<span class="nc" id="L92">      gridBagConstraints.gridheight = l.getGridHeight();</span>
+<span class="nc" id="L93">      gridBagConstraints.fill = l.getFill();</span>
+<span class="nc" id="L94">      gridBagConstraints.weightx = l.getWeightX();</span>
+<span class="nc" id="L95">      gridBagConstraints.weighty = l.getWeightY();</span>
+<span class="nc" id="L96">      gridBagConstraints.anchor = l.getAnchor();</span>
+<span class="nc" id="L97">      gridBagConstraints.insets = l.getInsets();</span>
+      // mLogger.debug(&quot;Preferred size of placeGbl is
+      // &quot;+subInstance.getSwingComponent().getPreferredSize()+&quot;, col=&quot;+l.getGridX()+&quot;,
+      // row=&quot;+l.getGridY());
+<span class="nc" id="L101">      panel.add(subInstance.getComponent(), gridBagConstraints);</span>
+<span class="nc" id="L102">    }</span>
+
+<span class="nc" id="L104">    return gui4jComponentInstance;</span>
+  }
+
+  private static class Layout implements Serializable {
+    private final Gui4jQualifiedComponent mGui4jComponentInPath;
+    private final int mGridX;
+    private final int mGridY;
+    private final int mIPadX;
+    private final int mIPadY;
+    private double mWeightX;
+    private double mWeightY;
+    private int mAnchor;
+    private final int mGridWidth;
+    private final int mGridHeight;
+    private int mFill;
+    private final Insets mInsets;
+
+    Layout(
+        Gui4jQualifiedComponent gui4jComponentInPath,
+        int gridX,
+        int gridY,
+        int gridWidth,
+        int gridHeight,
+        int ipadx,
+        int ipady,
+        int top,
+        int left,
+        int bottom,
+<span class="nc" id="L132">        int right) {</span>
+<span class="nc" id="L133">      mGui4jComponentInPath = gui4jComponentInPath;</span>
+<span class="nc" id="L134">      mGridX = gridX;</span>
+<span class="nc" id="L135">      mGridY = gridY;</span>
+<span class="nc" id="L136">      mGridWidth = gridWidth;</span>
+<span class="nc" id="L137">      mGridHeight = gridHeight;</span>
+<span class="nc" id="L138">      mFill = GridBagConstraints.BOTH;</span>
+<span class="nc" id="L139">      mIPadX = ipadx;</span>
+<span class="nc" id="L140">      mIPadY = ipady;</span>
+<span class="nc" id="L141">      mInsets = new Insets(top, left, bottom, right);</span>
+<span class="nc" id="L142">    }</span>
+
+    /**
+     * Returns the gridWidth.
+     *
+     * @return int
+     */
+    public int getGridWidth() {
+<span class="nc" id="L150">      return mGridWidth;</span>
+    }
+
+    public Insets getInsets() {
+<span class="nc" id="L154">      return mInsets;</span>
+    }
+
+    /**
+     * Returns the gridHeight.
+     *
+     * @return int
+     */
+    public int getGridHeight() {
+<span class="nc" id="L163">      return mGridHeight;</span>
+    }
+
+    /**
+     * Returns the gridX.
+     *
+     * @return int
+     */
+    public int getGridX() {
+<span class="nc" id="L172">      return mGridX;</span>
+    }
+
+    /**
+     * Returns the gridY.
+     *
+     * @return int
+     */
+    public int getGridY() {
+<span class="nc" id="L181">      return mGridY;</span>
+    }
+
+    /**
+     * Returns the ipadx.
+     *
+     * @return int
+     */
+    public int getIPadX() {
+<span class="nc" id="L190">      return mIPadX;</span>
+    }
+
+    /**
+     * Returns the ipady.
+     *
+     * @return int
+     */
+    public int getIPadY() {
+<span class="nc" id="L199">      return mIPadY;</span>
+    }
+
+    /**
+     * Returns the gui4jComponent.
+     *
+     * @return Gui4jComponent
+     */
+    public Gui4jQualifiedComponent getGui4jComponentInPath() {
+<span class="nc" id="L208">      return mGui4jComponentInPath;</span>
+    }
+
+    /**
+     * Returns the fill.
+     *
+     * @return int
+     */
+    public int getFill() {
+<span class="nc" id="L217">      return mFill;</span>
+    }
+
+    /**
+     * Sets the fill.
+     *
+     * @param fill The fill to set
+     */
+    public void setFill(int fill) {
+<span class="nc" id="L226">      mFill = fill;</span>
+<span class="nc" id="L227">    }</span>
+
+    /**
+     * Returns the weightX.
+     *
+     * @return int
+     */
+    public double getWeightX() {
+<span class="nc" id="L235">      return mWeightX;</span>
+    }
+
+    /**
+     * Returns the weightY.
+     *
+     * @return int
+     */
+    public double getWeightY() {
+<span class="nc" id="L244">      return mWeightY;</span>
+    }
+
+    /**
+     * Returns the anchor.
+     *
+     * @return int
+     */
+    public int getAnchor() {
+<span class="nc" id="L253">      return mAnchor;</span>
+    }
+
+    /**
+     * Sets the weightX.
+     *
+     * @param weightX The weightX to set
+     */
+    public void setWeightX(double weightX) {
+<span class="nc" id="L262">      mWeightX = weightX;</span>
+<span class="nc" id="L263">    }</span>
+
+    /**
+     * Sets the weightY.
+     *
+     * @param weightY The weightY to set
+     */
+    public void setWeightY(double weightY) {
+<span class="nc" id="L271">      mWeightY = weightY;</span>
+<span class="nc" id="L272">    }</span>
+
+    /**
+     * Sets the anchor.
+     *
+     * @param anchor The anchor to set
+     */
+    public void setAnchor(int anchor) {
+<span class="nc" id="L280">      mAnchor = anchor;</span>
+<span class="nc" id="L281">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

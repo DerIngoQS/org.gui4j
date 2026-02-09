@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RowHeaderDefaultTableModel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">RowHeaderDefaultTableModel.java</span></div><h1>RowHeaderDefaultTableModel.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing;
+
+import java.util.Vector;
+import javax.swing.table.*;
+
+public class RowHeaderDefaultTableModel extends DefaultTableModel implements RowHeaderTableModel {
+  protected Vector rowIdentifiers;
+
+  public RowHeaderDefaultTableModel() {
+<span class="nc" id="L10">    super((Vector) null, 0);</span>
+<span class="nc" id="L11">    initRowIdentifiers(0);</span>
+<span class="nc" id="L12">  }</span>
+
+  public RowHeaderDefaultTableModel(int numRows, int numColumns) {
+<span class="nc" id="L15">    super(numRows, numColumns);</span>
+<span class="nc" id="L16">    initRowIdentifiers(numRows);</span>
+<span class="nc" id="L17">  }</span>
+
+  protected void initRowIdentifiers(int numRows) {
+<span class="nc" id="L20">    rowIdentifiers = new Vector(numRows);</span>
+<span class="nc" id="L21">    rowIdentifiers.setSize(numRows);</span>
+<span class="nc" id="L22">  }</span>
+
+  public String getRowName(int row) {
+    String result;
+<span class="nc bnc" id="L26" title="All 2 branches missed.">    if (row &lt; rowIdentifiers.size()) {</span>
+<span class="nc" id="L27">      Object id = rowIdentifiers.elementAt(row);</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">      if (id == null) {</span>
+<span class="nc" id="L29">        result = null;</span>
+      } else {
+<span class="nc" id="L31">        result = id.toString();</span>
+      }
+<span class="nc" id="L33">    } else {</span>
+<span class="nc" id="L34">      result = null;</span>
+    }
+<span class="nc" id="L36">    return result;</span>
+  }
+
+  public void setRowName(int rowNumber, Object newName) {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    if (rowNumber &lt; rowIdentifiers.size()) {</span>
+<span class="nc" id="L41">      rowIdentifiers.setElementAt(newName, rowNumber);</span>
+    } else {
+<span class="nc" id="L43">      throw new ArrayIndexOutOfBoundsException(rowNumber);</span>
+    }
+<span class="nc" id="L45">  }</span>
+
+  public void addRow(Vector rowData) {
+<span class="nc" id="L48">    addRow(null, rowData);</span>
+<span class="nc" id="L49">  }</span>
+
+  public void addRow(Object[] rowData) {
+<span class="nc" id="L52">    addRow(null, convertToVector(rowData));</span>
+<span class="nc" id="L53">  }</span>
+
+  public void addRow(Object rowName, Vector rowData) {
+<span class="nc" id="L56">    super.addRow(rowData);</span>
+<span class="nc" id="L57">    rowIdentifiers.addElement(rowName);</span>
+<span class="nc" id="L58">  }</span>
+
+  public void insertRow(int row, Vector rowData) {
+<span class="nc" id="L61">    insertRow(row, null, rowData);</span>
+<span class="nc" id="L62">  }</span>
+
+  public void insertRow(int row, Object[] rowData) {
+<span class="nc" id="L65">    insertRow(row, null, convertToVector(rowData));</span>
+<span class="nc" id="L66">  }</span>
+
+  public void insertRow(int row, Object rowName, Vector rowData) {
+<span class="nc" id="L69">    super.insertRow(row, rowData);</span>
+<span class="nc" id="L70">    rowIdentifiers.insertElementAt(rowName, row);</span>
+<span class="nc" id="L71">  }</span>
+
+  public void moveRow(int startIndex, int endIndex, int toIndex) {
+<span class="nc" id="L74">    super.moveRow(startIndex, endIndex, toIndex);</span>
+
+<span class="nc bnc" id="L76" title="All 4 branches missed.">    if ((startIndex &lt;= toIndex) &amp;&amp; (toIndex &lt;= endIndex)) {</span>
+<span class="nc" id="L77">      return; // Nothing to move</span>
+    }
+
+<span class="nc bnc" id="L80" title="All 2 branches missed.">    boolean shift = toIndex &lt; startIndex;</span>
+
+    // Do the move by first removing the row, then reinserting it
+<span class="nc bnc" id="L83" title="All 2 branches missed.">    for (int i = startIndex; i &lt;= endIndex; i++) {</span>
+<span class="nc" id="L84">      Object rowName = rowIdentifiers.elementAt(i);</span>
+<span class="nc" id="L85">      rowIdentifiers.removeElementAt(i);</span>
+<span class="nc" id="L86">      rowIdentifiers.insertElementAt(rowName, toIndex);</span>
+
+<span class="nc bnc" id="L88" title="All 2 branches missed.">      if (shift) {</span>
+<span class="nc" id="L89">        toIndex++;</span>
+      }
+    }
+<span class="nc" id="L92">  }</span>
+
+  public void removeRow(int row) {
+<span class="nc" id="L95">    super.removeRow(row);</span>
+<span class="nc" id="L96">    rowIdentifiers.removeElementAt(row);</span>
+<span class="nc" id="L97">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

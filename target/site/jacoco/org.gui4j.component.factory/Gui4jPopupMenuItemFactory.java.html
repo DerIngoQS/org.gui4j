@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jPopupMenuItemFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jPopupMenuItemFactory.java</span></div><h1>Gui4jPopupMenuItemFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JMenuItem;
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.component.Gui4jMenuItem;
+import org.gui4j.component.Gui4jPopupMenuItem;
+import org.gui4j.constants.Const;
+import org.gui4j.core.Gui4jAbstractComponent;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentContainerManager;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeAlias;
+import org.gui4j.core.definition.Param;
+import org.gui4j.exception.Gui4jUncheckedException;
+import org.gui4j.util.Filter;
+
+<span class="nc" id="L23">public class Gui4jPopupMenuItemFactory extends Gui4jMenuItemFactory {</span>
+  public static final String POPUP_MENUITEM_NAME = &quot;popupMenuItem&quot;;
+
+  private static final String CONTEXT_TYPE = &quot;contextType&quot;;
+
+  /* (non-Javadoc)
+   * @see org.gui4j.component.factory.Gui4jJComponentFactory#defineGui4jJComponentBy(org.gui4j.core.Gui4jComponentContainer, java.lang.String, org.dom4j.LElement)
+   */
+  protected Gui4jJComponent defineGui4jJComponentBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e) {
+<span class="nc" id="L33">    Class contextType = extractContextType(gui4jComponentContainer, e);</span>
+<span class="nc" id="L34">    return new Gui4jPopupMenuItem(gui4jComponentContainer, JMenuItem.class, contextType, id);</span>
+  }
+
+  protected Class extractContextType(Gui4jComponentContainer gui4jComponentContainer, LElement e) {
+<span class="nc" id="L38">    Class contextType = null;</span>
+<span class="nc" id="L39">    String contextTypeAliasName = gui4jComponentContainer.getAttrValue(e, CONTEXT_TYPE);</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    if (contextTypeAliasName != null) {</span>
+<span class="nc" id="L41">      contextType = gui4jComponentContainer.getClassForAliasName(contextTypeAliasName);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">      if (contextType == null) {</span>
+<span class="nc" id="L43">        Object[] args = {contextType, contextTypeAliasName};</span>
+<span class="nc" id="L44">        throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L45">            gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L46">            Gui4jComponentContainerManager.getLineNumber(e.attribute(CONTEXT_TYPE)),</span>
+            RESOURCE_ERROR_alias_not_defined_in_path,
+            args);
+      }
+    }
+<span class="nc" id="L51">    return contextType;</span>
+  }
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc" id="L55">    super.addToplevelAttributes(attrList, filter);</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jPopupMenuItemFactory.class)) {</span>
+<span class="nc" id="L57">      attrList.add(new Attribute(CONTEXT_TYPE, new AttributeTypeAlias(), IMPLIED, false));</span>
+    }
+<span class="nc" id="L59">  }</span>
+
+  /**
+   * @see org.gui4j.core.Gui4jComponentFactory#getName()
+   */
+  public String getName() {
+<span class="nc" id="L65">    return POPUP_MENUITEM_NAME;</span>
+  }
+
+  protected Map getParameterMapForActionCommand(Gui4jAbstractComponent gui4jAbstractComponent) {
+<span class="nc" id="L69">    Map map = new HashMap();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">    assert gui4jAbstractComponent instanceof Gui4jMenuItem;</span>
+<span class="nc" id="L71">    Class contextType = ((Gui4jPopupMenuItem) gui4jAbstractComponent).getContextType();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">    map.put(Const.PARAM_CONTEXT, contextType == null ? Object.class : contextType);</span>
+<span class="nc" id="L73">    return map;</span>
+  }
+
+  protected List getParameterListForActionCommand() {
+<span class="nc" id="L77">    List list = new ArrayList(1);</span>
+<span class="nc" id="L78">    list.add(new Param(Const.PARAM_CONTEXT, CONTEXT_TYPE));</span>
+<span class="nc" id="L79">    return list;</span>
+  }
+
+  protected void definePropertyEnabled(Gui4jAbstractComponent gui4jComponent, LElement e) {
+<span class="nc" id="L83">    Gui4jPopupMenuItem popupMenuItem = (Gui4jPopupMenuItem) gui4jComponent;</span>
+<span class="nc" id="L84">    Gui4jCall enabled =</span>
+<span class="nc" id="L85">        getGui4jAccessInstance(</span>
+            Boolean.TYPE,
+<span class="nc" id="L87">            getParameterMapForActionCommand(gui4jComponent),</span>
+            gui4jComponent,
+            e,
+            ENABLED);
+<span class="nc" id="L91">    popupMenuItem.setEnabled(enabled);</span>
+<span class="nc" id="L92">  }</span>
+
+  protected void definePropertyVisible(Gui4jAbstractComponent gui4jComponent, LElement e) {
+<span class="nc" id="L95">    Gui4jPopupMenuItem popupMenuItem = (Gui4jPopupMenuItem) gui4jComponent;</span>
+<span class="nc" id="L96">    Gui4jCall visible =</span>
+<span class="nc" id="L97">        getGui4jAccessInstance(</span>
+            Boolean.TYPE,
+<span class="nc" id="L99">            getParameterMapForActionCommand(gui4jComponent),</span>
+            gui4jComponent,
+            e,
+            VISIBLE);
+<span class="nc" id="L103">    popupMenuItem.setVisible(visible);</span>
+<span class="nc" id="L104">  }</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.component.factory.Gui4jAbstractButtonFactory#definePropertyText(org.gui4j.core.Gui4jAbstractComponent, org.dom4j.LElement)
+   */
+  protected void definePropertyText(Gui4jAbstractComponent gui4jComponent, LElement e) {
+<span class="nc" id="L110">    Gui4jPopupMenuItem popupMenuItem = (Gui4jPopupMenuItem) gui4jComponent;</span>
+<span class="nc" id="L111">    Gui4jCall text =</span>
+<span class="nc" id="L112">        getGui4jAccessInstance(</span>
+<span class="nc" id="L113">            null, getParameterMapForActionCommand(gui4jComponent), gui4jComponent, e, TEXT);</span>
+<span class="nc" id="L114">    popupMenuItem.setText(text);</span>
+<span class="nc" id="L115">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

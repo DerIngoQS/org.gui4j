@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jCheckBoxMenuItemFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jCheckBoxMenuItemFactory.java</span></div><h1>Gui4jCheckBoxMenuItemFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jCheckBoxMenuItem;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.core.Gui4jComponentContainer;
+
+<span class="nc" id="L8">public final class Gui4jCheckBoxMenuItemFactory extends Gui4jMenuItemFactory {</span>
+  public static final String CHECKBOX_MENUITEM_NAME = &quot;checkBoxMenuItem&quot;;
+
+  /* (non-Javadoc)
+   * @see org.gui4j.component.factory.Gui4jJComponentFactory#defineGui4jJComponentBy(org.gui4j.core.Gui4jComponentContainer, java.lang.String, org.dom4j.LElement)
+   */
+  protected Gui4jJComponent defineGui4jJComponentBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e) {
+<span class="nc" id="L16">    return new Gui4jCheckBoxMenuItem(gui4jComponentContainer, id);</span>
+  }
+
+  /**
+   * @see org.gui4j.core.Gui4jComponentFactory#getName()
+   */
+  public String getName() {
+<span class="nc" id="L23">    return CHECKBOX_MENUITEM_NAME;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

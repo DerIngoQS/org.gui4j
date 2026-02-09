@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jExternalComponent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jExternalComponent.java</span></div><h1>Gui4jExternalComponent.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import javax.swing.JPanel;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.Gui4jSwingContainer;
+
+public final class Gui4jExternalComponent extends Gui4jAbstractPopupComponent {
+
+  /**
+   * Constructor for Gui4jExternalComponent.
+   *
+   * @param gui4jComponentContainer
+   * @param componentClass
+   * @param id
+   */
+  public Gui4jExternalComponent(
+      Gui4jComponentContainer gui4jComponentContainer, Class componentClass, String id) {
+<span class="nc" id="L23">    super(gui4jComponentContainer, componentClass, id);</span>
+<span class="nc" id="L24">  }</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.core.Gui4jAbstractComponent#createComponentInstance(org.gui4j.core.Gui4jSwingContainer, org.gui4j.Gui4jCallBase, org.gui4j.core.Gui4jQualifiedComponent)
+   */
+  protected Gui4jComponentInstance createComponentInstance(
+      Gui4jSwingContainer gui4jSwingContainer,
+      Gui4jCallBase gui4jCallBase,
+      Gui4jQualifiedComponent gui4jComponentInPath) {
+    /*
+    Component component =
+        (Component) mComponent.getValue(gui4jCallBase, null, null);
+        */
+<span class="nc" id="L37">    JPanel panel = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L38">    panel.setOpaque(false);</span>
+<span class="nc" id="L39">    Gui4jComponentInstance gui4jComponentInstance =</span>
+        new Gui4jComponentInstance(gui4jSwingContainer, panel, gui4jComponentInPath);
+<span class="nc" id="L41">    return gui4jComponentInstance;</span>
+  }
+
+  public void setComponent(Gui4jComponentInstance gui4jComponentInstance, Component component) {
+<span class="nc" id="L45">    JPanel panel = (JPanel) gui4jComponentInstance.getSwingComponent();</span>
+    // panel.removeAll();
+<span class="nc" id="L47">    panel.add(component, &quot;Center&quot;);</span>
+<span class="nc" id="L48">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

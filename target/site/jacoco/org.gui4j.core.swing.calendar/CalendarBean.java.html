@@ -1,0 +1,687 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalendarBean.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing.calendar</a> &gt; <span class="el_source">CalendarBean.java</span></div><h1>CalendarBean.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing.calendar;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Vector;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+public class CalendarBean extends JPanel {
+  static final int rows = 7;
+  static final int cols = 7;
+<span class="nc" id="L30">  static final ArrowIcon leftIcon = new ArrowIcon(ArrowIcon.LEFT);</span>
+<span class="nc" id="L31">  static final ArrowIcon rightIcon = new ArrowIcon(ArrowIcon.RIGHT);</span>
+
+<span class="nc" id="L33">  GridLayout gridLayout1 = new GridLayout(rows, cols + 2);</span>
+<span class="nc" id="L34">  String[] dayName = null;</span>
+<span class="nc" id="L35">  JLabel[] headerLabel = new JLabel[cols];</span>
+<span class="nc" id="L36">  JToggleButton[][] button = new JToggleButton[rows][cols];</span>
+<span class="nc" id="L37">  JLabel[] label = new JLabel[rows];</span>
+  ButtonGroup group;
+<span class="nc" id="L39">  JButton oneMonthBack = new JButton(leftIcon);</span>
+<span class="nc" id="L40">  JButton oneMonthForward = new JButton(rightIcon);</span>
+<span class="nc" id="L41">  JLabel dateLabel = new JLabel(&quot;September 2000&quot;);</span>
+<span class="nc" id="L42">  Color weekendColor = new Color(238, 129, 0);</span>
+<span class="nc" id="L43">  Color workdayColor = new Color(21, 55, 93);</span>
+<span class="nc" id="L44">  Color todayColor = Color.red;</span>
+<span class="nc" id="L45">  Color selectedColor = Color.white;</span>
+<span class="nc" id="L46">  Color backgroundColor = new Color(255, 255, 255);</span>
+<span class="nc" id="L47">  Font headerFont = new Font(&quot;Helvetica&quot;, Font.BOLD, 10);</span>
+<span class="nc" id="L48">  Font dayFont = new Font(&quot;Helvetica&quot;, Font.PLAIN, 9);</span>
+<span class="nc" id="L49">  Font dateFont = new Font(&quot;Helvetica&quot;, Font.PLAIN, 11);</span>
+<span class="nc" id="L50">  Insets dayMargin = new Insets(1, 1, 1, 1);</span>
+<span class="nc" id="L51">  Dimension rollButtonSize = new Dimension(10, 10);</span>
+<span class="nc" id="L52">  ActionListener rollBackListener = null;</span>
+<span class="nc" id="L53">  ActionListener rollForwardListener = null;</span>
+<span class="nc" id="L54">  ActionListener dateListener = null;</span>
+  Calendar month;
+<span class="nc" id="L56">  Calendar selectedDate = null;</span>
+<span class="nc" id="L57">  DateFormat format = null;</span>
+<span class="nc" id="L58">  Locale locale = null;</span>
+<span class="nc" id="L59">  DateFormatSymbols dateSymbols = null;</span>
+  private transient Vector actionListeners;
+
+  /**
+   * This method invokes a simple test program that demonstrates the calendar bean.
+   *
+   * @param args
+   */
+  public static void main(String[] args) {
+<span class="nc" id="L68">    System.out.println(&quot;test program for CalendarBean&quot;);</span>
+<span class="nc" id="L69">    Locale locale = Locale.GERMAN;</span>
+<span class="nc" id="L70">    final CalendarBean cal = new CalendarBean(new Date(), locale);</span>
+<span class="nc" id="L71">    final JFrame frame2 = new JFrame();</span>
+<span class="nc" id="L72">    frame2.getContentPane().setLayout(new BorderLayout());</span>
+<span class="nc" id="L73">    frame2.getContentPane().add(&quot;Center&quot;, cal);</span>
+<span class="nc" id="L74">    JButton change = new JButton(&quot;Change xxx&quot;);</span>
+<span class="nc" id="L75">    change.addActionListener(</span>
+<span class="nc" id="L76">        new ActionListener() {</span>
+          public void actionPerformed(ActionEvent evt) {
+<span class="nc" id="L78">            cal.setDayFont(new Font(&quot;Helvetica&quot;, Font.PLAIN, 22));</span>
+<span class="nc" id="L79">            cal.setDateFont(new Font(&quot;Helvetica&quot;, Font.PLAIN, 22));</span>
+<span class="nc" id="L80">            cal.setHeaderFont(new Font(&quot;Helvetica&quot;, Font.PLAIN, 22));</span>
+<span class="nc" id="L81">            cal.setRollButtonSize(new java.awt.Dimension(20, 20));</span>
+<span class="nc" id="L82">            frame2.pack();</span>
+<span class="nc" id="L83">          }</span>
+        });
+<span class="nc" id="L85">    frame2.getContentPane().add(&quot;South&quot;, change);</span>
+<span class="nc" id="L86">    frame2.pack();</span>
+<span class="nc" id="L87">    frame2.setVisible(true);</span>
+<span class="nc" id="L88">  }</span>
+
+  /**
+   * Creates a new instance of CalendarBean displaying the current month using the default locale.
+   */
+  public CalendarBean() {
+<span class="nc" id="L94">    this(new Date(), Locale.getDefault());</span>
+<span class="nc" id="L95">  }</span>
+
+  /**
+   * Creates a new instance of CalendarBean displaying the given month and using the given locale.
+   *
+   * @param date the date that initially should be selected
+   * @param locale the locale that should be used for the calendar
+   */
+<span class="nc" id="L103">  public CalendarBean(Date date, Locale locale) {</span>
+<span class="nc" id="L104">    this.locale = locale;</span>
+<span class="nc" id="L105">    Calendar lMonth = Calendar.getInstance(locale);</span>
+<span class="nc" id="L106">    lMonth.setTime(date);</span>
+<span class="nc" id="L107">    this.format = new SimpleDateFormat(&quot;MMMM yyyy&quot;, this.locale);</span>
+<span class="nc" id="L108">    this.dateSymbols = new DateFormatSymbols(this.locale);</span>
+<span class="nc" id="L109">    this.setLayout(new BorderLayout(1, 1));</span>
+<span class="nc" id="L110">    this.buildGui();</span>
+<span class="nc" id="L111">    this.showMonth(lMonth);</span>
+<span class="nc" id="L112">  }</span>
+
+  /**
+   * Builds or Rebuilds the graphical user interface of the calendar. This method is called by the
+   * constructor or whenever properties like font colors or font sizes are changed.
+   */
+  protected void buildGui() {
+    // Remove all components from this panel in order to begin creating the gui
+    // from scratch.
+<span class="nc" id="L121">    this.removeAll();</span>
+    // Prepare the action listeners for the
+    // roll forward and backward buttons.
+<span class="nc bnc" id="L124" title="All 2 branches missed.">    if (this.rollBackListener == null) {</span>
+<span class="nc" id="L125">      this.rollBackListener =</span>
+<span class="nc" id="L126">          new ActionListener() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L128">              CalendarBean.this.rollOneMonthBack();</span>
+<span class="nc" id="L129">            }</span>
+          };
+<span class="nc" id="L131">      oneMonthBack.addActionListener(this.rollBackListener);</span>
+    }
+<span class="nc bnc" id="L133" title="All 2 branches missed.">    if (this.rollForwardListener == null) {</span>
+<span class="nc" id="L134">      this.rollForwardListener =</span>
+<span class="nc" id="L135">          new ActionListener() {</span>
+            public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L137">              CalendarBean.this.rollOneMonthForward();</span>
+<span class="nc" id="L138">            }</span>
+          };
+<span class="nc" id="L140">      oneMonthForward.addActionListener(this.rollForwardListener);</span>
+    }
+    // Prepare the ActionListener for the toggle buttons, that
+    // will select the day which is represented by the button.
+    // and the button group for the toggle buttons
+<span class="nc bnc" id="L145" title="All 2 branches missed.">    if (this.dateListener == null) {</span>
+<span class="nc" id="L146">      ActionListener lDateListener =</span>
+<span class="nc" id="L147">          new ActionListener() {</span>
+            public void actionPerformed(ActionEvent evt) {
+<span class="nc" id="L149">              String day = ((JToggleButton) evt.getSource()).getText();</span>
+              try {
+<span class="nc" id="L151">                int d = Integer.parseInt(day);</span>
+<span class="nc" id="L152">                CalendarBean.this.month.set(Calendar.DATE, d);</span>
+<span class="nc" id="L153">                CalendarBean.this.select(CalendarBean.this.month);</span>
+<span class="nc" id="L154">              } catch (NumberFormatException ex) {</span>
+                // ignore
+<span class="nc" id="L156">              }</span>
+<span class="nc" id="L157">            }</span>
+          };
+<span class="nc" id="L159">      this.group = new ButtonGroup();</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">      for (int y = 1; y &lt; rows; y++) {</span>
+<span class="nc" id="L161">        label[y] = new JLabel();</span>
+<span class="nc" id="L162">        label[y].setHorizontalAlignment(SwingConstants.CENTER);</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        for (int x = 0; x &lt; cols; x++) {</span>
+<span class="nc" id="L164">          button[y][x] = new JToggleButton(&quot;  &quot;);</span>
+<span class="nc" id="L165">          button[y][x].addActionListener(lDateListener);</span>
+<span class="nc" id="L166">          group.add(button[y][x]);</span>
+        }
+      }
+    }
+    // Create the control panel on the top of the calendar
+    // containing the roll forward and roll backward buttons
+    // and the title label for the calendar, which displays the current visible
+    // month name and the year.
+<span class="nc" id="L174">    EmptyBorder emptyBorder = null; // new EmptyBorder(0, 0, 0, 0);</span>
+<span class="nc" id="L175">    JPanel controlPanel = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L176">    this.add(&quot;North&quot;, controlPanel);</span>
+<span class="nc" id="L177">    leftIcon.setPreferredSize(this.rollButtonSize);</span>
+<span class="nc" id="L178">    rightIcon.setPreferredSize(this.rollButtonSize);</span>
+<span class="nc" id="L179">    oneMonthBack.setMargin(new Insets(1, 1, 1, 1));</span>
+<span class="nc" id="L180">    oneMonthBack.setBorder(emptyBorder);</span>
+<span class="nc" id="L181">    oneMonthBack.setFocusable(false);</span>
+<span class="nc" id="L182">    oneMonthForward.setMargin(new Insets(1, 1, 1, 1));</span>
+<span class="nc" id="L183">    oneMonthForward.setBorder(emptyBorder);</span>
+<span class="nc" id="L184">    oneMonthForward.setFocusable(false);</span>
+<span class="nc" id="L185">    dateLabel.setHorizontalAlignment(SwingConstants.CENTER);</span>
+<span class="nc" id="L186">    dateLabel.setFont(dateFont);</span>
+<span class="nc" id="L187">    controlPanel.add(&quot;West&quot;, oneMonthBack);</span>
+<span class="nc" id="L188">    controlPanel.add(&quot;East&quot;, oneMonthForward);</span>
+<span class="nc" id="L189">    controlPanel.add(&quot;Center&quot;, dateLabel);</span>
+    // Create the calandar panel which contains all the toggle buttons
+    // for the days of the currently dispayed month, and the header with
+    // the names of the days.
+<span class="nc" id="L193">    JPanel calendarPanel = new JPanel(gridLayout1);</span>
+<span class="nc" id="L194">    this.add(&quot;Center&quot;, calendarPanel);</span>
+    // Add the headers
+<span class="nc" id="L196">    JLabel kwHeader = new JLabel(&quot;W&quot;);</span>
+<span class="nc" id="L197">    kwHeader.setFont(headerFont);</span>
+<span class="nc" id="L198">    kwHeader.setHorizontalAlignment(SwingConstants.CENTER);</span>
+<span class="nc" id="L199">    calendarPanel.add(kwHeader);</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">    for (int x = 0; x &lt; cols; x++) {</span>
+      // headerLabel[x] = new JLabel( getDayNames()[ x]);
+<span class="nc bnc" id="L202" title="All 2 branches missed.">      if (headerLabel[x] == null) {</span>
+<span class="nc" id="L203">        headerLabel[x] = new JLabel(&quot;XX&quot;);</span>
+      }
+<span class="nc" id="L205">      headerLabel[x].setHorizontalAlignment(SwingConstants.CENTER);</span>
+<span class="nc" id="L206">      headerLabel[x].setFont(headerFont);</span>
+<span class="nc" id="L207">      calendarPanel.add(headerLabel[x]);</span>
+    }
+    // Add the toggle buttons for the days
+<span class="nc bnc" id="L210" title="All 2 branches missed.">    for (int y = 1; y &lt; rows; y++) {</span>
+<span class="nc" id="L211">      label[y].setFont(dayFont);</span>
+<span class="nc" id="L212">      label[y].setBorder(emptyBorder);</span>
+<span class="nc" id="L213">      label[y].setBackground(backgroundColor);</span>
+<span class="nc" id="L214">      label[y].setOpaque(true);</span>
+<span class="nc" id="L215">      calendarPanel.add(label[y]);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">      for (int x = 0; x &lt; cols; x++) {</span>
+<span class="nc" id="L217">        button[y][x].setFont(dayFont);</span>
+<span class="nc" id="L218">        button[y][x].setMargin(dayMargin);</span>
+<span class="nc" id="L219">        button[y][x].setBorder(emptyBorder);</span>
+<span class="nc" id="L220">        button[y][x].setBackground(backgroundColor);</span>
+<span class="nc" id="L221">        calendarPanel.add(button[y][x]);</span>
+      }
+    }
+    // force revalidation of the layout manager
+<span class="nc" id="L225">    this.validate();</span>
+<span class="nc" id="L226">  }</span>
+
+  /** Rolls the calendar one month forward and displays the new month. */
+  public void rollOneMonthForward() {
+<span class="nc" id="L230">    this.month.add(Calendar.MONTH, 1);</span>
+<span class="nc" id="L231">    this.showMonth();</span>
+<span class="nc" id="L232">  }</span>
+
+  /** Rolls the calendar one month backwards and displays the new month. */
+  public void rollOneMonthBack() {
+<span class="nc" id="L236">    this.month.add(Calendar.MONTH, -1);</span>
+<span class="nc" id="L237">    this.showMonth();</span>
+<span class="nc" id="L238">  }</span>
+
+  /**
+   * Selects the given date and displays the month containing that date.
+   *
+   * @param date the date to select
+   */
+  public void select(Date date) {
+<span class="nc bnc" id="L246" title="All 2 branches missed.">    if (date == null) {</span>
+<span class="nc" id="L247">      this.showMonth(this.month);</span>
+<span class="nc" id="L248">      this.selectedDate = null;</span>
+    } else {
+<span class="nc bnc" id="L250" title="All 2 branches missed.">      if (selectedDate == null) {</span>
+<span class="nc" id="L251">        selectedDate = (Calendar) this.month.clone();</span>
+      }
+<span class="nc" id="L253">      this.selectedDate.setTime(date);</span>
+<span class="nc" id="L254">      this.showMonth(this.selectedDate);</span>
+    }
+<span class="nc" id="L256">  }</span>
+
+  /**
+   * Selects the given date (calendar) and displays the month containing that date. This methods
+   * overloads #select( Date date).
+   *
+   * @param date
+   */
+  protected void select(Calendar date) {
+<span class="nc" id="L265">    this.selectedDate = date;</span>
+<span class="nc" id="L266">    fireActionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));</span>
+<span class="nc" id="L267">    this.showMonth(this.selectedDate);</span>
+<span class="nc" id="L268">  }</span>
+
+  /**
+   * Returns the selected date as an Date instance.
+   *
+   * @return the selected date
+   */
+  public Date getSelectedDate() {
+<span class="nc bnc" id="L276" title="All 2 branches missed.">    if (this.selectedDate == null) return null;</span>
+<span class="nc" id="L277">    return this.selectedDate.getTime();</span>
+  }
+
+  /**
+   * Sets the given month to display on the calndar panel.
+   *
+   * @param pMonth the month to display
+   */
+  public void showMonth(Calendar pMonth) {
+<span class="nc bnc" id="L286" title="All 2 branches missed.">    if (pMonth == null) throw new NullPointerException(&quot;Illeagal null argument for month.&quot;);</span>
+<span class="nc" id="L287">    this.month = (Calendar) pMonth.clone();</span>
+<span class="nc" id="L288">    this.format.setCalendar((Calendar) this.month.clone());</span>
+<span class="nc" id="L289">    this.showMonth();</span>
+<span class="nc" id="L290">  }</span>
+
+  /** Displays the currently set month on the calendar panel. */
+  protected void showMonth() {
+<span class="nc" id="L294">    int selectedDay = -1; // NONE selected</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">    if (selectedDate != null</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">        &amp;&amp; (this.selectedDate.get(Calendar.YEAR) == this.month.get(Calendar.YEAR))</span>
+<span class="nc bnc" id="L297" title="All 2 branches missed.">        &amp;&amp; (this.selectedDate.get(Calendar.MONTH) == this.month.get(Calendar.MONTH))) {</span>
+<span class="nc" id="L298">      selectedDay = this.selectedDate.get(Calendar.DATE);</span>
+    }
+<span class="nc" id="L300">    group.setSelected(null, true);</span>
+<span class="nc" id="L301">    int todayDate = -1;</span>
+<span class="nc" id="L302">    Calendar today = Calendar.getInstance();</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">    if ((today.get(Calendar.YEAR) == this.month.get(Calendar.YEAR))</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">        &amp;&amp; (today.get(Calendar.MONTH) == this.month.get(Calendar.MONTH))) {</span>
+<span class="nc" id="L305">      todayDate = today.get(Calendar.DATE);</span>
+    }
+<span class="nc bnc" id="L307" title="All 2 branches missed.">    for (int x = 0; x &lt; cols; x++) {</span>
+<span class="nc" id="L308">      this.headerLabel[x].setText(this.getDayNames()[x]);</span>
+    }
+<span class="nc" id="L310">    int[][] dates = getDatesForButtons(month);</span>
+<span class="nc bnc" id="L311" title="All 2 branches missed.">    for (int y = 0; y &lt; 6; y++) {</span>
+      {
+<span class="nc" id="L313">        Calendar cal = Calendar.getInstance();</span>
+<span class="nc" id="L314">        int dayOfMonth = dates[y][0];</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">        if (dayOfMonth == 0) {</span>
+<span class="nc" id="L316">          dayOfMonth = dates[y][6];</span>
+        }
+<span class="nc bnc" id="L318" title="All 2 branches missed.">        if (dayOfMonth != 0) {</span>
+<span class="nc" id="L319">          cal.set(Calendar.DAY_OF_MONTH, dayOfMonth);</span>
+<span class="nc" id="L320">          cal.set(Calendar.YEAR, this.month.get(Calendar.YEAR));</span>
+<span class="nc" id="L321">          cal.set(Calendar.MONTH, this.month.get(Calendar.MONTH));</span>
+<span class="nc" id="L322">          int week = cal.get(Calendar.WEEK_OF_YEAR);</span>
+<span class="nc" id="L323">          label[y + 1].setText(&quot;&quot; + week);</span>
+<span class="nc" id="L324">        } else {</span>
+<span class="nc" id="L325">          label[y + 1].setText(&quot;&quot;);</span>
+        }
+      }
+<span class="nc bnc" id="L328" title="All 2 branches missed.">      for (int x = 0; x &lt; 7; x++) {</span>
+<span class="nc" id="L329">        int dayOfMonth = dates[y][x];</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">        if (dayOfMonth != 0) {</span>
+<span class="nc" id="L331">          button[y + 1][x].setText(&quot;&quot; + dayOfMonth);</span>
+<span class="nc" id="L332">          button[y + 1][x].setEnabled(true);</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">          if (dayOfMonth == selectedDay) {</span>
+<span class="nc" id="L334">            button[y + 1][x].setSelected(true);</span>
+          } else {
+<span class="nc" id="L336">            button[y + 1][x].setSelected(false);</span>
+          }
+<span class="nc bnc" id="L338" title="All 2 branches missed.">          if (dayOfMonth == selectedDay) {</span>
+<span class="nc" id="L339">            button[y + 1][x].setForeground(this.selectedColor);</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">          } else if (dayOfMonth == todayDate) {</span>
+<span class="nc" id="L341">            button[y + 1][x].setForeground(this.todayColor);</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">          } else if (this.isWeekend(dayOfMonth)) {</span>
+<span class="nc" id="L343">            button[y + 1][x].setForeground(this.weekendColor);</span>
+          } else {
+<span class="nc" id="L345">            button[y + 1][x].setForeground(this.workdayColor);</span>
+          }
+        } else {
+<span class="nc" id="L348">          button[y + 1][x].setText(&quot;&quot;);</span>
+<span class="nc" id="L349">          button[y + 1][x].setEnabled(false);</span>
+        }
+      }
+    }
+<span class="nc" id="L353">    this.dateLabel.setText(this.formatDate(this.month.getTime()));</span>
+<span class="nc" id="L354">  }</span>
+
+  /**
+   * Returns the human readable shortages for the week days beginning with the weeks first day at
+   * index 0.
+   *
+   * @return an array of String containing the short names of the days of the week
+   */
+  protected String[] getDayNames() {
+    // return this.dateSymbols.getShortWeekdays();
+<span class="nc bnc" id="L364" title="All 2 branches missed.">    if (this.dayName == null) {</span>
+<span class="nc" id="L365">      String[] shortWeekdays = this.dateSymbols.getShortWeekdays();</span>
+<span class="nc" id="L366">      int firstDayOfWeek = this.month.getFirstDayOfWeek();</span>
+      int delta;
+<span class="nc bnc" id="L368" title="All 8 branches missed.">      switch (firstDayOfWeek) {</span>
+        case Calendar.SUNDAY:
+<span class="nc" id="L370">          delta = 0;</span>
+<span class="nc" id="L371">          break;</span>
+        case Calendar.MONDAY:
+<span class="nc" id="L373">          delta = 1;</span>
+<span class="nc" id="L374">          break;</span>
+        case Calendar.TUESDAY:
+<span class="nc" id="L376">          delta = 2;</span>
+<span class="nc" id="L377">          break;</span>
+        case Calendar.WEDNESDAY:
+<span class="nc" id="L379">          delta = 3;</span>
+<span class="nc" id="L380">          break;</span>
+        case Calendar.THURSDAY:
+<span class="nc" id="L382">          delta = 4;</span>
+<span class="nc" id="L383">          break;</span>
+        case Calendar.FRIDAY:
+<span class="nc" id="L385">          delta = 5;</span>
+<span class="nc" id="L386">          break;</span>
+        case Calendar.SATURDAY:
+<span class="nc" id="L388">          delta = 6;</span>
+<span class="nc" id="L389">          break;</span>
+        default:
+<span class="nc" id="L391">          throw new Error(</span>
+              &quot;Unexpected Error. First day of month is non of Sun, Mon, Tue, Wed, Thu, Fri, Sat&quot;);
+      }
+<span class="nc" id="L394">      this.dayName = new String[7];</span>
+<span class="nc bnc" id="L395" title="All 2 branches missed.">      for (int i = 0; i &lt; 7; i++) {</span>
+<span class="nc" id="L396">        this.dayName[i] = shortWeekdays[((i + delta) % 7) + 1];</span>
+      }
+    }
+<span class="nc" id="L399">    return this.dayName;</span>
+  }
+
+  protected boolean isWeekend(int dayOfMonth) {
+<span class="nc" id="L403">    Calendar temp = (Calendar) this.month.clone();</span>
+<span class="nc" id="L404">    temp.set(Calendar.DAY_OF_MONTH, dayOfMonth);</span>
+<span class="nc" id="L405">    int lDayName = temp.get(Calendar.DAY_OF_WEEK);</span>
+<span class="nc bnc" id="L406" title="All 4 branches missed.">    if (lDayName == Calendar.SATURDAY || lDayName == Calendar.SUNDAY) return true;</span>
+<span class="nc" id="L407">    else return false;</span>
+  }
+
+  // These members are for optimization purpose only
+<span class="nc" id="L411">  private Date tempDate = new Date();</span>
+<span class="nc" id="L412">  private Calendar tempCal = null;</span>
+
+  /**
+   * Returns an two dimensional array of int, each containing the date of the given months day as
+   * they will appear on the toggle buttons on the calendar panel.
+   *
+   * @param pMonth the month the array should be calculated for
+   * @return an array of the dates of the days of the given month
+   */
+  protected int[][] getDatesForButtons(Calendar pMonth) {
+<span class="nc" id="L422">    int[][] result = new int[6][7];</span>
+<span class="nc" id="L423">    this.tempDate.setTime(pMonth.getTime().getTime());</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">    if (this.tempCal == null) {</span>
+<span class="nc" id="L425">      this.tempCal = (Calendar) pMonth.clone();</span>
+    }
+<span class="nc" id="L427">    this.tempCal.setTime(tempDate);</span>
+<span class="nc" id="L428">    Calendar day = tempCal;</span>
+    // Calendar day = (Calendar) month.clone();
+<span class="nc" id="L430">    day.set(Calendar.DAY_OF_MONTH, 1);</span>
+    // int firstWeekDayOfMonth = day.get(Calendar.DAY_OF_WEEK);
+    // find the first day of the month in the first week
+<span class="nc" id="L433">    int x = 0;</span>
+<span class="nc bnc" id="L434" title="All 2 branches missed.">    while (day.get(Calendar.DAY_OF_WEEK) != day.getFirstDayOfWeek()) {</span>
+<span class="nc" id="L435">      day.roll(Calendar.DAY_OF_WEEK, false);</span>
+<span class="nc" id="L436">      x = x + 1;</span>
+    }
+<span class="nc" id="L438">    day = (Calendar) pMonth.clone();</span>
+<span class="nc" id="L439">    day.set(Calendar.DAY_OF_MONTH, 1);</span>
+<span class="nc bnc" id="L440" title="All 2 branches missed.">    for (int y = 0; y &lt; 6; y++) {</span>
+<span class="nc bnc" id="L441" title="All 2 branches missed.">      for (; x &lt; 7; x++) {</span>
+<span class="nc" id="L442">        result[y][x] = day.get(Calendar.DATE);</span>
+<span class="nc" id="L443">        day.roll(Calendar.DATE, true);</span>
+<span class="nc bnc" id="L444" title="All 2 branches missed.">        if (day.get(Calendar.DATE) == 1) return result;</span>
+      }
+<span class="nc" id="L446">      x = 0;</span>
+    }
+<span class="nc" id="L448">    throw new Error(&quot;Unexpected Error. Month has more than 31 days!&quot;);</span>
+  }
+
+  /**
+   * Returns the formatted string of the given date, using the internal DateFormat as it was passed
+   * to the constructor of this class. This method is called by the routine that displays the title
+   * of the currently displayed month.
+   *
+   * @param date the dat to format
+   * @return the fromatted string
+   */
+  protected String formatDate(Date date) {
+<span class="nc" id="L460">    return this.format.format(date);</span>
+  }
+
+  /**
+   * Removes the given action listener from this component.
+   *
+   * @param l
+   */
+  public synchronized void removeActionListener(ActionListener l) {
+<span class="nc bnc" id="L469" title="All 4 branches missed.">    if (actionListeners != null &amp;&amp; actionListeners.contains(l)) {</span>
+<span class="nc" id="L470">      Vector v = (Vector) actionListeners.clone();</span>
+<span class="nc" id="L471">      v.removeElement(l);</span>
+<span class="nc" id="L472">      actionListeners = v;</span>
+    }
+<span class="nc" id="L474">  }</span>
+
+  /**
+   * Adds the given action listnener to this component. All action listeners will be informed about
+   * changes that are made to the selected date of this calendar.
+   *
+   * @param l the listener to add to this component
+   */
+  public synchronized void addActionListener(ActionListener l) {
+<span class="nc bnc" id="L483" title="All 2 branches missed.">    Vector v = actionListeners == null ? new Vector(2) : (Vector) actionListeners.clone();</span>
+<span class="nc bnc" id="L484" title="All 2 branches missed.">    if (!v.contains(l)) {</span>
+<span class="nc" id="L485">      v.addElement(l);</span>
+<span class="nc" id="L486">      actionListeners = v;</span>
+    }
+<span class="nc" id="L488">  }</span>
+
+  /**
+   * Fires the given action event to all listeners that are added to this component.
+   *
+   * @param e the event to fire
+   */
+  protected void fireActionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L496" title="All 2 branches missed.">    if (actionListeners != null) {</span>
+<span class="nc" id="L497">      Vector listeners = actionListeners;</span>
+<span class="nc" id="L498">      int count = listeners.size();</span>
+<span class="nc bnc" id="L499" title="All 2 branches missed.">      for (int i = 0; i &lt; count; i++) {</span>
+<span class="nc" id="L500">        ((ActionListener) listeners.elementAt(i)).actionPerformed(e);</span>
+      }
+    }
+<span class="nc" id="L503">  }</span>
+
+  /**
+   * Changes the color of the weekend day font.
+   *
+   * @param weekendColor the new color for the weekend day font
+   */
+  public void setWeekendColor(Color weekendColor) {
+<span class="nc" id="L511">    this.weekendColor = weekendColor;</span>
+<span class="nc" id="L512">    this.buildGui();</span>
+<span class="nc" id="L513">    this.showMonth();</span>
+<span class="nc" id="L514">  }</span>
+
+  /**
+   * Returns the currently used font color for weekend days.
+   *
+   * @return the font color for the weekend days
+   */
+  public Color getWeekendColor() {
+<span class="nc" id="L522">    return this.weekendColor;</span>
+  }
+
+  /**
+   * Changes the color of the workday font.
+   *
+   * @param workdayColor the new color for the workday font
+   */
+  public void setWorkdayColor(Color workdayColor) {
+<span class="nc" id="L531">    this.workdayColor = workdayColor;</span>
+<span class="nc" id="L532">    this.buildGui();</span>
+<span class="nc" id="L533">    this.showMonth();</span>
+<span class="nc" id="L534">  }</span>
+
+  /**
+   * Returns the currently used font color for workday days.
+   *
+   * @return the font color for the workday days
+   */
+  public Color getWorkdayColor() {
+<span class="nc" id="L542">    return this.workdayColor;</span>
+  }
+
+  /**
+   * Changes the color of the selected day font.
+   *
+   * @param selectedColor the new color for the selected day font
+   */
+  public void setSelectedColor(Color selectedColor) {
+<span class="nc" id="L551">    this.selectedColor = selectedColor;</span>
+<span class="nc" id="L552">    this.buildGui();</span>
+<span class="nc" id="L553">    this.showMonth();</span>
+<span class="nc" id="L554">  }</span>
+
+  /**
+   * Returns the currently used font color for selected day.
+   *
+   * @return the font color for the selected day
+   */
+  public Color getSelectedColor() {
+<span class="nc" id="L562">    return this.selectedColor;</span>
+  }
+
+  /**
+   * Changes the color of the background of the days.
+   *
+   * @param dayBackground the new color for the background ofvthe days
+   */
+  public void setDayBackground(Color dayBackground) {
+<span class="nc" id="L571">    this.backgroundColor = dayBackground;</span>
+<span class="nc" id="L572">    this.buildGui();</span>
+<span class="nc" id="L573">    this.showMonth();</span>
+<span class="nc" id="L574">  }</span>
+
+  /**
+   * Returns the currently used color of the background of the days.
+   *
+   * @return the currently used color of the background of the days
+   */
+  public Color getDayBackground() {
+<span class="nc" id="L582">    return this.backgroundColor;</span>
+  }
+
+  /**
+   * Changes the font of the header of the days.
+   *
+   * @param headerFont the font of the header of the days.
+   */
+  public void setHeaderFont(Font headerFont) {
+<span class="nc" id="L591">    this.headerFont = headerFont;</span>
+<span class="nc" id="L592">    this.buildGui();</span>
+<span class="nc" id="L593">    this.showMonth();</span>
+<span class="nc" id="L594">  }</span>
+
+  /**
+   * Returns the currently used font of the header of the days.
+   *
+   * @return the currently used font of the header of the days
+   */
+  public Font getHeaderFont() {
+<span class="nc" id="L602">    return this.headerFont;</span>
+  }
+
+  /**
+   * Changes the font of the days displayed on the calendar panel.
+   *
+   * @param dayFont the font of the days displayed on the calendar panel
+   */
+  public void setDayFont(Font dayFont) {
+<span class="nc" id="L611">    this.dayFont = dayFont;</span>
+<span class="nc" id="L612">    this.buildGui();</span>
+<span class="nc" id="L613">    this.showMonth();</span>
+<span class="nc" id="L614">  }</span>
+
+  /**
+   * Returns the currently used font of the days displayed on the calendar panel.
+   *
+   * @return the currently used font of the days displayed on the calendar panel
+   */
+  public Font getDayFont() {
+<span class="nc" id="L622">    return this.dayFont;</span>
+  }
+
+  /**
+   * Changes the font of the title of the calendar panel, which displays the currently displayed
+   * month's name and the year.
+   *
+   * @param dateFont the new font for the title
+   */
+  public void setDateFont(Font dateFont) {
+<span class="nc" id="L632">    this.dateFont = dateFont;</span>
+<span class="nc" id="L633">    this.buildGui();</span>
+<span class="nc" id="L634">    this.showMonth();</span>
+<span class="nc" id="L635">  }</span>
+
+  /**
+   * Returns the currently used font of the title of the calendar panel, which displays the
+   * currently displayed month's name and the year.
+   *
+   * @return the currently used font for the title
+   */
+  public Font getDateFont() {
+<span class="nc" id="L644">    return this.dateFont;</span>
+  }
+
+  /**
+   * Changes the margin of each days button.
+   *
+   * @param dayMargin the margin of each days button
+   */
+  public void setDayMargin(Insets dayMargin) {
+<span class="nc" id="L653">    this.dayMargin = dayMargin;</span>
+<span class="nc" id="L654">    this.buildGui();</span>
+<span class="nc" id="L655">    this.showMonth();</span>
+<span class="nc" id="L656">  }</span>
+
+  /**
+   * Returns the currently used margin of each days button.
+   *
+   * @return the currently used margin of each days button
+   */
+  public Insets getDayMargin() {
+<span class="nc" id="L664">    return this.dayMargin;</span>
+  }
+
+  /**
+   * Changes the margin of each days button.
+   *
+   * @param newSize the margin of each days button
+   */
+  public void setRollButtonSize(Dimension newSize) {
+<span class="nc" id="L673">    this.rollButtonSize = newSize;</span>
+<span class="nc" id="L674">    this.buildGui();</span>
+<span class="nc" id="L675">    this.showMonth();</span>
+<span class="nc" id="L676">  }</span>
+
+  /**
+   * Returns the currently used margin of each days button.
+   *
+   * @return the currently used margin of each days button
+   */
+  public Dimension getRollButtonSize() {
+<span class="nc" id="L684">    return this.rollButtonSize;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

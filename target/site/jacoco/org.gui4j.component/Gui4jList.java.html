@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jList.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jList.java</span></div><h1>Gui4jList.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import javax.swing.DefaultListModel;
+import javax.swing.JList;
+import javax.swing.ListSelectionModel;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.constants.Const;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.Gui4jSwingContainer;
+import org.gui4j.core.InternalElementRetriever;
+import org.gui4j.core.listener.Gui4jMouseListenerList;
+
+public final class Gui4jList extends Gui4jJComponent {
+<span class="nc" id="L24">  protected static final Log mLogger = LogFactory.getLog(Gui4jList.class);</span>
+
+  protected Gui4jCall mRowValue;
+  private Gui4jCall mOnSelect;
+  private Gui4jCall mOnDoubleClick;
+  private Gui4jCall mSelectedItemsCall;
+  private Gui4jCall mSelectedItemCall;
+  private final int mVisibleRowCount;
+
+<span class="nc" id="L33">  private int mListSelectionMode = ListSelectionModel.SINGLE_SELECTION;</span>
+
+  /**
+   * Constructor for Gui4jList.
+   *
+   * @param gui4jComponentContainer
+   * @param id
+   * @param visibleRowCount
+   */
+  public Gui4jList(
+      Gui4jComponentContainer gui4jComponentContainer, String id, int visibleRowCount) {
+<span class="nc" id="L44">    super(gui4jComponentContainer, JList.class, id);</span>
+<span class="nc" id="L45">    mVisibleRowCount = visibleRowCount;</span>
+<span class="nc" id="L46">  }</span>
+
+  public void setRowValue(Gui4jCall rowValue) {
+<span class="nc" id="L49">    mRowValue = rowValue;</span>
+<span class="nc" id="L50">  }</span>
+
+  public void setOnSelect(Gui4jCall onSelect) {
+<span class="nc" id="L53">    mOnSelect = onSelect;</span>
+<span class="nc" id="L54">  }</span>
+
+  public void setOnDoubleClick(Gui4jCall onDoubleClick) {
+<span class="nc" id="L57">    mOnDoubleClick = onDoubleClick;</span>
+<span class="nc" id="L58">  }</span>
+
+  protected void setProperties(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L61">    JList list = (JList) gui4jComponentInstance.getComponent();</span>
+<span class="nc" id="L62">    list.setSelectionMode(mListSelectionMode);</span>
+<span class="nc" id="L63">    super.setProperties(gui4jComponentInstance);</span>
+<span class="nc bnc" id="L64" title="All 4 branches missed.">    if (mOnSelect != null || mOnDoubleClick != null) {</span>
+<span class="nc" id="L65">      Gui4jListModel model = (Gui4jListModel) list.getModel();</span>
+<span class="nc" id="L66">      Gui4jMouseListenerList mouseListener =</span>
+          new Gui4jMouseListenerList(gui4jComponentInstance, model);
+<span class="nc" id="L68">      gui4jComponentInstance.getGui4jSwingContainer().addDispose(mouseListener);</span>
+
+      // add listener to model for later retrieval
+<span class="nc" id="L71">      model.setListener(mouseListener);</span>
+
+<span class="nc bnc" id="L73" title="All 2 branches missed.">      if (mOnSelect != null) {</span>
+<span class="nc" id="L74">        mouseListener.setOnClick(mOnSelect);</span>
+<span class="nc" id="L75">        list.addListSelectionListener(mouseListener);</span>
+      }
+<span class="nc bnc" id="L77" title="All 2 branches missed.">      if (mOnDoubleClick != null) {</span>
+<span class="nc" id="L78">        mouseListener.setOnDoubleClick(mOnDoubleClick);</span>
+<span class="nc" id="L79">        list.addMouseListener(mouseListener);</span>
+      }
+    }
+
+<span class="nc bnc" id="L83" title="All 2 branches missed.">    if (mVisibleRowCount != 0) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">      if (mVisibleRowCount == -1) {</span>
+<span class="nc" id="L85">        int numberOfItems = list.getModel().getSize();</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (numberOfItems &gt; 0) {</span>
+<span class="nc" id="L87">          list.setVisibleRowCount(numberOfItems);</span>
+        }
+<span class="nc" id="L89">      } else {</span>
+<span class="nc" id="L90">        list.setVisibleRowCount(mVisibleRowCount);</span>
+      }
+    }
+<span class="nc" id="L93">  }</span>
+
+  public void setSelectionMode(int selectionMode) {
+<span class="nc" id="L96">    mListSelectionMode = selectionMode;</span>
+<span class="nc" id="L97">  }</span>
+
+  public void setArrayContent(JList list, Object[] content) {
+<span class="nc" id="L100">    Gui4jListModel model = (Gui4jListModel) list.getModel();</span>
+<span class="nc" id="L101">    model.removeAllElements();</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    if (content != null) {</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">      for (int i = 0; i &lt; content.length; i++) {</span>
+<span class="nc" id="L104">        model.addElement(content[i]);</span>
+      }
+    }
+<span class="nc" id="L107">    list.repaint();</span>
+<span class="nc" id="L108">  }</span>
+
+  public void setContent(Gui4jComponentInstance gui4jComponentInstance, Collection content) {
+    // mLogger.debug(&quot;setContent called with: &quot; + content);
+
+<span class="nc" id="L113">    JList list = (JList) gui4jComponentInstance.getSwingComponent();</span>
+
+<span class="nc" id="L115">    Gui4jListModel model = (Gui4jListModel) list.getModel();</span>
+<span class="nc" id="L116">    Gui4jMouseListenerList listener = model.getListener();</span>
+
+    // deactivate listener to prevent updates caused by refill of content
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    if (listener != null) {</span>
+<span class="nc" id="L120">      listener.setActive(false);</span>
+    }
+
+    // remember selected items
+<span class="nc" id="L124">    Collection selectedItems = new ArrayList();</span>
+<span class="nc" id="L125">    int[] selectedIndices = getSelectedIndices(list);</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">    for (int i = 0; i &lt; selectedIndices.length; i++) {</span>
+<span class="nc" id="L127">      selectedItems.add(model.getInternalElementAt(i));</span>
+    }
+
+<span class="nc" id="L130">    model.removeAllElements();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">    if (content != null) {</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">      for (Iterator it = content.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L133">        Object value = it.next();</span>
+<span class="nc" id="L134">        model.addElement(value);</span>
+<span class="nc" id="L135">      }</span>
+    }
+
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    if (listener != null) {</span>
+<span class="nc" id="L139">      listener.setActive(true);</span>
+    }
+
+<span class="nc bnc" id="L142" title="All 2 branches missed.">    if (mSelectedItemsCall != null) {</span>
+<span class="nc" id="L143">      selectedItems =</span>
+          (Collection)
+<span class="nc" id="L145">              mSelectedItemsCall.getValueNoParams(gui4jComponentInstance.getGui4jCallBase(), null);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">    } else if (mSelectedItemCall != null) {</span>
+<span class="nc" id="L147">      Object selectedItem =</span>
+<span class="nc" id="L148">          mSelectedItemCall.getValueNoParams(gui4jComponentInstance.getGui4jCallBase(), null);</span>
+<span class="nc" id="L149">      selectedItems = null;</span>
+<span class="nc" id="L150">      setSelectedItem(list, selectedItem);</span>
+    }
+<span class="nc bnc" id="L152" title="All 2 branches missed.">    if (selectedItems != null) {</span>
+<span class="nc" id="L153">      setSelectedItems(list, selectedItems);</span>
+    }
+
+<span class="nc" id="L156">    list.repaint();</span>
+<span class="nc" id="L157">  }</span>
+
+  public void setSelectedIndices(JList list, int[] selectedIndices) {
+<span class="nc" id="L160">    list.setSelectedIndices(selectedIndices);</span>
+<span class="nc" id="L161">  }</span>
+
+  public void setSelectedItems(JList list, Collection elements) {
+    // mLogger.debug(&quot;setSelectedItems called with: &quot; + elements);
+<span class="nc bnc" id="L165" title="All 2 branches missed.">    int[] indices = new int[elements == null ? 0 : elements.size()];</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">    if (elements != null) {</span>
+<span class="nc" id="L167">      Gui4jListModel model = (Gui4jListModel) list.getModel();</span>
+<span class="nc" id="L168">      int count = 0;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">      for (Iterator it = elements.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L170">        Object object = it.next();</span>
+<span class="nc" id="L171">        int idx = model.indexOf(object);</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">        if (idx != -1) {</span>
+<span class="nc" id="L173">          indices[count] = idx;</span>
+<span class="nc" id="L174">          count++;</span>
+        }
+<span class="nc" id="L176">      }</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">      if (count != elements.size()) {</span>
+<span class="nc" id="L178">        int[] newIndices = new int[count];</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        for (int i = 0; i &lt; count; i++) {</span>
+<span class="nc" id="L180">          newIndices[i] = indices[i];</span>
+        }
+<span class="nc" id="L182">        indices = newIndices;</span>
+      }
+<span class="nc bnc" id="L184" title="All 4 branches missed.">      if (elements.size() == 1 &amp;&amp; indices.length &gt; 0) {</span>
+<span class="nc" id="L185">        list.scrollRectToVisible(list.getCellBounds(indices[0], indices[0] + 1));</span>
+      }
+    }
+
+<span class="nc" id="L189">    list.setSelectedIndices(indices);</span>
+<span class="nc" id="L190">  }</span>
+
+  public void setSelectedItem(JList list, Object element) {
+<span class="nc" id="L193">    Gui4jListModel model = (Gui4jListModel) list.getModel();</span>
+<span class="nc" id="L194">    int index = model.indexOf(element);</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    if (index != -1) {</span>
+<span class="nc" id="L196">      list.setSelectedIndex(index);</span>
+<span class="nc" id="L197">      list.scrollRectToVisible(list.getCellBounds(index, index + 1));</span>
+    }
+<span class="nc" id="L199">  }</span>
+
+  private int[] getSelectedIndices(JList list) {
+<span class="nc" id="L202">    return list.getSelectedIndices();</span>
+  }
+
+  /* (non-Javadoc)
+   * @see org.gui4j.core.Gui4jAbstractComponent#createComponentInstance(org.gui4j.core.Gui4jSwingContainer, org.gui4j.Gui4jCallBase, org.gui4j.core.Gui4jQualifiedComponent)
+   */
+  protected Gui4jComponentInstance createComponentInstance(
+      Gui4jSwingContainer gui4jSwingContainer,
+      Gui4jCallBase gui4jCallBase,
+      Gui4jQualifiedComponent gui4jComponentInPath) {
+<span class="nc" id="L212">    Gui4jListModel model = new Gui4jListModel(gui4jCallBase);</span>
+<span class="nc" id="L213">    JList list = new JList();</span>
+<span class="nc" id="L214">    list.setModel(model);</span>
+<span class="nc" id="L215">    return new Gui4jComponentInstance(gui4jSwingContainer, list, gui4jComponentInPath);</span>
+  }
+
+  /**
+   * @see org.gui4j.core.Gui4jComponent#dispose(Gui4jComponentInstance)
+   */
+  public void dispose(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L222">    super.dispose(gui4jComponentInstance);</span>
+<span class="nc" id="L223">    JList list = (JList) gui4jComponentInstance.getSwingComponent();</span>
+<span class="nc" id="L224">    Gui4jListModel model = (Gui4jListModel) list.getModel();</span>
+<span class="nc" id="L225">    model.dispose();</span>
+<span class="nc" id="L226">  }</span>
+
+  public void setSelectedItemsCall(Gui4jCall selectedItemsCall) {
+<span class="nc" id="L229">    mSelectedItemsCall = selectedItemsCall;</span>
+<span class="nc" id="L230">  }</span>
+
+  public void setSelectedItemCall(Gui4jCall selectedItemCall) {
+<span class="nc" id="L233">    mSelectedItemCall = selectedItemCall;</span>
+<span class="nc" id="L234">  }</span>
+
+  public class Gui4jListModel extends DefaultListModel implements InternalElementRetriever {
+    private Gui4jCallBase mGui4jController;
+
+    private Gui4jMouseListenerList mMouseListener;
+
+<span class="nc" id="L241">    public Gui4jListModel(Gui4jCallBase gui4jController) {</span>
+<span class="nc" id="L242">      mGui4jController = gui4jController;</span>
+<span class="nc" id="L243">    }</span>
+
+    public Object getInternalElementAt(int index) {
+<span class="nc" id="L246">      return super.getElementAt(index);</span>
+    }
+
+    public Object getElementAt(int index) {
+<span class="nc" id="L250">      Object value = super.getElementAt(index);</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">      if (value != null) {</span>
+<span class="nc" id="L252">        Map paramMap = new HashMap();</span>
+<span class="nc" id="L253">        paramMap.put(Const.PARAM_INDEX, new Integer(index));</span>
+<span class="nc" id="L254">        paramMap.put(Const.PARAM_ITEM, value);</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">        if (mRowValue == null) {</span>
+<span class="nc" id="L256">          mLogger.warn(getId() + &quot;: rowValue not defined&quot;);</span>
+        }
+<span class="nc bnc" id="L258" title="All 2 branches missed.">        return mRowValue == null ? null : mRowValue.getValue(mGui4jController, paramMap, null);</span>
+      } else {
+<span class="nc" id="L260">        return null;</span>
+      }
+    }
+
+    public void dispose() {
+<span class="nc bnc" id="L265" title="All 2 branches missed.">      if (mMouseListener != null) {</span>
+<span class="nc" id="L266">        mMouseListener.setActive(false);</span>
+      }
+<span class="nc" id="L268">      mMouseListener = null;</span>
+<span class="nc" id="L269">      mGui4jController = null;</span>
+<span class="nc" id="L270">      removeAllElements();</span>
+<span class="nc" id="L271">    }</span>
+
+    public void setListener(Gui4jMouseListenerList mouseListener) {
+<span class="nc" id="L274">      mMouseListener = mouseListener;</span>
+<span class="nc" id="L275">    }</span>
+
+    public Gui4jMouseListenerList getListener() {
+<span class="nc" id="L278">      return mMouseListener;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

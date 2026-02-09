@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jAbstractButtonFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jAbstractButtonFactory.java</span></div><h1>Gui4jAbstractButtonFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.swing.Icon;
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jAbstractButton;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.component.util.Gui4jAlignment;
+import org.gui4j.constants.Const;
+import org.gui4j.core.Gui4jAbstractComponent;
+import org.gui4j.core.Gui4jMap1;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeEnumeration;
+import org.gui4j.core.definition.AttributeTypeMethodCall;
+import org.gui4j.core.definition.Param;
+import org.gui4j.util.Filter;
+
+/** Class to represent Swing Gui4jAbstractButtonFactory */
+<span class="nc" id="L21">public abstract class Gui4jAbstractButtonFactory extends Gui4jJComponentFactory {</span>
+  protected static final String TEXT = &quot;text&quot;;
+  protected static final String ICON = &quot;icon&quot;;
+  protected static final String ICON_TEXT_GAP = &quot;iconTextGap&quot;;
+  protected static final String ACTIONCOMMAND = &quot;actionCommand&quot;;
+<span class="nc" id="L26">  private final String VERTICALTEXTPOSITION = &quot;vTextPosition&quot;;</span>
+<span class="nc" id="L27">  private final String HORIZONTALTEXTPOSITION = &quot;hTextPosition&quot;;</span>
+  private static final String GROUP = &quot;group&quot;;
+  private static final String MNEMONIC = &quot;mnemonic&quot;;
+  private static final String SELECTED = &quot;selected&quot;;
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc" id="L33">    super.addToplevelAttributes(attrList, filter);</span>
+<span class="nc bnc" id="L34" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jAbstractButtonFactory.class)) {</span>
+<span class="nc" id="L35">      attrList.add(</span>
+          new Attribute(
+              TEXT, new AttributeTypeMethodCall(String.class, EVENT_AWARE), IMPLIED, false));
+<span class="nc" id="L38">      attrList.add(</span>
+          new Attribute(
+              ACTIONCOMMAND,
+<span class="nc" id="L41">              new AttributeTypeMethodCall(null, getParameterListForActionCommand()),</span>
+              IMPLIED,
+              false));
+<span class="nc" id="L44">      attrList.add(new Attribute(GROUP, new AttributeTypeMethodCall(String.class), IMPLIED, false));</span>
+<span class="nc" id="L45">      attrList.add(</span>
+          new Attribute(MNEMONIC, new AttributeTypeMethodCall(Character.TYPE), IMPLIED, false));
+<span class="nc" id="L47">      attrList.add(</span>
+          new Attribute(
+              VERTICALTEXTPOSITION,
+              new AttributeTypeEnumeration(Gui4jAlignment.mVerticalAlign, Gui4jAlignment.CENTER),
+              false,
+              false));
+<span class="nc" id="L53">      attrList.add(</span>
+          new Attribute(
+              HORIZONTALTEXTPOSITION,
+              new AttributeTypeEnumeration(
+                  Gui4jAlignment.mHorizontalAlign, Gui4jAlignment.TRAILING),
+              false,
+              false));
+<span class="nc" id="L60">      attrList.add(new Attribute(ICON, new AttributeTypeMethodCall(Icon.class), IMPLIED, false));</span>
+<span class="nc" id="L61">      attrList.add(</span>
+          new Attribute(ICON_TEXT_GAP, new AttributeTypeMethodCall(Integer.TYPE), IMPLIED, false));
+<span class="nc" id="L63">      attrList.add(</span>
+          new Attribute(
+              SELECTED, new AttributeTypeMethodCall(Boolean.TYPE, EVENT_AWARE), IMPLIED, false));
+    }
+<span class="nc" id="L67">  }</span>
+
+  protected void definePropertyText(Gui4jAbstractComponent gui4jJComponent, LElement e) {
+<span class="nc" id="L70">    gui4jJComponent.definePropertySetter(</span>
+        TEXT,
+<span class="nc" id="L72">        getGui4jAccessInstance(</span>
+            String.class,
+<span class="nc" id="L74">            getParameterMapForActionCommand(gui4jJComponent),</span>
+            gui4jJComponent,
+            e,
+            TEXT));
+<span class="nc" id="L78">  }</span>
+
+  protected void defineProperties(Gui4jJComponent gui4jJComponent, LElement e) {
+<span class="nc" id="L81">    super.defineProperties(gui4jJComponent, e);</span>
+<span class="nc" id="L82">    Gui4jAbstractButton button = (Gui4jAbstractButton) gui4jJComponent;</span>
+<span class="nc" id="L83">    definePropertyText(gui4jJComponent, e);</span>
+<span class="nc" id="L84">    gui4jJComponent.definePropertySetter(</span>
+<span class="nc" id="L85">        GROUP, getGui4jAccessInstance(String.class, gui4jJComponent, e, GROUP));</span>
+<span class="nc" id="L86">    button.setActionCommand(</span>
+<span class="nc" id="L87">        getGui4jAccessInstance(</span>
+            null,
+<span class="nc" id="L89">            getParameterMapForActionCommand(gui4jJComponent),</span>
+            gui4jJComponent,
+            e,
+            ACTIONCOMMAND));
+<span class="nc" id="L93">    button.definePropertySetter(</span>
+<span class="nc" id="L94">        MNEMONIC, getGui4jAccessInstance(Character.TYPE, gui4jJComponent, e, MNEMONIC));</span>
+<span class="nc" id="L95">    gui4jJComponent.definePropertySetter(</span>
+<span class="nc" id="L96">        ICON, getGui4jAccessInstance(Icon.class, gui4jJComponent, e, ICON));</span>
+<span class="nc" id="L97">    gui4jJComponent.definePropertySetter(</span>
+<span class="nc" id="L98">        ICON_TEXT_GAP, getGui4jAccessInstance(Integer.TYPE, gui4jJComponent, e, ICON_TEXT_GAP));</span>
+<span class="nc" id="L99">    gui4jJComponent.definePropertySetter(</span>
+<span class="nc" id="L100">        SELECTED, getGui4jAccessInstance(Boolean.TYPE, gui4jJComponent, e, SELECTED));</span>
+
+    {
+<span class="nc" id="L103">      String hTextPosition =</span>
+<span class="nc" id="L104">          gui4jJComponent.getGui4jComponentContainer().getAttrValue(e, HORIZONTALTEXTPOSITION);</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">      if (hTextPosition != null) {</span>
+<span class="nc" id="L106">        Integer val = (Integer) Gui4jAlignment.mHorizontalAlign.get(hTextPosition);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (val != null) {</span>
+<span class="nc" id="L108">          button.setHTextPosition(val.intValue());</span>
+        }
+      }
+    }
+    {
+<span class="nc" id="L113">      String vTextPosition =</span>
+<span class="nc" id="L114">          gui4jJComponent.getGui4jComponentContainer().getAttrValue(e, VERTICALTEXTPOSITION);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">      if (vTextPosition != null) {</span>
+<span class="nc" id="L116">        Integer val = (Integer) Gui4jAlignment.mVerticalAlign.get(vTextPosition);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">        if (val != null) {</span>
+<span class="nc" id="L118">          button.setVTextPosition(val.intValue());</span>
+        }
+      }
+    }
+<span class="nc" id="L122">  }</span>
+
+  protected Map getParameterMapForActionCommand(Gui4jAbstractComponent gui4jAbstractComponent) {
+<span class="nc" id="L125">    return new Gui4jMap1(Const.PARAM_VALUE, Boolean.TYPE);</span>
+  }
+
+  protected List getParameterListForActionCommand() {
+<span class="nc" id="L129">    List params = new ArrayList(1);</span>
+<span class="nc" id="L130">    params.add(new Param(Const.PARAM_VALUE, boolean.class));</span>
+<span class="nc" id="L131">    return params;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

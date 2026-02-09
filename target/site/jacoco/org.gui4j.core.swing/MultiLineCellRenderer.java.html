@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MultiLineCellRenderer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">MultiLineCellRenderer.java</span></div><h1>MultiLineCellRenderer.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing;
+
+/**
+ * MultiLineCellRenderer.java
+ *
+ * &lt;p&gt;Created: Mon May 17 09:41:53 1999
+ *
+ * @author Thomas Wernitz, Da Vinci Communications Ltd &lt;thomas_wernitz@clear.net.nz&gt;
+ *     &lt;p&gt;credit to Zafir Anjum for JTableEx and thanks to SUN for their source code ;)
+ */
+import java.awt.Color;
+import java.awt.Component;
+import java.io.Serializable;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.table.TableCellRenderer;
+
+public class MultiLineCellRenderer extends JTextArea implements TableCellRenderer, Serializable {
+
+  protected static Border noFocusBorder;
+
+  private Color unselectedForeground;
+  private Color unselectedBackground;
+
+  public MultiLineCellRenderer() {
+<span class="nc" id="L26">    super();</span>
+<span class="nc" id="L27">    noFocusBorder = new EmptyBorder(1, 2, 1, 2);</span>
+<span class="nc" id="L28">    setLineWrap(true);</span>
+<span class="nc" id="L29">    setWrapStyleWord(true);</span>
+<span class="nc" id="L30">    setOpaque(true);</span>
+<span class="nc" id="L31">    setBorder(noFocusBorder);</span>
+<span class="nc" id="L32">  }</span>
+
+  public void setForeground(Color c) {
+<span class="nc" id="L35">    super.setForeground(c);</span>
+<span class="nc" id="L36">    unselectedForeground = c;</span>
+<span class="nc" id="L37">  }</span>
+
+  public void setBackground(Color c) {
+<span class="nc" id="L40">    super.setBackground(c);</span>
+<span class="nc" id="L41">    unselectedBackground = c;</span>
+<span class="nc" id="L42">  }</span>
+
+  public void updateUI() {
+<span class="nc" id="L45">    super.updateUI();</span>
+<span class="nc" id="L46">    setForeground(null);</span>
+<span class="nc" id="L47">    setBackground(null);</span>
+<span class="nc" id="L48">  }</span>
+
+  public Component getTableCellRendererComponent(
+      JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+<span class="nc bnc" id="L53" title="All 2 branches missed.">    if (isSelected) {</span>
+<span class="nc" id="L54">      super.setForeground(table.getSelectionForeground());</span>
+<span class="nc" id="L55">      super.setBackground(table.getSelectionBackground());</span>
+    } else {
+<span class="nc" id="L57">      super.setForeground(</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">          (unselectedForeground != null) ? unselectedForeground : table.getForeground());</span>
+<span class="nc" id="L59">      super.setBackground(</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">          (unselectedBackground != null) ? unselectedBackground : table.getBackground());</span>
+    }
+
+<span class="nc" id="L63">    setFont(table.getFont());</span>
+
+<span class="nc bnc" id="L65" title="All 2 branches missed.">    if (hasFocus) {</span>
+<span class="nc" id="L66">      setBorder(UIManager.getBorder(&quot;Table.focusCellHighlightBorder&quot;));</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">      if (table.isCellEditable(row, column)) {</span>
+<span class="nc" id="L68">        super.setForeground(UIManager.getColor(&quot;Table.focusCellForeground&quot;));</span>
+<span class="nc" id="L69">        super.setBackground(UIManager.getColor(&quot;Table.focusCellBackground&quot;));</span>
+      }
+    } else {
+<span class="nc" id="L72">      setBorder(noFocusBorder);</span>
+    }
+
+<span class="nc" id="L75">    setValue(value);</span>
+
+<span class="nc" id="L77">    return this;</span>
+  }
+
+  protected void setValue(Object value) {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    setText((value == null) ? &quot;&quot; : value.toString());</span>
+<span class="nc" id="L82">  }</span>
+
+<span class="nc" id="L84">  public static class UIResource extends MultiLineCellRenderer</span>
+      implements javax.swing.plaf.UIResource {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jStyleContainer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core</a> &gt; <span class="el_source">Gui4jStyleContainer.java</span></div><h1>Gui4jStyleContainer.java</h1><pre class="source lang-java linenums">package org.gui4j.core;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import org.dom4j.Attribute;
+import org.dom4j.LElement;
+import org.gui4j.exception.ErrorTags;
+import org.gui4j.exception.Gui4jUncheckedException;
+
+public final class Gui4jStyleContainer implements Serializable, ErrorTags {
+  private final Map mStyleMap;
+  private final Map mStyleMapResourceName;
+  private final String mConfigurationName;
+<span class="nc" id="L19">  private final String NOTHING = &quot;Nothing&quot;;</span>
+<span class="nc" id="L20">  private final String DEFAULT = &quot;Default&quot;;</span>
+
+<span class="nc" id="L22">  public Gui4jStyleContainer(String configurationName) {</span>
+<span class="nc" id="L23">    mStyleMap = new HashMap();</span>
+<span class="nc" id="L24">    mStyleMapResourceName = new HashMap();</span>
+<span class="nc" id="L25">    mConfigurationName = configurationName;</span>
+<span class="nc" id="L26">  }</span>
+
+  /**
+   * @param resourceName
+   * @param styleName name of style
+   * @param styleExtends name of style to be extended
+   */
+  public void createStyle(String resourceName, String styleName, String styleExtends) {
+<span class="nc" id="L34">    Map style = getStyle(styleName, false);</span>
+<span class="nc bnc" id="L35" title="All 4 branches missed.">    if (style != null &amp;&amp; !resourceName.equals(mStyleMapResourceName.get(styleName))) {</span>
+<span class="nc" id="L36">      Object[] args = {styleName};</span>
+<span class="nc" id="L37">      throw new Gui4jUncheckedException.ResourceError(</span>
+          mConfigurationName, -1, RESOURCE_ERROR_style_defined_twice, args);
+    }
+
+<span class="nc" id="L41">    style = new HashMap();</span>
+<span class="nc" id="L42">    mStyleMap.put(styleName, style);</span>
+<span class="nc" id="L43">    mStyleMapResourceName.put(styleName, resourceName);</span>
+
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    if (styleExtends != null) {</span>
+<span class="nc" id="L46">      Map styleE = getStyle(styleExtends, true);</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">      for (Iterator it = styleE.entrySet().iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L48">        Map.Entry entry = (Map.Entry) it.next();</span>
+<span class="nc" id="L49">        String elementName = (String) entry.getKey();</span>
+<span class="nc" id="L50">        Map attributes = (Map) entry.getValue();</span>
+<span class="nc" id="L51">        style.put(elementName, attributes);</span>
+<span class="nc" id="L52">      }</span>
+    }
+<span class="nc" id="L54">  }</span>
+
+  private Map getStyle(String styleName, boolean checkExistent) {
+<span class="nc" id="L57">    Map style = (Map) mStyleMap.get(styleName);</span>
+<span class="nc bnc" id="L58" title="All 4 branches missed.">    if (checkExistent &amp;&amp; style == null) {</span>
+<span class="nc" id="L59">      Object[] args = {styleName};</span>
+<span class="nc" id="L60">      throw new Gui4jUncheckedException.ResourceError(</span>
+          mConfigurationName, -1, RESOURCE_ERROR_style_not_defined, args);
+    }
+<span class="nc" id="L63">    return style;</span>
+  }
+
+  public void addAttributes(String elementName, String styleName, List attributes) {
+<span class="nc" id="L67">    Map style = getStyle(styleName, true);</span>
+<span class="nc" id="L68">    Map attrs = (Map) style.get(elementName);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">    if (attrs != null) {</span>
+<span class="nc" id="L70">      Map oldAttrs = attrs;</span>
+<span class="nc" id="L71">      attrs = new HashMap();</span>
+<span class="nc" id="L72">      style.put(elementName, attrs);</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">      for (Iterator it = oldAttrs.entrySet().iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L74">        Map.Entry entry = (Map.Entry) it.next();</span>
+<span class="nc" id="L75">        String name = (String) entry.getKey();</span>
+<span class="nc" id="L76">        String value = (String) entry.getValue();</span>
+<span class="nc" id="L77">        attrs.put(name, value);</span>
+<span class="nc" id="L78">      }</span>
+<span class="nc" id="L79">    } else {</span>
+<span class="nc" id="L80">      attrs = new HashMap();</span>
+<span class="nc" id="L81">      style.put(elementName, attrs);</span>
+    }
+
+<span class="nc bnc" id="L84" title="All 2 branches missed.">    for (Iterator it = attributes.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L85">      Attribute attr = (Attribute) it.next();</span>
+<span class="nc" id="L86">      attrs.put(attr.getName(), attr.getValue());</span>
+<span class="nc" id="L87">    }</span>
+<span class="nc" id="L88">  }</span>
+
+  /**
+   * Copies all defined styles of &lt;code&gt;gui4jStyleContainer&lt;/code&gt; If such a style is already
+   * defined, an exception is thrown.
+   *
+   * @param gui4jStyleContainer
+   */
+  public void extendBy(Gui4jStyleContainer gui4jStyleContainer) {
+<span class="nc bnc" id="L97" title="All 2 branches missed.">    for (Iterator it = gui4jStyleContainer.mStyleMap.entrySet().iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L98">      Map.Entry entry = (Map.Entry) it.next();</span>
+<span class="nc" id="L99">      String styleName = (String) entry.getKey();</span>
+<span class="nc" id="L100">      Map style = (Map) entry.getValue();</span>
+
+<span class="nc" id="L102">      Map thisStyle = getStyle(styleName, false);</span>
+
+<span class="nc bnc" id="L104" title="All 2 branches missed.">      if (thisStyle != null</span>
+          &amp;&amp; !mStyleMapResourceName
+<span class="nc" id="L106">              .get(styleName)</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">              .equals(gui4jStyleContainer.mStyleMapResourceName.get(styleName))) {</span>
+<span class="nc" id="L108">        Object[] args = {styleName};</span>
+<span class="nc" id="L109">        throw new Gui4jUncheckedException.ResourceError(</span>
+            mConfigurationName, -1, RESOURCE_ERROR_style_defined_twice, args);
+      }
+
+<span class="nc" id="L113">      mStyleMap.put(styleName, style);</span>
+<span class="nc" id="L114">      mStyleMapResourceName.put(</span>
+<span class="nc" id="L115">          styleName, gui4jStyleContainer.mStyleMapResourceName.get(styleName));</span>
+<span class="nc" id="L116">    }</span>
+<span class="nc" id="L117">  }</span>
+
+  /**
+   * Element &lt;code&gt;e&lt;/code&gt; represents a &lt;code&gt;Gui4jComponent&lt;/code&gt;. The method inserts all
+   * attributes in that instance defined by this style which are not defined by the element
+   *
+   * @param e
+   */
+  public void extend(LElement e) {
+<span class="nc" id="L126">    String styleName = e.attributeValue(Gui4jComponentFactory.FIELD_Style);</span>
+<span class="nc bnc" id="L127" title="All 4 branches missed.">    if (styleName != null &amp;&amp; styleName.equals(NOTHING)) {</span>
+<span class="nc" id="L128">      return;</span>
+    }
+<span class="nc" id="L130">    String name = e.getName();</span>
+<span class="nc" id="L131">    Map attrs = null;</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">    if (styleName != null) {</span>
+<span class="nc" id="L133">      Map style = getStyle(styleName, true);</span>
+<span class="nc" id="L134">      attrs = (Map) style.get(name);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">      if (attrs == null) {</span>
+        // maybe we should not throw an exception
+        // there is no problem if there are no attributes for this element
+
+        /*
+        throw new UncheckedGui4jException(
+        	mConfigurationSource.toString()
+        		+ &quot;: style with name &quot;
+        		+ styleName
+        		+ &quot; for element &quot;
+        		+ name
+        		+ &quot; not defined&quot;);
+        */
+      }
+<span class="nc" id="L149">    } else {</span>
+<span class="nc" id="L150">      Map style = getStyle(DEFAULT, false);</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">      if (style != null) {</span>
+<span class="nc" id="L152">        attrs = (Map) style.get(name);</span>
+      }
+    }
+<span class="nc bnc" id="L155" title="All 2 branches missed.">    if (attrs != null) {</span>
+<span class="nc" id="L156">      Set names = new HashSet();</span>
+<span class="nc" id="L157">      List attrList = e.attributes();</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">      for (Iterator it = attrList.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L159">        Attribute attr = (Attribute) it.next();</span>
+<span class="nc" id="L160">        names.add(attr.getName());</span>
+<span class="nc" id="L161">      }</span>
+
+<span class="nc" id="L163">      boolean modified = false;</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">      for (Iterator it = attrs.entrySet().iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L165">        Map.Entry entry = (Map.Entry) it.next();</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (!names.contains(entry.getKey())) {</span>
+<span class="nc" id="L167">          e.addAttribute((String) entry.getKey(), (String) entry.getValue());</span>
+          /*
+          attrList.add(
+          	new Attribute(
+          		(String) entry.getKey(),
+          		(String) entry.getValue()));
+          		*/
+<span class="nc" id="L174">          modified = true;</span>
+        }
+<span class="nc" id="L176">      }</span>
+
+<span class="nc bnc" id="L178" title="All 2 branches missed.">      if (modified) {</span>
+        // e.setAttributes(attrList);
+      }
+    }
+<span class="nc" id="L182">    e.addAttribute(Gui4jComponentFactory.FIELD_Style, NOTHING);</span>
+<span class="nc" id="L183">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

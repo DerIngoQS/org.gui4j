@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j</a> &gt; <span class="el_source">Gui4jFactory.java</span></div><h1>Gui4jFactory.java</h1><pre class="source lang-java linenums">package org.gui4j;
+
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.constants.Const;
+
+/** Main class to construct the Gui4j instance. */
+public class Gui4jFactory {
+  /**
+   * @param validateXML validate the xml file
+   * @param logInvoke log all method invocation (very time consuming)
+   * @param numberOfWorkerThreads maximal number of worker threads. Use -1, for an unrestricted
+   *     count.
+   * @param url the properties file containing the set of factory components. See
+   *     gui4jComponent.properties in the documentation.
+   * @return Gui4j
+   */
+  public static Gui4j createGui4j(
+      boolean validateXML, boolean logInvoke, int numberOfWorkerThreads, URL url) {
+<span class="nc bnc" id="L21" title="All 2 branches missed.">    if (url == null) {</span>
+<span class="nc" id="L22">      throw new NullPointerException(&quot;URL must not be null&quot;);</span>
+    }
+    try {
+<span class="nc" id="L25">      Class clazz = Class.forName(&quot;org.gui4j.core.impl.Gui4jImpl&quot;);</span>
+<span class="nc" id="L26">      Constructor c =</span>
+<span class="nc" id="L27">          clazz.getConstructor(new Class[] {Boolean.TYPE, Boolean.TYPE, Integer.TYPE, URL.class});</span>
+<span class="nc" id="L28">      c.setAccessible(true);</span>
+<span class="nc" id="L29">      Gui4j gui4j =</span>
+          (Gui4j)
+<span class="nc" id="L31">              c.newInstance(</span>
+                  new Object[] {
+                    new Boolean(validateXML),
+                    new Boolean(logInvoke),
+                    new Integer(numberOfWorkerThreads),
+                    url
+                  });
+<span class="nc" id="L38">      LogFactory.getLog(Gui4jFactory.class)</span>
+<span class="nc" id="L39">          .info(&quot;Gui4j initialized (version &quot; + Const.GUI4J_VERSION + &quot;)&quot;);</span>
+<span class="nc" id="L40">      return gui4j;</span>
+<span class="nc" id="L41">    } catch (Exception e) {</span>
+<span class="nc" id="L42">      LogFactory.getLog(Gui4jFactory.class).fatal(e, e);</span>
+<span class="nc" id="L43">      throw new RuntimeException(e);</span>
+    }
+  }
+
+  private Gui4jFactory() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

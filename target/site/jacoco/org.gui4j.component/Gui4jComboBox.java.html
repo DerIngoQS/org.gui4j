@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jComboBox.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jComboBox.java</span></div><h1>Gui4jComboBox.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import java.awt.Component;
+import java.util.Collection;
+import java.util.Iterator;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.plaf.basic.BasicComboBoxEditor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.Gui4jDispose;
+import org.gui4j.constants.Const;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jMap1;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.Gui4jSwingContainer;
+import org.gui4j.core.listener.Gui4jActionListenerComboBox;
+import org.gui4j.core.swing.ComboBoxHorizontalScroll;
+import org.gui4j.core.swing.Gui4jKeySelectionManager;
+import org.gui4j.core.swing.TransformValue;
+import org.gui4j.core.util.ComboBoxNullItem;
+
+public final class Gui4jComboBox extends Gui4jJComponent {
+<span class="nc" id="L29">  private static final Log mLogger = LogFactory.getLog(Gui4jComboBox.class);</span>
+
+  protected Gui4jCall mRowValue;
+  protected Gui4jCall mOnSelect;
+  protected Gui4jCall mStringConvert;
+  protected Gui4jCall mSelectedItem;
+  protected Gui4jCall mNullItem;
+  protected boolean mManualActionOnly;
+
+  /**
+   * Constructor for Gui4jComboBox.
+   *
+   * @param gui4jComponentContainer
+   * @param id
+   */
+  public Gui4jComboBox(Gui4jComponentContainer gui4jComponentContainer, String id) {
+<span class="nc" id="L45">    super(gui4jComponentContainer, ComboBoxHorizontalScroll.class, id);</span>
+<span class="nc" id="L46">  }</span>
+
+  public void setRowValue(Gui4jCall rowValue) {
+<span class="nc" id="L49">    mRowValue = rowValue;</span>
+<span class="nc" id="L50">  }</span>
+
+  public void setSelectedItem(Gui4jCall selectedItem) {
+<span class="nc" id="L53">    mSelectedItem = selectedItem;</span>
+<span class="nc" id="L54">  }</span>
+
+  public void setNullItem(Gui4jCall nullItem) {
+<span class="nc" id="L57">    mNullItem = nullItem;</span>
+<span class="nc" id="L58">  }</span>
+
+  public void setManualActionOnly(boolean manualActionOnly) {
+<span class="nc" id="L61">    mManualActionOnly = manualActionOnly;</span>
+<span class="nc" id="L62">  }</span>
+
+  protected void setProperties(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L65">    super.setProperties(gui4jComponentInstance);</span>
+    // mLogger.debug(&quot;Setting comboBox properties of comboBox &quot;+getId());
+<span class="nc" id="L67">    ComboBoxHorizontalScroll comboBox =</span>
+<span class="nc" id="L68">        (ComboBoxHorizontalScroll) gui4jComponentInstance.getComponent();</span>
+
+<span class="nc" id="L70">    Gui4jActionListenerComboBox actionListener = null;</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">    if (mOnSelect != null) {</span>
+<span class="nc" id="L72">      ComboBoxModel model = comboBox.getModel();</span>
+<span class="nc" id="L73">      actionListener = new Gui4jActionListenerComboBox(gui4jComponentInstance, model);</span>
+<span class="nc" id="L74">      gui4jComponentInstance.getGui4jSwingContainer().addDispose(actionListener);</span>
+<span class="nc" id="L75">      actionListener.setActionPerformed(mOnSelect);</span>
+<span class="nc" id="L76">      comboBox.setActionListener(actionListener);</span>
+    }
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    if (comboBox.getModel().getSize() &gt; 0) {</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">      if (comboBox.getSelectedIndex() == -1) {</span>
+        // mLogger.debug(&quot;No selection active; setting selection index 0
+        // of comboBox with id
+        // &quot;+getId());
+<span class="nc" id="L83">        comboBox.setSelectedIndex(0);</span>
+      } else {
+<span class="nc" id="L85">        comboBox.setSelectedIndex(comboBox.getSelectedIndex());</span>
+      }
+    }
+<span class="nc" id="L88">  }</span>
+
+  public void setOnSelect(Gui4jCall onSelect) {
+<span class="nc" id="L91">    mOnSelect = onSelect;</span>
+<span class="nc" id="L92">  }</span>
+
+  public void setStringConvert(Gui4jCall stringConvert) {
+<span class="nc" id="L95">    mStringConvert = stringConvert;</span>
+<span class="nc" id="L96">  }</span>
+
+  public void setArrayContent(JComboBox comboBox, Object[] content) {
+    // TODO: setArrayContent should behave like setContent with regard to
+    // activation/dactivation of action listener and retaining selection.
+<span class="nc" id="L101">    comboBox.removeAllItems();</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    for (int i = 0; i &lt; content.length; i++) {</span>
+<span class="nc" id="L103">      comboBox.addItem(content[i]);</span>
+    }
+<span class="nc" id="L105">  }</span>
+
+  public void setContent(Gui4jComponentInstance gui4jComponentInstance, Collection content) {
+<span class="nc" id="L108">    ComboBoxHorizontalScroll comboBox =</span>
+<span class="nc" id="L109">        (ComboBoxHorizontalScroll) gui4jComponentInstance.getSwingComponent();</span>
+    // mLogger.debug(&quot;setContent called, selected index was: &quot; +
+    // comboBox.getSelectedIndex());
+<span class="nc" id="L112">    Object selectItem = getSelectedItem(comboBox);</span>
+
+<span class="nc" id="L114">    Gui4jActionListenerComboBox actionListener = comboBox.getActionListener();</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">    if (actionListener != null) {</span>
+<span class="nc" id="L116">      actionListener.setActive(false);</span>
+    }
+<span class="nc" id="L118">    comboBox.removeAllItems();</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    if (mNullItem != null) {</span>
+<span class="nc" id="L120">      String text =</span>
+          (String)
+<span class="nc" id="L122">              mNullItem.getValueNoParams(gui4jComponentInstance.getGui4jCallBase(), &quot;(undefined)&quot;);</span>
+<span class="nc bnc" id="L123" title="All 4 branches missed.">      if (text == null || text.length() == 0) {</span>
+<span class="nc" id="L124">        text = &quot; &quot;; // combobox can't deal correctly with null elements</span>
+        // and empty strings
+      }
+<span class="nc" id="L127">      comboBox.addItem(new ComboBoxNullItem(text));</span>
+    }
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    if (content != null) {</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">      for (Iterator it = content.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L131">        Object value = it.next();</span>
+<span class="nc" id="L132">        comboBox.addItem(value);</span>
+<span class="nc" id="L133">      }</span>
+    }
+<span class="nc bnc" id="L135" title="All 2 branches missed.">    if (actionListener != null) {</span>
+<span class="nc" id="L136">      actionListener.setActive(true);</span>
+    }
+
+<span class="nc bnc" id="L139" title="All 2 branches missed.">    if (mSelectedItem != null) {</span>
+      // Selektion wird durch Methodenaufruf bestimmt
+<span class="nc" id="L141">      selectItem = mSelectedItem.getValueNoParams(gui4jComponentInstance.getGui4jCallBase(), null);</span>
+    }
+<span class="nc bnc" id="L143" title="All 6 branches missed.">    if (selectItem == null || (content != null &amp;&amp; content.contains(selectItem))) {</span>
+      // mLogger.debug(&quot;Resetting selectedItem in setContent to
+      // &quot;+selectItem);
+<span class="nc" id="L146">      setSelectedItem(comboBox, selectItem);</span>
+    }
+<span class="nc" id="L148">  }</span>
+
+  public void setSelectedItem(JComboBox comboBox, Object item) {
+<span class="nc" id="L151">    mLogger.debug(&quot;Setting selection to &quot; + item + &quot; of comboBox with id &quot; + getId());</span>
+<span class="nc" id="L152">    Gui4jActionListenerComboBox actionListener = null;</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">    if (mManualActionOnly) {</span>
+<span class="nc" id="L154">      actionListener = ((ComboBoxHorizontalScroll) comboBox).getActionListener();</span>
+    }
+    try {
+<span class="nc bnc" id="L157" title="All 2 branches missed.">      if (actionListener != null) {</span>
+<span class="nc" id="L158">        actionListener.setActive(false);</span>
+      }
+<span class="nc bnc" id="L160" title="All 2 branches missed.">      if (item != null) {</span>
+<span class="nc" id="L161">        comboBox.setSelectedItem(item);</span>
+      } else {
+<span class="nc bnc" id="L163" title="All 4 branches missed.">        if (mNullItem != null &amp;&amp; comboBox.getItemCount() &gt; 0) {</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">          for (int index = 0; index &lt; comboBox.getItemCount(); index++) {</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">            if (comboBox.getItemAt(index) instanceof ComboBoxNullItem) {</span>
+<span class="nc" id="L166">              comboBox.setSelectedIndex(index);</span>
+<span class="nc" id="L167">              return;</span>
+            }
+          }
+        }
+      }
+    } finally {
+<span class="nc bnc" id="L173" title="All 2 branches missed.">      if (actionListener != null) {</span>
+<span class="nc" id="L174">        actionListener.setActive(true);</span>
+      }
+    }
+<span class="nc" id="L177">  }</span>
+
+  private Object getSelectedItem(JComboBox comboBox) {
+<span class="nc" id="L180">    Object selection = comboBox.getSelectedItem();</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">    if (selection instanceof ComboBoxNullItem) {</span>
+<span class="nc" id="L182">      return null;</span>
+    } else {
+<span class="nc" id="L184">      return selection;</span>
+    }
+  }
+
+  public void setEditable(JComboBox comboBox, boolean editable) {
+<span class="nc bnc" id="L189" title="All 4 branches missed.">    if (editable</span>
+        &amp;&amp; mStringConvert == null
+<span class="nc bnc" id="L191" title="All 2 branches missed.">        &amp;&amp; !String.class.isAssignableFrom(mRowValue.getResultClass())) {</span>
+<span class="nc" id="L192">      mLogger.warn(</span>
+          &quot;ComboBox (id &quot;
+<span class="nc" id="L194">              + getId()</span>
+              + &quot;): Conversion from string to &quot;
+<span class="nc" id="L196">              + mRowValue.getResultClass()</span>
+              + &quot; is not defined&quot;);
+    }
+<span class="nc" id="L199">    comboBox.setEditable(editable);</span>
+<span class="nc" id="L200">  }</span>
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.gui4j.core.Gui4jAbstractComponent#createComponentInstance(org.gui4j.core.Gui4jSwingContainer,
+   *      org.gui4j.Gui4jCallBase, org.gui4j.core.Gui4jQualifiedComponent)
+   */
+  protected Gui4jComponentInstance createComponentInstance(
+      Gui4jSwingContainer gui4jSwingContainer,
+      final Gui4jCallBase gui4jCallBase,
+      Gui4jQualifiedComponent gui4jComponentInPath) {
+<span class="nc" id="L212">    ComboBoxHorizontalScroll comboBox = new ComboBoxHorizontalScroll();</span>
+
+<span class="nc" id="L214">    TransformValue transformValue =</span>
+<span class="nc" id="L215">        new TransformValue() {</span>
+          public Object transform(Object value) {
+<span class="nc bnc" id="L217" title="All 2 branches missed.">            if (value instanceof ComboBoxNullItem) {</span>
+<span class="nc" id="L218">              return ((ComboBoxNullItem) value).getText();</span>
+            }
+<span class="nc bnc" id="L220" title="All 4 branches missed.">            return value == null || mRowValue == null</span>
+<span class="nc" id="L221">                ? value</span>
+<span class="nc" id="L222">                : mRowValue.getValue(gui4jCallBase, new Gui4jMap1(Const.PARAM_ITEM, value), null);</span>
+          }
+        };
+
+<span class="nc" id="L226">    ComboBoxEditor comboBoxEditor = new ComboBoxEditor(gui4jCallBase, transformValue);</span>
+<span class="nc" id="L227">    gui4jSwingContainer.addDispose(comboBoxEditor);</span>
+<span class="nc" id="L228">    comboBox.setEditor(comboBoxEditor);</span>
+
+<span class="nc" id="L230">    comboBox.setKeySelectionManager(new Gui4jKeySelectionManager(transformValue));</span>
+<span class="nc" id="L231">    ComboBoxCellRenderer cellRenderer = new ComboBoxCellRenderer(transformValue);</span>
+<span class="nc" id="L232">    gui4jSwingContainer.addDispose(cellRenderer);</span>
+<span class="nc" id="L233">    comboBox.setRenderer(cellRenderer);</span>
+
+<span class="nc" id="L235">    return new Gui4jComponentInstance(gui4jSwingContainer, comboBox, gui4jComponentInPath);</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.gui4j.core.Gui4jComponent#dispose(org.gui4j.core.Gui4jComponentInstance)
+   */
+  public void dispose(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L244">    Gui4jActionListenerComboBox actionListenerComboBox =</span>
+<span class="nc" id="L245">        (Gui4jActionListenerComboBox) gui4jComponentInstance.getStorage(this);</span>
+<span class="nc" id="L246">    super.dispose(gui4jComponentInstance);</span>
+<span class="nc" id="L247">    JComboBox comboBox = (JComboBox) gui4jComponentInstance.getSwingComponent();</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">    if (actionListenerComboBox != null) {</span>
+<span class="nc" id="L249">      actionListenerComboBox.setActive(false);</span>
+    }
+<span class="nc bnc" id="L251" title="All 2 branches missed.">    if (comboBox != null) {</span>
+      // MA 05.11.04: comboBox.setEditor(null) seems to lead to a
+      // NullPointerException cause
+      // editor is removed later by swing
+      // comboBox.setEditor(null);
+<span class="nc" id="L256">      comboBox.setRenderer(null);</span>
+<span class="nc" id="L257">      comboBox.setSelectedItem(null);</span>
+<span class="nc" id="L258">      comboBox.removeAllItems();</span>
+    }
+<span class="nc" id="L260">  }</span>
+
+  private class ComboBoxEditor extends BasicComboBoxEditor implements Gui4jDispose {
+    private Gui4jCallBase mGui4jCallBase;
+    private TransformValue mTransformValue;
+
+<span class="nc" id="L266">    private ComboBoxEditor(Gui4jCallBase gui4jCallBase, TransformValue transformValue) {</span>
+<span class="nc" id="L267">      mGui4jCallBase = gui4jCallBase;</span>
+<span class="nc" id="L268">      mTransformValue = transformValue;</span>
+<span class="nc" id="L269">    }</span>
+
+    public Object getItem() {
+<span class="nc" id="L272">      Object object = super.getItem();</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">      if (object != null</span>
+<span class="nc bnc" id="L274" title="All 4 branches missed.">          &amp;&amp; String.class.isAssignableFrom(object.getClass())</span>
+          &amp;&amp; mStringConvert != null) {
+<span class="nc" id="L276">        return mStringConvert.getValueUseDefaultParam(mGui4jCallBase, object, null);</span>
+      }
+<span class="nc" id="L278">      return object;</span>
+    }
+
+    public void setItem(Object anObject) {
+<span class="nc bnc" id="L282" title="All 4 branches missed.">      if ((anObject != null) &amp;&amp; !(String.class.isAssignableFrom(anObject.getClass()))) {</span>
+<span class="nc" id="L283">        anObject = mTransformValue.transform(anObject);</span>
+        // anObject = mRowValue.getValue(mGui4jCallBase, new
+        // Gui4jMap1(PARAM_ITEM, anObject), null);
+      }
+<span class="nc" id="L287">      super.setItem(anObject);</span>
+<span class="nc" id="L288">    }</span>
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.gui4j.Gui4jDispose#dispose()
+     */
+    public void dispose() {
+<span class="nc" id="L296">      mGui4jCallBase = null;</span>
+<span class="nc" id="L297">      mTransformValue = null;</span>
+<span class="nc" id="L298">    }</span>
+  }
+
+  private class ComboBoxCellRenderer extends DefaultListCellRenderer implements Gui4jDispose {
+    private TransformValue mTransformValue;
+
+<span class="nc" id="L304">    private ComboBoxCellRenderer(TransformValue transformValue) {</span>
+<span class="nc" id="L305">      mTransformValue = transformValue;</span>
+<span class="nc" id="L306">    }</span>
+
+    public Component getListCellRendererComponent(
+        JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+<span class="nc" id="L310">      return super.getListCellRendererComponent(</span>
+<span class="nc" id="L311">          list, mTransformValue.transform(value), index, isSelected, cellHasFocus);</span>
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.gui4j.Gui4jDispose#dispose()
+     */
+    public void dispose() {
+<span class="nc" id="L320">      mTransformValue = null;</span>
+<span class="nc" id="L321">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

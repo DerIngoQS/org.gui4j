@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ComboBoxCellEdit.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">ComboBoxCellEdit.java</span></div><h1>ComboBoxCellEdit.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing;
+
+import java.awt.Component;
+import java.awt.Font;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import javax.swing.CellEditor;
+import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JComboBox;
+import javax.swing.JList;
+import javax.swing.plaf.basic.BasicComboBoxEditor;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.util.ComboBoxNullItem;
+
+public class ComboBoxCellEdit extends DefaultCellEditor {
+  private final JComboBox mComboBox;
+  private final CellComboBoxModel mComboBoxModel;
+  protected final Gui4jCallBase mGui4jController;
+  protected final String mParamName;
+  protected final Gui4jCall mValue;
+  protected final Gui4jCall mStringConvert;
+  private Font mFont;
+  protected Map mParamMap;
+
+  public static ComboBoxCellEdit getInstance(
+      final Gui4jCallBase gui4jController,
+      final Gui4jCall value,
+      final Gui4jCall stringConvert,
+      final String paramName,
+      Font font) {
+<span class="nc" id="L35">    ComboBoxHorizontalScroll comboBox = new ComboBoxHorizontalScroll();</span>
+<span class="nc" id="L36">    ComboBoxCellEdit comboBoxCellEdit =</span>
+        new ComboBoxCellEdit(comboBox, gui4jController, value, stringConvert, paramName, font);
+<span class="nc" id="L38">    comboBox.setCellEditor(comboBoxCellEdit);</span>
+<span class="nc" id="L39">    return comboBoxCellEdit;</span>
+  }
+
+  public void setEditable(boolean editable) {
+<span class="nc" id="L43">    mComboBox.setEditable(editable);</span>
+<span class="nc" id="L44">  }</span>
+
+  public void setContent(Collection collection, String nullItemText) {
+<span class="nc" id="L47">    int idx = mComboBox.getSelectedIndex();</span>
+<span class="nc" id="L48">    mComboBoxModel.setContent(collection, nullItemText);</span>
+<span class="nc bnc" id="L49" title="All 4 branches missed.">    if (idx != -1 &amp;&amp; idx &lt; collection.size()) {</span>
+<span class="nc" id="L50">      mComboBox.setSelectedIndex(idx);</span>
+    } else {
+<span class="nc" id="L52">      Object item = getCellEditorValue();</span>
+<span class="nc" id="L53">      idx = mComboBoxModel.getIndexOf(item);</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">      if (idx != -1) {</span>
+<span class="nc" id="L55">        mComboBox.setSelectedIndex(idx);</span>
+      } else {
+      }
+    }
+<span class="nc" id="L59">  }</span>
+
+  public void setParamMap(Map paramMap) {
+<span class="nc" id="L62">    mParamMap = paramMap;</span>
+<span class="nc" id="L63">  }</span>
+
+  public void setSelectedItem(Object item) {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">    if (item != null) {</span>
+<span class="nc" id="L67">      mComboBox.setSelectedItem(item);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">    } else if (mComboBox.getItemCount() &gt; 0) {</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">      for (int index = 0; index &lt; mComboBox.getItemCount(); index++) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (mComboBox.getItemAt(index) instanceof ComboBoxNullItem) {</span>
+<span class="nc" id="L71">          mComboBox.setSelectedIndex(index);</span>
+<span class="nc" id="L72">          return;</span>
+        }
+      }
+    }
+<span class="nc" id="L76">  }</span>
+
+  private ComboBoxCellEdit(
+      final JComboBox comboBox,
+      final Gui4jCallBase gui4jController,
+      final Gui4jCall value,
+      final Gui4jCall stringConvert,
+      final String paramName,
+      Font font) {
+<span class="nc" id="L85">    super(comboBox);</span>
+<span class="nc" id="L86">    mFont = font;</span>
+<span class="nc" id="L87">    mGui4jController = gui4jController;</span>
+<span class="nc" id="L88">    mComboBox = comboBox;</span>
+<span class="nc" id="L89">    mParamName = paramName;</span>
+<span class="nc" id="L90">    mValue = value;</span>
+<span class="nc" id="L91">    mStringConvert = stringConvert;</span>
+<span class="nc" id="L92">    ComboBoxCellEditFocus editor = new ComboBoxCellEditFocus();</span>
+<span class="nc" id="L93">    comboBox.setFont(mFont);</span>
+<span class="nc" id="L94">    comboBox.setEditor(editor);</span>
+<span class="nc" id="L95">    editor.setCellEditor(this);</span>
+
+<span class="nc" id="L97">    final TransformValue transformValue =</span>
+<span class="nc" id="L98">        new TransformValue() {</span>
+          public Object transform(Object pValue) {
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            if (pValue instanceof ComboBoxNullItem) {</span>
+<span class="nc" id="L101">              return ((ComboBoxNullItem) pValue).getText();</span>
+            }
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            if (mParamMap != null) {</span>
+<span class="nc" id="L104">              Object oldValue = mParamMap.get(paramName);</span>
+<span class="nc" id="L105">              mParamMap.put(paramName, pValue);</span>
+<span class="nc" id="L106">              Object val = mValue.getValue(mGui4jController, mParamMap, pValue);</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">              if (oldValue == null) {</span>
+<span class="nc" id="L108">                mParamMap.remove(paramName);</span>
+              } else {
+<span class="nc" id="L110">                mParamMap.put(paramName, oldValue);</span>
+              }
+<span class="nc" id="L112">              return val;</span>
+            } else {
+<span class="nc" id="L114">              return pValue;</span>
+            }
+          }
+        };
+
+<span class="nc" id="L119">    comboBox.setKeySelectionManager(new Gui4jKeySelectionManager(transformValue));</span>
+<span class="nc" id="L120">    DefaultListCellRenderer cellRenderer =</span>
+<span class="nc" id="L121">        new DefaultListCellRenderer() {</span>
+          public Component getListCellRendererComponent(
+              JList list, Object pValue, int index, boolean isSelected, boolean cellHasFocus) {
+<span class="nc" id="L124">            return super.getListCellRendererComponent(</span>
+<span class="nc" id="L125">                list, transformValue.transform(pValue), index, isSelected, cellHasFocus);</span>
+          }
+        };
+<span class="nc" id="L128">    mComboBox.setRenderer(cellRenderer);</span>
+<span class="nc" id="L129">    mComboBoxModel = new CellComboBoxModel();</span>
+<span class="nc" id="L130">    mComboBox.setModel(mComboBoxModel);</span>
+<span class="nc" id="L131">  }</span>
+
+  public void setFont(Font font) {
+<span class="nc" id="L134">    mFont = font;</span>
+<span class="nc" id="L135">    mComboBox.setFont(font);</span>
+<span class="nc" id="L136">  }</span>
+
+  // *******************************************************************************
+
+<span class="nc" id="L140">  private class CellComboBoxModel extends DefaultComboBoxModel {</span>
+    public void setContent(Collection collection, String nullItemText) {
+<span class="nc" id="L142">      removeAllElements();</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">      if (nullItemText != null) {</span>
+<span class="nc" id="L144">        addElement(new ComboBoxNullItem(nullItemText));</span>
+      }
+<span class="nc bnc" id="L146" title="All 2 branches missed.">      if (collection != null) {</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        for (Iterator it = collection.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L148">          Object element = it.next();</span>
+<span class="nc" id="L149">          addElement(element);</span>
+<span class="nc" id="L150">        }</span>
+      }
+<span class="nc" id="L152">    }</span>
+  }
+
+  public final class ComboBoxCellEditFocus extends BasicComboBoxEditor {
+    private final org.gui4j.core.swing.Gui4jCellEditor.CellEditorTextField cellEditorTextField;
+
+<span class="nc" id="L158">    public ComboBoxCellEditFocus() {</span>
+<span class="nc" id="L159">      super();</span>
+<span class="nc" id="L160">      cellEditorTextField = new org.gui4j.core.swing.Gui4jCellEditor.CellEditorTextField(false);</span>
+<span class="nc" id="L161">      editor = cellEditorTextField;</span>
+<span class="nc" id="L162">    }</span>
+
+    /**
+     * @see javax.swing.ComboBoxEditor#getItem()
+     */
+    public Object getItem() {
+<span class="nc" id="L168">      Object object = super.getItem();</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">      if (object != null</span>
+<span class="nc bnc" id="L170" title="All 4 branches missed.">          &amp;&amp; String.class.isAssignableFrom(object.getClass())</span>
+          &amp;&amp; mStringConvert != null) {
+<span class="nc" id="L172">        return mStringConvert.getValueUseDefaultParam(mGui4jController, object, null);</span>
+      }
+<span class="nc" id="L174">      return object;</span>
+    }
+
+    /**
+     * @see javax.swing.ComboBoxEditor#setItem(Object)
+     */
+    public void setItem(Object anObject) {
+      // System.out.println(&quot;setItem: anObject=&quot; + anObject);
+<span class="nc bnc" id="L182" title="All 4 branches missed.">      if ((anObject != null)</span>
+          &amp;&amp; (mParamMap != null)
+<span class="nc bnc" id="L184" title="All 2 branches missed.">          &amp;&amp; !(String.class.isAssignableFrom(anObject.getClass()))) {</span>
+<span class="nc" id="L185">        mParamMap.put(mParamName, anObject);</span>
+<span class="nc" id="L186">        anObject = mValue.getValue(mGui4jController, mParamMap, null);</span>
+      }
+<span class="nc" id="L188">      super.setItem(anObject);</span>
+<span class="nc" id="L189">    }</span>
+
+    public void setCellEditor(CellEditor cellEditor) {
+<span class="nc" id="L192">      cellEditorTextField.setCellEditor(cellEditor);</span>
+<span class="nc" id="L193">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

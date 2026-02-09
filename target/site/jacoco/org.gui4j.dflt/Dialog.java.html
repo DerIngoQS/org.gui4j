@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Dialog.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.dflt</a> &gt; <span class="el_source">Dialog.java</span></div><h1>Dialog.java</h1><pre class="source lang-java linenums">package org.gui4j.dflt;
+
+import java.awt.Component;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JOptionPane;
+import org.gui4j.Gui4jWindow;
+
+/** */
+<span class="nc" id="L10">public final class Dialog {</span>
+
+  /**
+   * Zeigt eine Dialogbox mit Yes/No Button. Der Cancel-Button ist optional.
+   *
+   * @param gui4jWindow
+   * @param msg
+   * @param title
+   * @param withCancel
+   * @return Result
+   */
+  public static Result confirm(
+      Gui4jWindow gui4jWindow, String msg, String title, boolean withCancel) {
+<span class="nc bnc" id="L23" title="All 2 branches missed.">    Component parent = gui4jWindow == null ? null : gui4jWindow.getWindow();</span>
+<span class="nc" id="L24">    return showConfirm(</span>
+        parent,
+        msg,
+        title,
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        withCancel ? JOptionPane.YES_NO_CANCEL_OPTION : JOptionPane.YES_NO_OPTION,</span>
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        withCancel ? Result.CANCEL : Result.NO);</span>
+  }
+
+  /**
+   * Zeigt eine Info-Box mit Ok-Button an.
+   *
+   * @param gui4jWindow
+   * @param msg
+   * @param title
+   */
+  public static void info(Gui4jWindow gui4jWindow, String msg, String title) {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    Component parent = gui4jWindow == null ? null : gui4jWindow.getWindow();</span>
+<span class="nc" id="L41">    JOptionPane.showMessageDialog(parent, msg, title, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L42">  }</span>
+
+  /**
+   * Zeigt eine Warnung mit Ok-Button an.
+   *
+   * @param gui4jWindow
+   * @param msg
+   * @param title
+   */
+  public static void warning(Gui4jWindow gui4jWindow, String msg, String title) {
+<span class="nc bnc" id="L52" title="All 2 branches missed.">    Component parent = gui4jWindow == null ? null : gui4jWindow.getWindow();</span>
+<span class="nc" id="L53">    JOptionPane.showMessageDialog(parent, msg, title, JOptionPane.WARNING_MESSAGE);</span>
+<span class="nc" id="L54">  }</span>
+
+  /**
+   * Zeigt eine Warnung mit Ok-Button an.
+   *
+   * @param parent Parent-Component
+   * @param msg Message
+   * @param title Title of Messagebox
+   */
+  public static void warning(Component parent, String msg, String title) {
+<span class="nc" id="L64">    JOptionPane.showMessageDialog(parent, msg, title, JOptionPane.WARNING_MESSAGE);</span>
+<span class="nc" id="L65">  }</span>
+
+  /**
+   * Zeigt ein Text-Eingabefeld an. Wird der Abbrechen-Button gedrückt wird null zurückgegeben.
+   *
+   * @param gui4jWindow
+   * @param msg
+   * @param value
+   * @return String
+   */
+  public static String input(Gui4jWindow gui4jWindow, String msg, String value) {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">    Component parent = gui4jWindow == null ? null : gui4jWindow.getWindow();</span>
+<span class="nc" id="L77">    return JOptionPane.showInputDialog(parent, msg, value);</span>
+  }
+
+  /**
+   * Method zeigt mittels der übergebenen Parameter einen JOptionPane an.
+   *
+   * @param parent
+   * @param msg
+   * @param title
+   * @param option
+   * @param closeResult
+   * @return Result
+   */
+  private static Result showConfirm(
+      Component parent, String msg, String title, int option, Result closeResult) {
+<span class="nc" id="L92">    int result = JOptionPane.showConfirmDialog(parent, msg, title, option);</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (result == JOptionPane.CLOSED_OPTION) {</span>
+<span class="nc" id="L94">      return closeResult;</span>
+    }
+<span class="nc" id="L96">    Result res = Result.getResult(result);</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">    assert res != null;</span>
+<span class="nc" id="L98">    return res;</span>
+  }
+
+  public static class Result {
+    public static final Result OK;
+    public static final Result CANCEL;
+    public static final Result YES;
+    public static final Result NO;
+
+    private static Map resultMap;
+
+    static {
+<span class="nc" id="L110">      resultMap = new HashMap();</span>
+<span class="nc" id="L111">      OK = new Result(JOptionPane.OK_OPTION);</span>
+<span class="nc" id="L112">      YES = new Result(JOptionPane.YES_OPTION);</span>
+<span class="nc" id="L113">      NO = new Result(JOptionPane.NO_OPTION);</span>
+<span class="nc" id="L114">      CANCEL = new Result(JOptionPane.CANCEL_OPTION);</span>
+<span class="nc" id="L115">    }</span>
+
+    protected static Result getResult(int i) {
+<span class="nc" id="L118">      return (Result) resultMap.get(new Integer(i));</span>
+    }
+
+<span class="nc" id="L121">    private Result(int i) {</span>
+<span class="nc" id="L122">      resultMap.put(new Integer(i), this);</span>
+<span class="nc" id="L123">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

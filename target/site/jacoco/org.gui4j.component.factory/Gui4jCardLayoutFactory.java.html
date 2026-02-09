@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jCardLayoutFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jCardLayoutFactory.java</span></div><h1>Gui4jCardLayoutFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jCardLayout;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentContainerManager;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeID;
+import org.gui4j.core.definition.AttributeTypeMethodCall;
+import org.gui4j.exception.Gui4jUncheckedException;
+import org.gui4j.util.Filter;
+
+<span class="nc" id="L23">public final class Gui4jCardLayoutFactory extends Gui4jJComponentFactory {</span>
+  private static final String NAME = &quot;cardLayout&quot;;
+  private static final String PLACEMENT = &quot;placeCl&quot;;
+  private static final String REFRESH = &quot;refresh&quot;;
+  private static final String ID = &quot;id&quot;;
+  private static final String CONDITION = &quot;condition&quot;;
+  private static final String DEFAULT = &quot;default&quot;;
+
+<span class="nc" id="L31">  private static final Log mLogger = LogFactory.getLog(Gui4jCardLayoutFactory.class);</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.component.factory.Gui4jJComponentFactory#defineGui4jJComponentBy(org.gui4j.core.Gui4jComponentContainer, java.lang.String, org.dom4j.LElement)
+   */
+  protected Gui4jJComponent defineGui4jJComponentBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e) {
+<span class="nc" id="L38">    String gui4jIdDefault = e.attributeValue(DEFAULT);</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">    assert gui4jIdDefault != null;</span>
+<span class="nc" id="L40">    Gui4jQualifiedComponent gui4jComponentDefault =</span>
+<span class="nc" id="L41">        gui4jComponentContainer.getGui4jQualifiedComponent(gui4jIdDefault);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">    assert gui4jComponentDefault != null;</span>
+
+<span class="nc" id="L44">    Gui4jCardLayout gui4jCardLayout =</span>
+        new Gui4jCardLayout(gui4jComponentContainer, id, gui4jComponentDefault);
+<span class="nc" id="L46">    List children = e.elements();</span>
+<span class="nc" id="L47">    List errorList = new ArrayList();</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">    for (Iterator it = children.iterator(); it.hasNext(); ) {</span>
+      try {
+<span class="nc" id="L50">        LElement child = (LElement) it.next();</span>
+<span class="nc" id="L51">        gui4jComponentContainer.autoExtend(child);</span>
+<span class="nc" id="L52">        Gui4jCall condition =</span>
+<span class="nc" id="L53">            getGui4jAccessInstance(Boolean.TYPE, gui4jCardLayout, child, CONDITION);</span>
+
+<span class="nc" id="L55">        String gui4jId = child.attributeValue(ID);</span>
+        Gui4jQualifiedComponent gui4jComponentInPath;
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (gui4jId == null) {</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">          if (child.elements().isEmpty()) {</span>
+<span class="nc" id="L59">            Object[] args = {PLACEMENT};</span>
+<span class="nc" id="L60">            throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L61">                gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L62">                Gui4jComponentContainerManager.getLineNumber(child),</span>
+                RESOURCE_ERROR_element_must_contain_gui4jComponent,
+                args);
+          }
+<span class="nc" id="L66">          LElement gui4jElement = (LElement) child.elements().iterator().next();</span>
+<span class="nc" id="L67">          gui4jComponentInPath = gui4jComponentContainer.extractGui4jComponent(gui4jElement);</span>
+<span class="nc" id="L68">        } else {</span>
+<span class="nc" id="L69">          gui4jComponentInPath = gui4jComponentContainer.getGui4jQualifiedComponent(gui4jId);</span>
+        }
+
+<span class="nc" id="L72">        gui4jCardLayout.addPlacement(condition, gui4jComponentInPath);</span>
+<span class="nc" id="L73">      } catch (Throwable t) {</span>
+<span class="nc" id="L74">        errorList.add(t);</span>
+<span class="nc" id="L75">      }</span>
+    }
+
+<span class="nc" id="L78">    checkErrorList(errorList);</span>
+
+    {
+<span class="nc" id="L81">      Map m = null;</span>
+<span class="nc" id="L82">      Gui4jCall refresh = getGui4jAccessInstance(null, m, gui4jCardLayout, e, REFRESH);</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">      if (refresh != null) {</span>
+<span class="nc" id="L84">        Gui4jCall[] dependantProperties = refresh.getDependantProperties();</span>
+<span class="nc bnc" id="L85" title="All 4 branches missed.">        if (dependantProperties == null || dependantProperties.length == 0) {</span>
+<span class="nc" id="L86">          mLogger.warn(&quot;Set of dependant events is empty&quot;);</span>
+        }
+<span class="nc" id="L88">        gui4jCardLayout.setRefresh(dependantProperties);</span>
+      }
+    }
+
+<span class="nc" id="L92">    return gui4jCardLayout;</span>
+  }
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc" id="L96">    super.addToplevelAttributes(attrList, filter);</span>
+<span class="nc bnc" id="L97" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jCardLayoutFactory.class)) {</span>
+<span class="nc" id="L98">      attrList.add(</span>
+          new Attribute(REFRESH, new AttributeTypeMethodCall(null, EVENT_AWARE), IMPLIED, false));
+<span class="nc" id="L100">      attrList.add(new Attribute(DEFAULT, new AttributeTypeID(), REQUIRED, false));</span>
+    }
+<span class="nc" id="L102">  }</span>
+
+  public void addInnerAttributes(String elementName, List list) {
+<span class="nc bnc" id="L105" title="All 2 branches missed.">    if (PLACEMENT.equals(elementName)) {</span>
+<span class="nc" id="L106">      Attribute[] attributesSubElement = {</span>
+        new Attribute(ID, new AttributeTypeID(), IMPLIED, false),
+        new Attribute(CONDITION, new AttributeTypeMethodCall(Boolean.TYPE), REQUIRED, false)
+      };
+<span class="nc" id="L110">      list.addAll(Arrays.asList(attributesSubElement));</span>
+    }
+<span class="nc" id="L112">  }</span>
+
+  public SubElement getSubElement(String elementName) {
+<span class="nc" id="L115">    SubElement place = SubElement.getInstance(PLACEMENT);</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    if (NAME.equals(elementName)) {</span>
+<span class="nc" id="L117">      return SubElement.star(place);</span>
+    }
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    if (PLACEMENT.equals(elementName)) {</span>
+<span class="nc" id="L120">      return SubElement.optional(SubElement.gui4jComponent());</span>
+    }
+<span class="nc" id="L122">    return null;</span>
+  }
+
+  public String[] getInnerElements() {
+<span class="nc" id="L126">    String[] elems = {PLACEMENT};</span>
+<span class="nc" id="L127">    return elems;</span>
+  }
+
+  /**
+   * @see org.gui4j.core.Gui4jComponentFactory#getName()
+   */
+  public String getName() {
+<span class="nc" id="L134">    return NAME;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

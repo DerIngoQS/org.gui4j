@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jComponentPropertyGetter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core</a> &gt; <span class="el_source">Gui4jComponentPropertyGetter.java</span></div><h1>Gui4jComponentPropertyGetter.java</h1><pre class="source lang-java linenums">package org.gui4j.core;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+import javax.swing.SwingUtilities;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.core.util.MethodCall;
+import org.gui4j.exception.ErrorTags;
+import org.gui4j.exception.Gui4jUncheckedException;
+
+public final class Gui4jComponentPropertyGetter implements ErrorTags, Gui4jComponentProperty {
+<span class="nc" id="L14">  private static final Log mLogger = LogFactory.getLog(Gui4jComponentPropertyGetter.class);</span>
+  private final Gui4jCall mGui4jAccess;
+  protected final MethodCall mMethod;
+  private final boolean mUseSwingComponent;
+
+  public Gui4jComponentPropertyGetter(
+<span class="nc" id="L20">      Gui4jCall gui4jAccess, MethodCall method, boolean useSwingComponent) {</span>
+<span class="nc" id="L21">    mGui4jAccess = gui4jAccess;</span>
+<span class="nc" id="L22">    mMethod = method;</span>
+<span class="nc" id="L23">    mUseSwingComponent = useSwingComponent;</span>
+<span class="nc" id="L24">  }</span>
+
+  public boolean usesSwingComponent() {
+<span class="nc" id="L27">    return mUseSwingComponent;</span>
+  }
+
+  public void apply(
+      final Gui4jComponentInstance gui4jComponentInstance,
+      Object sourceClass,
+      Gui4jCallBase gui4jController,
+      boolean handleThreads) {
+<span class="nc bnc" id="L35" title="All 2 branches missed.">    if (gui4jComponentInstance == null) {</span>
+<span class="nc" id="L36">      mLogger.warn(&quot;Gui4jComponentInstance is null&quot;);</span>
+<span class="nc" id="L37">      return;</span>
+    }
+<span class="nc" id="L39">    final Object[] args = {sourceClass};</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    if (!handleThreads) {</span>
+      // do not handle thread problem with swing
+      try {
+<span class="nc" id="L43">        Object value = mMethod.invoke(gui4jComponentInstance.getGui4jComponent(), args);</span>
+<span class="nc" id="L44">        mGui4jAccess.getValueUseDefaultParam(gui4jController, value, null);</span>
+<span class="nc" id="L45">      } catch (InvocationTargetException e) {</span>
+<span class="nc" id="L46">        Gui4jReflectionManager.handleInvocationTargetException(e);</span>
+<span class="nc" id="L47">        throw new Gui4jUncheckedException.ProgrammingError(</span>
+            PROGRAMMING_ERROR_invocation_target_exception, e);
+<span class="nc" id="L49">      } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L50">        throw new Gui4jUncheckedException.ProgrammingError(</span>
+            PROGRAMMING_ERROR_illegal_access_exception, e);
+<span class="nc" id="L52">      }</span>
+    } else {
+      // handle thread problem with swing
+<span class="nc bnc" id="L55" title="All 2 branches missed.">      if (SwingUtilities.isEventDispatchThread()) {</span>
+<span class="nc" id="L56">        mLogger.warn(&quot;Strange, we are in the Event-Dispatch Thread&quot;);</span>
+        try {
+<span class="nc" id="L58">          Object value = mMethod.invoke(gui4jComponentInstance.getGui4jComponent(), args);</span>
+<span class="nc" id="L59">          Map m = new Gui4jMap1(&quot;&quot;, value);</span>
+<span class="nc" id="L60">          Gui4jThreadManager gui4jThreadManager =</span>
+<span class="nc" id="L61">              gui4jComponentInstance.getGui4j().getGui4jThreadManager();</span>
+<span class="nc" id="L62">          gui4jThreadManager.performWork(gui4jController, mGui4jAccess, m);</span>
+<span class="nc" id="L63">        } catch (InvocationTargetException e) {</span>
+<span class="nc" id="L64">          Gui4jReflectionManager.handleInvocationTargetException(e);</span>
+<span class="nc" id="L65">          throw new Gui4jUncheckedException.ProgrammingError(</span>
+              PROGRAMMING_ERROR_invocation_target_exception, e);
+<span class="nc" id="L67">        } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L68">          throw new Gui4jUncheckedException.ProgrammingError(</span>
+              PROGRAMMING_ERROR_illegal_access_exception, e);
+<span class="nc" id="L70">        }</span>
+      } else {
+<span class="nc" id="L72">        final Element element = new Element();</span>
+<span class="nc" id="L73">        Runnable work =</span>
+<span class="nc" id="L74">            new Runnable() {</span>
+              public void run() {
+                try {
+<span class="nc" id="L77">                  element.mValue = mMethod.invoke(gui4jComponentInstance.getGui4jComponent(), args);</span>
+<span class="nc" id="L78">                } catch (InvocationTargetException e) {</span>
+<span class="nc" id="L79">                  Gui4jReflectionManager.handleInvocationTargetException(e);</span>
+<span class="nc" id="L80">                  throw new Gui4jUncheckedException.ProgrammingError(</span>
+                      PROGRAMMING_ERROR_invocation_target_exception, e);
+<span class="nc" id="L82">                } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L83">                  throw new Gui4jUncheckedException.ProgrammingError(</span>
+                      PROGRAMMING_ERROR_illegal_access_exception, e);
+<span class="nc" id="L85">                }</span>
+<span class="nc" id="L86">              }</span>
+            };
+<span class="nc" id="L88">        Gui4jThreadManager.executeInSwingThreadAndWait(work);</span>
+<span class="nc" id="L89">        mGui4jAccess.getValueUseDefaultParam(gui4jController, element.mValue, null);</span>
+      }
+    }
+<span class="nc" id="L92">  }</span>
+
+  public void apply(
+      Gui4jComponentInstance gui4jComponentInstance,
+      Gui4jCallBase gui4jController,
+      boolean handleThreads) {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">    if (mUseSwingComponent) {</span>
+<span class="nc" id="L99">      apply(</span>
+          gui4jComponentInstance,
+<span class="nc" id="L101">          gui4jComponentInstance.getComponent(),</span>
+          gui4jController,
+          handleThreads);
+    } else {
+<span class="nc" id="L105">      apply(gui4jComponentInstance, gui4jComponentInstance, gui4jController, handleThreads);</span>
+    }
+<span class="nc" id="L107">  }</span>
+
+  public Gui4jCall getGui4jAccess() {
+<span class="nc" id="L110">    return mGui4jAccess;</span>
+  }
+
+  public boolean applyInitially() {
+<span class="nc" id="L114">    return false;</span>
+  }
+
+  private static class Element {
+    public Object mValue;
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

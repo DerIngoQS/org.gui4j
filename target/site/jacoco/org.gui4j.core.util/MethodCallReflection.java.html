@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MethodCallReflection.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.util</a> &gt; <span class="el_source">MethodCallReflection.java</span></div><h1>MethodCallReflection.java</h1><pre class="source lang-java linenums">package org.gui4j.core.util;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+/**
+ * Entspricht der Klasse {@link java.lang.reflect.Method}, ausser dass diese Klasse serialisierbar
+ * ist.
+ */
+<span class="fc" id="L13">public final class MethodCallReflection implements MethodCall {</span>
+  private Method method;
+
+  /**
+   * Constructor for MethodCall.
+   *
+   * @param method
+   */
+<span class="fc" id="L21">  private MethodCallReflection(Method method) {</span>
+<span class="fc" id="L22">    this.method = method;</span>
+<span class="fc" id="L23">  }</span>
+
+  public static MethodCall getInstance(Method method) {
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">    return method == null ? null : new MethodCallReflection(method);</span>
+  }
+
+  public Object invoke(Object base, Object[] args)
+      throws InvocationTargetException, IllegalAccessException {
+<span class="fc" id="L31">    return method.invoke(base, args);</span>
+  }
+
+  public int getModifiers() {
+<span class="nc" id="L35">    return method.getModifiers();</span>
+  }
+
+  public Class getReturnType() {
+<span class="fc" id="L39">    return method.getReturnType();</span>
+  }
+
+  private void writeObject(ObjectOutputStream out) throws IOException {
+<span class="nc" id="L43">    out.writeObject(method.getDeclaringClass());</span>
+<span class="nc" id="L44">    out.writeObject(method.getName());</span>
+<span class="nc" id="L45">    out.writeObject(method.getParameterTypes());</span>
+<span class="nc" id="L46">  }</span>
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+<span class="nc" id="L49">    Class c = (Class) in.readObject();</span>
+<span class="nc" id="L50">    String name = (String) in.readObject();</span>
+<span class="nc" id="L51">    Class[] argTypes = (Class[]) in.readObject();</span>
+    try {
+<span class="nc" id="L53">      method = c.getMethod(name, argTypes);</span>
+<span class="nc" id="L54">    } catch (NoSuchMethodException e) {</span>
+      // should not happen
+<span class="nc" id="L56">      e.printStackTrace();</span>
+<span class="nc" id="L57">      assert false;</span>
+<span class="nc" id="L58">    }</span>
+<span class="nc" id="L59">  }</span>
+
+  public String toString() {
+<span class="nc" id="L62">    return method.toString();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jLabel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jLabel.java</span></div><h1>Gui4jLabel.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jQualifiedComponent;
+
+public final class Gui4jLabel extends Gui4jJComponent {
+  private String mLabelForId;
+<span class="nc" id="L13">  private int mHAlign = SwingConstants.LEADING;</span>
+<span class="nc" id="L14">  private int mVAlign = SwingConstants.CENTER;</span>
+<span class="nc" id="L15">  private int mVTextPosition = SwingConstants.CENTER;</span>
+<span class="nc" id="L16">  private int mHTextPosition = SwingConstants.TRAILING;</span>
+  private Gui4jCall mSuffixCall;
+
+  /**
+   * Constructor for Gui4jLabel.
+   *
+   * @param gui4jComponentContainer
+   * @param id
+   */
+  public Gui4jLabel(Gui4jComponentContainer gui4jComponentContainer, String id) {
+<span class="nc" id="L26">    super(gui4jComponentContainer, JLabel.class, id);</span>
+<span class="nc" id="L27">  }</span>
+
+  protected void setProperties(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L30">    super.setProperties(gui4jComponentInstance);</span>
+<span class="nc" id="L31">    JLabel label = (JLabel) gui4jComponentInstance.getComponent();</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">    if (mLabelForId != null) {</span>
+<span class="nc" id="L33">      Gui4jQualifiedComponent gui4jComponentInPath =</span>
+          gui4jComponentInstance
+<span class="nc" id="L35">              .getGui4jComponent()</span>
+<span class="nc" id="L36">              .getGui4jComponentContainer()</span>
+<span class="nc" id="L37">              .getGui4jQualifiedComponent(mLabelForId);</span>
+<span class="nc" id="L38">      Gui4jComponentInstance subInstance =</span>
+<span class="nc" id="L39">          gui4jComponentInstance.getGui4jComponentInstance(gui4jComponentInPath);</span>
+<span class="nc" id="L40">      label.setLabelFor(subInstance.getComponent());</span>
+    }
+<span class="nc" id="L42">    label.setHorizontalAlignment(mHAlign);</span>
+<span class="nc" id="L43">    label.setVerticalAlignment(mVAlign);</span>
+
+<span class="nc" id="L45">    label.setHorizontalTextPosition(mHTextPosition);</span>
+<span class="nc" id="L46">    label.setVerticalTextPosition(mVTextPosition);</span>
+<span class="nc" id="L47">  }</span>
+
+  public void setMnemonic(JLabel label, char mnemonic) {
+<span class="nc" id="L50">    label.setDisplayedMnemonic(mnemonic);</span>
+<span class="nc" id="L51">  }</span>
+
+  public void setIcon(JLabel label, Icon icon) {
+<span class="nc" id="L54">    label.setIcon(icon);</span>
+<span class="nc" id="L55">  }</span>
+
+  public void setHAlignment(int halignment) {
+<span class="nc" id="L58">    mHAlign = halignment;</span>
+<span class="nc" id="L59">  }</span>
+
+  public void setVAlignment(int valignment) {
+<span class="nc" id="L62">    mVAlign = valignment;</span>
+<span class="nc" id="L63">  }</span>
+
+  public void setHTextPosition(int hTextPosition) {
+<span class="nc" id="L66">    mHTextPosition = hTextPosition;</span>
+<span class="nc" id="L67">  }</span>
+
+  public void setVTextPosition(int vTextPosition) {
+<span class="nc" id="L70">    mVTextPosition = vTextPosition;</span>
+<span class="nc" id="L71">  }</span>
+
+  public void setText(Gui4jComponentInstance gui4jComponentInstance, String text) {
+<span class="nc bnc" id="L74" title="All 2 branches missed.">    if (mSuffixCall != null) {</span>
+<span class="nc" id="L75">      String suffix =</span>
+<span class="nc" id="L76">          (String) mSuffixCall.getValueNoParams(gui4jComponentInstance.getGui4jCallBase(), &quot;&quot;);</span>
+<span class="nc" id="L77">      text = text + suffix;</span>
+    }
+
+<span class="nc" id="L80">    JLabel label = (JLabel) gui4jComponentInstance.getSwingComponent();</span>
+<span class="nc" id="L81">    label.setText(text);</span>
+<span class="nc" id="L82">  }</span>
+
+  public void setSuffixCall(Gui4jCall suffixCall) {
+<span class="nc" id="L85">    this.mSuffixCall = suffixCall;</span>
+<span class="nc" id="L86">  }</span>
+
+  /**
+   * Sets the labelForId.
+   *
+   * @param labelForId The labelForId to set
+   */
+  public void setLabelForId(String labelForId) {
+<span class="nc" id="L94">    mLabelForId = labelForId;</span>
+<span class="nc" id="L95">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

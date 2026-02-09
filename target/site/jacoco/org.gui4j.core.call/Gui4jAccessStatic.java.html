@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jAccessStatic.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.call</a> &gt; <span class="el_source">Gui4jAccessStatic.java</span></div><h1>Gui4jAccessStatic.java</h1><pre class="source lang-java linenums">package org.gui4j.core.call;
+
+import java.util.Map;
+import org.gui4j.exception.Gui4jUncheckedException;
+
+final class Gui4jAccessStatic extends Gui4jAccessImpl {
+  private final Class mClass;
+
+<span class="nc" id="L9">  Gui4jAccessStatic(ParseCtx parseCtx, String accessPath) {</span>
+<span class="nc" id="L10">    int startIndex = parseCtx.i;</span>
+<span class="nc" id="L11">    startIndex++; // accessPath.charAt(startIndex)=':'</span>
+<span class="nc" id="L12">    int endIndex = accessPath.indexOf('.', startIndex);</span>
+<span class="nc bnc" id="L13" title="All 2 branches missed.">    if (endIndex == -1) {</span>
+<span class="nc" id="L14">      Object[] args = {accessPath, new Integer(startIndex)};</span>
+<span class="nc" id="L15">      throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L16">          parseCtx.getConfigurationName(),</span>
+<span class="nc" id="L17">          parseCtx.getLineNumber(),</span>
+          RESOURCE_ERROR_access_unexpected_end,
+          args);
+    }
+<span class="nc" id="L21">    String aliasName = accessPath.substring(startIndex, endIndex);</span>
+<span class="nc" id="L22">    parseCtx.i = endIndex;</span>
+<span class="nc" id="L23">    mClass = parseCtx.getClassForAliasName(aliasName);</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">    if (mClass == null) {</span>
+<span class="nc" id="L25">      Object[] args = {accessPath, aliasName};</span>
+<span class="nc" id="L26">      throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L27">          parseCtx.getConfigurationName(),</span>
+<span class="nc" id="L28">          parseCtx.getLineNumber(),</span>
+          RESOURCE_ERROR_alias_not_defined_in_path,
+          args);
+    }
+<span class="nc" id="L32">  }</span>
+
+  Class getResultClass() {
+<span class="nc" id="L35">    return mClass;</span>
+  }
+
+  public boolean isConstant() {
+<span class="nc" id="L39">    return true;</span>
+  }
+
+  public Object getValue(Object baseInstance, Object thisInstance, Map paramMap) {
+<span class="nc" id="L43">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

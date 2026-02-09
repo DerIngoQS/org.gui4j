@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalendarButton.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing.calendar</a> &gt; <span class="el_source">CalendarButton.java</span></div><h1>CalendarButton.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing.calendar;
+
+/*
+
+  File: $Workfile: CalendarButton.java $
+
+  Original Author: Michael Karneim
+
+  Last modified on: $Modtime:  $
+
+  Last modified by: $Author: joachims $
+
+
+
+  Maturity Level: DRAFT
+
+*/
+
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+
+/**
+ * CalendarButton provides a simple mechanism for the user to bind a date chooser popup to a text
+ * component. Whenever the button is pressed a popup appears below a specified text component, and
+ * displays a CalenderBean control. JTextField dateField = new JTextField(&quot;14.01.1971 &quot;);
+ * CalendarButton dateButton = new CalendarButton(); dateButton.setText( &quot;...&quot;);
+ * dateButton.setTextComponent( dateField); dateButton.setPreferredSize( new Dimension( 20,
+ * dateField.getPreferredSize().height)); JFrame frame = new JFrame();
+ * frame.getContentPane().setLayout( new FlowLayout(0)); frame.getContentPane().add( dateField);
+ * frame.getContentPane().add( dateButton); frame.pack(); frame.setVisible( true);
+ */
+public class CalendarButton extends JButton implements ActionListener {
+
+  javax.swing.text.JTextComponent textComponent;
+
+<span class="nc" id="L48">  JPopupMenu popup = null;</span>
+
+  //  SimpleDateFormat format = new SimpleDateFormat(FormatManager.getInstance().getDatePattern());
+  // //[PENDING,mk,29.02.2000: Hier keine Abhängigkeit ins Restprojekt einbauen!]
+
+<span class="nc" id="L53">  SimpleDateFormat format = new SimpleDateFormat(&quot;dd.MM.yy&quot;);</span>
+
+  CalendarBean calendarBean;
+
+  /**
+   * This method invokes a simple test program that demonstrates the calendar button.
+   *
+   * @param args
+   */
+  public static void main(String[] args) {
+<span class="nc" id="L63">    System.out.println(&quot;test program for CalendarButton&quot;);</span>
+<span class="nc" id="L64">    JTextField dateField = new JTextField(&quot;14.01.1971   &quot;);</span>
+
+<span class="nc" id="L66">    CalendarButton dateButton = new CalendarButton();</span>
+
+<span class="nc" id="L68">    dateButton.setText(&quot;...&quot;);</span>
+
+<span class="nc" id="L70">    dateButton.setTextComponent(dateField);</span>
+
+<span class="nc" id="L72">    dateButton.setPreferredSize(new java.awt.Dimension(20, dateField.getPreferredSize().height));</span>
+
+<span class="nc" id="L74">    JFrame frame1 = new JFrame();</span>
+
+<span class="nc" id="L76">    frame1.getContentPane().setLayout(new java.awt.FlowLayout(0));</span>
+
+<span class="nc" id="L78">    frame1.getContentPane().add(dateField);</span>
+
+<span class="nc" id="L80">    frame1.getContentPane().add(dateButton);</span>
+<span class="nc" id="L81">    JComboBox comboBox = new JComboBox(new String[] {&quot;1&quot;, &quot;2&quot;});</span>
+<span class="nc" id="L82">    frame1.getContentPane().add(comboBox);</span>
+<span class="nc" id="L83">    frame1.pack();</span>
+
+<span class="nc" id="L85">    frame1.setVisible(true);</span>
+<span class="nc" id="L86">  }</span>
+
+  /** Creates an instance of CalenderBean */
+<span class="nc" id="L89">  public CalendarButton() {</span>
+<span class="nc" id="L90">    this.addActionListener(this);</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">    this.setEnabled(this.textComponent != null ? this.textComponent.isEditable() : false);</span>
+<span class="nc" id="L92">  }</span>
+
+  /**
+   * Implements the ActionListener interface. This method is called whenever the button is pressed.
+   *
+   * @param e
+   */
+  public void actionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L100" title="All 2 branches missed.">    if (textComponent == null) return;</span>
+
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    if (e.getSource() == this) {</span>
+<span class="nc" id="L103">      JPopupMenu p = this.getPopupMenu();</span>
+<span class="nc" id="L104">      String dateString = this.textComponent.getText();</span>
+
+      try {
+<span class="nc" id="L107">        Date date = this.format.parse(dateString);</span>
+<span class="nc" id="L108">        this.getCalendarBean().select(date);</span>
+<span class="nc" id="L109">      } catch (Throwable t) {</span>
+<span class="nc" id="L110">        this.getCalendarBean().showMonth(Calendar.getInstance());</span>
+<span class="nc" id="L111">        this.getCalendarBean().select(new Date());</span>
+<span class="nc" id="L112">      }</span>
+
+<span class="nc" id="L114">      p.show(textComponent, 0, textComponent.getSize().height);</span>
+
+<span class="nc" id="L116">    } else {</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">      if (e.getSource() == this.getCalendarBean()) {</span>
+<span class="nc" id="L118">        this.textComponent.grabFocus();</span>
+<span class="nc" id="L119">        JPopupMenu p = this.getPopupMenu();</span>
+<span class="nc" id="L120">        p.setVisible(false);</span>
+<span class="nc" id="L121">        Date date = this.getCalendarBean().getSelectedDate();</span>
+<span class="nc" id="L122">        String dateString = format.format(date);</span>
+<span class="nc" id="L123">        this.textComponent.setText(dateString);</span>
+<span class="nc" id="L124">        SwingUtilities.invokeLater(</span>
+<span class="nc" id="L125">            new Runnable() {</span>
+              public void run() {
+<span class="nc" id="L127">                grabFocus();</span>
+<span class="nc" id="L128">              }</span>
+            });
+      }
+    }
+<span class="nc" id="L132">  }</span>
+
+<span class="nc" id="L134">  private transient PropertyChangeListener enableStateListener =</span>
+<span class="nc" id="L135">      new PropertyChangeListener() {</span>
+        public void propertyChange(PropertyChangeEvent evt) {
+<span class="nc bnc" id="L137" title="All 2 branches missed.">          if (!(evt.getSource() == textComponent)) {</span>
+<span class="nc" id="L138">            return;</span>
+          }
+<span class="nc" id="L140">          boolean newValue = ((Boolean) evt.getNewValue()).booleanValue();</span>
+<span class="nc" id="L141">          setEnabled(newValue);</span>
+<span class="nc" id="L142">        }</span>
+      };
+
+  /**
+   * Sets the reference to the text component, the calender button should work
+   *
+   * &lt;p&gt;with. From this text component the calendar button will get the date
+   *
+   * &lt;p&gt;string to put into the date chooser popup on button click. Below this
+   *
+   * &lt;p&gt;text component the date chooser popup will be displayed. Into this text component
+   *
+   * &lt;p&gt;the selected date will be inserted from the date chooser component.
+   *
+   * @param newTextComponent the text component the button will work with
+   */
+  public void setTextComponent(javax.swing.text.JTextComponent newTextComponent) {
+
+<span class="nc" id="L160">    javax.swing.text.JTextComponent oldTextComponent = textComponent;</span>
+
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    if (this.textComponent != null)</span>
+<span class="nc" id="L163">      this.textComponent.removePropertyChangeListener(&quot;editable&quot;, enableStateListener);</span>
+
+<span class="nc" id="L165">    textComponent = newTextComponent;</span>
+
+<span class="nc bnc" id="L167" title="All 2 branches missed.">    if (this.textComponent != null) {</span>
+<span class="nc" id="L168">      this.textComponent.addPropertyChangeListener(&quot;editable&quot;, enableStateListener);</span>
+<span class="nc" id="L169">      this.setEnabled(this.textComponent.isEditable());</span>
+    }
+
+<span class="nc" id="L172">    firePropertyChange(&quot;textComponent&quot;, oldTextComponent, newTextComponent);</span>
+<span class="nc" id="L173">  }</span>
+
+  /**
+   * Returns the text component that is bound to this button for displaying the
+   *
+   * &lt;p&gt;date.
+   *
+   * @return the text component that is bound to this button for displaying the
+   *     &lt;p&gt;date
+   */
+  public javax.swing.text.JTextComponent getTextComponent() {
+
+<span class="nc" id="L185">    return textComponent;</span>
+  }
+
+  /**
+   * Returns the popup menu with the date chooser control.
+   *
+   * @return the popup menu with the date chooser control
+   */
+  protected JPopupMenu getPopupMenu() {
+
+<span class="nc bnc" id="L195" title="All 2 branches missed.">    if (this.popup == null) {</span>
+<span class="nc" id="L196">      this.popup = new JPopupMenu();</span>
+<span class="nc" id="L197">      this.popup.add(this.getCalendarBean());</span>
+    }
+
+<span class="nc" id="L200">    return this.popup;</span>
+  }
+
+  /**
+   * Defines the pattern that has to be used to transform a String to
+   *
+   * &lt;p&gt;a Date instance and vice versa. The default is &quot;dd.mm.yyyy&quot;.
+   *
+   * @param pattern the format pattern
+   */
+  public void setDatePattern(String pattern) {
+
+<span class="nc" id="L212">    String oldPattern = this.format.toPattern();</span>
+
+<span class="nc" id="L214">    this.format.applyPattern(pattern);</span>
+
+<span class="nc" id="L216">    firePropertyChange(&quot;datePattern&quot;, oldPattern, pattern);</span>
+<span class="nc" id="L217">  }</span>
+
+  /**
+   * Returns the pattern that has to be used to transform a String to
+   *
+   * &lt;p&gt;a Date instance and vice versa.
+   *
+   * @return the pattern that has to be used to transform a String to
+   *     &lt;p&gt;a Date instance and vice versa
+   */
+  public String getDatePattern() {
+
+<span class="nc" id="L229">    return this.format.toPattern();</span>
+  }
+
+  /**
+   * Sets the CalendarBean instance that has to be used in the popup.
+   *
+   * &lt;p&gt;Note:&lt;br&gt;
+   * This method offers an easy way to customize the look and feel
+   *
+   * &lt;p&gt;of the date chooser popup. Be carefull not to use one single calendar
+   *
+   * &lt;p&gt;bean in more calendar buttons.
+   *
+   * @param newCalendarBean the CalendarBean instance that has to be used in the popup
+   */
+  public void setCalendarBean(CalendarBean newCalendarBean) {
+
+<span class="nc" id="L246">    CalendarBean oldCalendarBean = calendarBean;</span>
+
+<span class="nc bnc" id="L248" title="All 2 branches missed.">    if (oldCalendarBean != null) {</span>
+
+<span class="nc" id="L250">      oldCalendarBean.removeActionListener(this);</span>
+    }
+
+<span class="nc" id="L253">    this.calendarBean = newCalendarBean;</span>
+
+<span class="nc" id="L255">    this.calendarBean.addActionListener(this);</span>
+
+<span class="nc" id="L257">    firePropertyChange(&quot;calendarBean&quot;, oldCalendarBean, newCalendarBean);</span>
+<span class="nc" id="L258">  }</span>
+
+  /**
+   * Returns the CalendarBean instance that is used in the popup.
+   *
+   * @return the CalendarBean instance that is used in the popup
+   */
+  public CalendarBean getCalendarBean() {
+
+<span class="nc bnc" id="L267" title="All 2 branches missed.">    if (this.calendarBean == null) {</span>
+
+<span class="nc" id="L269">      this.calendarBean = new CalendarBean();</span>
+<span class="nc" id="L270">      Font f = textComponent.getFont(); // TODO: dynamisch</span>
+<span class="nc" id="L271">      this.calendarBean.setDayFont(f);</span>
+<span class="nc" id="L272">      this.calendarBean.setDateFont(f);</span>
+<span class="nc" id="L273">      this.calendarBean.setHeaderFont(f);</span>
+<span class="nc" id="L274">      this.calendarBean.setFont(f);</span>
+<span class="nc" id="L275">      this.calendarBean.addActionListener(this);</span>
+    }
+
+<span class="nc" id="L278">    return this.calendarBean;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

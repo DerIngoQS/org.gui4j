@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MaxLengthDocumentFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">MaxLengthDocumentFilter.java</span></div><h1>MaxLengthDocumentFilter.java</h1><pre class="source lang-java linenums">/*
+ * Created on 26.02.2004
+ */
+package org.gui4j.core.swing;
+
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+
+/**
+ * @author MarcusT
+ */
+public class MaxLengthDocumentFilter extends DocumentFilter {
+  private final int max;
+
+  public MaxLengthDocumentFilter(int max) {
+<span class="nc" id="L17">    super();</span>
+<span class="nc" id="L18">    this.max = max;</span>
+<span class="nc" id="L19">  }</span>
+
+  public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr)
+      throws BadLocationException {
+<span class="nc" id="L23">    int overflow = fb.getDocument().getLength() + string.length() - max;</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">    if (overflow &lt;= 0) {</span>
+<span class="nc" id="L25">      super.insertString(fb, offset, string, attr);</span>
+    } else {
+<span class="nc" id="L27">      super.insertString(fb, offset, string.substring(0, string.length() - overflow), attr);</span>
+    }
+<span class="nc" id="L29">  }</span>
+
+  public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs)
+      throws BadLocationException {
+
+<span class="nc bnc" id="L34" title="All 2 branches missed.">    int textlength = text == null ? 0 : text.length();</span>
+<span class="nc" id="L35">    int overflow = fb.getDocument().getLength() - length + textlength - max;</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">    if (overflow &lt;= 0) {</span>
+<span class="nc" id="L37">      super.replace(fb, offset, length, text, attrs);</span>
+    } else {
+<span class="nc" id="L39">      super.replace(fb, offset, length, text.substring(0, textlength - overflow), attrs);</span>
+    }
+<span class="nc" id="L41">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

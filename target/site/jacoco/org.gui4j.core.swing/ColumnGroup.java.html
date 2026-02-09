@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ColumnGroup.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">ColumnGroup.java</span></div><h1>ColumnGroup.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing;
+
+import java.awt.Component;
+import java.awt.Dimension;
+import java.util.Enumeration;
+import java.util.Vector;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+
+/**
+ * ColumnGroup
+ *
+ * @version 1.0 10/20/98
+ * @author Nobuo Tamemasa
+ */
+public class ColumnGroup {
+  protected TableCellRenderer renderer;
+  protected Vector v;
+  protected String text;
+<span class="nc" id="L25">  protected int margin = 0;</span>
+
+  public ColumnGroup(String text) {
+<span class="nc" id="L28">    this(null, text);</span>
+<span class="nc" id="L29">  }</span>
+
+<span class="nc" id="L31">  public ColumnGroup(TableCellRenderer renderer, String text) {</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">    if (renderer == null) {</span>
+<span class="nc" id="L33">      this.renderer =</span>
+<span class="nc" id="L34">          new DefaultTableCellRenderer() {</span>
+            public Component getTableCellRendererComponent(
+                JTable table,
+                Object value,
+                boolean isSelected,
+                boolean hasFocus,
+                int row,
+                int column) {
+<span class="nc" id="L42">              JTableHeader header = table.getTableHeader();</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">              if (header != null) {</span>
+<span class="nc" id="L44">                setForeground(header.getForeground());</span>
+<span class="nc" id="L45">                setBackground(header.getBackground());</span>
+<span class="nc" id="L46">                setFont(header.getFont());</span>
+              }
+<span class="nc" id="L48">              setHorizontalAlignment(SwingConstants.CENTER);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">              setText((value == null) ? &quot;&quot; : value.toString());</span>
+<span class="nc" id="L50">              setBorder(UIManager.getBorder(&quot;TableHeader.cellBorder&quot;));</span>
+<span class="nc" id="L51">              return this;</span>
+            }
+          };
+    } else {
+<span class="nc" id="L55">      this.renderer = renderer;</span>
+    }
+<span class="nc" id="L57">    this.text = text;</span>
+<span class="nc" id="L58">    v = new Vector();</span>
+<span class="nc" id="L59">  }</span>
+
+  /**
+   * @param obj TableColumn or ColumnGroup
+   */
+  public void add(Object obj) {
+<span class="nc bnc" id="L65" title="All 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L66">      return;</span>
+    }
+<span class="nc" id="L68">    v.addElement(obj);</span>
+<span class="nc" id="L69">  }</span>
+
+  /**
+   * @param c TableColumn
+   * @param g ColumnGroups
+   * @return Vector
+   */
+  public Vector getColumnGroups(TableColumn c, Vector g) {
+<span class="nc" id="L77">    g.addElement(this);</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    if (v.contains(c)) return g;</span>
+<span class="nc" id="L79">    Enumeration en = v.elements();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">    while (en.hasMoreElements()) {</span>
+<span class="nc" id="L81">      Object obj = en.nextElement();</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">      if (obj instanceof ColumnGroup) {</span>
+<span class="nc" id="L83">        Vector groups = ((ColumnGroup) obj).getColumnGroups(c, (Vector) g.clone());</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (groups != null) return groups;</span>
+      }
+<span class="nc" id="L86">    }</span>
+<span class="nc" id="L87">    return null;</span>
+  }
+
+  public TableCellRenderer getHeaderRenderer() {
+<span class="nc" id="L91">    return renderer;</span>
+  }
+
+  public void setHeaderRenderer(TableCellRenderer renderer) {
+<span class="nc bnc" id="L95" title="All 2 branches missed.">    if (renderer != null) {</span>
+<span class="nc" id="L96">      this.renderer = renderer;</span>
+    }
+<span class="nc" id="L98">  }</span>
+
+  public Object getHeaderValue() {
+<span class="nc" id="L101">    return text;</span>
+  }
+
+  public Dimension getSize(JTable table) {
+<span class="nc" id="L105">    Component comp =</span>
+<span class="nc" id="L106">        renderer.getTableCellRendererComponent(table, getHeaderValue(), false, false, -1, -1);</span>
+<span class="nc" id="L107">    int height = comp.getPreferredSize().height;</span>
+<span class="nc" id="L108">    int width = 0;</span>
+<span class="nc" id="L109">    Enumeration en = v.elements();</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">    while (en.hasMoreElements()) {</span>
+<span class="nc" id="L111">      Object obj = en.nextElement();</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">      if (obj instanceof TableColumn) {</span>
+<span class="nc" id="L113">        TableColumn aColumn = (TableColumn) obj;</span>
+<span class="nc" id="L114">        width += aColumn.getWidth();</span>
+<span class="nc" id="L115">      } else {</span>
+<span class="nc" id="L116">        width += ((ColumnGroup) obj).getSize(table).width;</span>
+      }
+<span class="nc" id="L118">    }</span>
+<span class="nc" id="L119">    return new Dimension(width, height);</span>
+  }
+
+  public void setColumnMargin(int margin) {
+<span class="nc" id="L123">    this.margin = margin;</span>
+<span class="nc" id="L124">    Enumeration enumeration = v.elements();</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    while (enumeration.hasMoreElements()) {</span>
+<span class="nc" id="L126">      Object obj = enumeration.nextElement();</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">      if (obj instanceof ColumnGroup) {</span>
+<span class="nc" id="L128">        ((ColumnGroup) obj).setColumnMargin(margin);</span>
+      }
+<span class="nc" id="L130">    }</span>
+<span class="nc" id="L131">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

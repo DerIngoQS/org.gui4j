@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IViewListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">IViewListener.java</span></div><h1>IViewListener.java</h1><pre class="source lang-java linenums">/*
+ * Copyright (c) 2004 Christopher M Butler Copyright of changes to original ViewListener (c) 2005 Kay
+ * Krüger-Barvels Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the &quot;Software&quot;), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions: The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT
+ * WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+/* Changes to original code (c) 2005 beck et al. projects GmbH */
+
+package org.gui4j.core.swing;
+
+import java.awt.AWTEvent;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.EventQueue;
+import java.awt.KeyboardFocusManager;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.event.AWTEventListener;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.HashSet;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/** Supports focus tracking for {@link org.gui4j.core.swing.IView}s. */
+public class IViewListener implements PropertyChangeListener, ChangeListener, AWTEventListener {
+
+<span class="nc" id="L41">  private static final Log log = LogFactory.getLog(IViewListener.class);</span>
+
+  private static final String PERMANENT_FOCUS_OWNER = &quot;permanentFocusOwner&quot;;
+  private static final String ACTIVE_WINDOW = &quot;activeWindow&quot;;
+
+<span class="nc" id="L46">  private static final IViewListener SINGLETON = new IViewListener();</span>
+<span class="nc" id="L47">  private static HashSet PROP_EVENTS = new HashSet();</span>
+
+  static {
+<span class="nc" id="L50">    log.debug(&quot;IViewListener static initializer&quot;);</span>
+<span class="nc" id="L51">    primeImpl();</span>
+<span class="nc" id="L52">  }</span>
+
+  /** Call this to cause class loading. Everything else is automatically taken care of. */
+<span class="nc" id="L55">  public static void prime() {}</span>
+
+  private static void primeImpl() {
+<span class="nc" id="L58">    PROP_EVENTS.add(PERMANENT_FOCUS_OWNER);</span>
+<span class="nc" id="L59">    PROP_EVENTS.add(ACTIVE_WINDOW);</span>
+
+<span class="nc" id="L61">    EventQueue.invokeLater(</span>
+<span class="nc" id="L62">        new Runnable() {</span>
+          public void run() {
+            KeyboardFocusManager focusManager =
+<span class="nc" id="L65">                KeyboardFocusManager.getCurrentKeyboardFocusManager();</span>
+<span class="nc" id="L66">            focusManager.addPropertyChangeListener(SINGLETON);</span>
+<span class="nc" id="L67">          }</span>
+        });
+
+<span class="nc" id="L70">    Toolkit.getDefaultToolkit().addAWTEventListener(SINGLETON, AWTEvent.MOUSE_EVENT_MASK);</span>
+<span class="nc" id="L71">  }</span>
+
+  public static IViewListener getInstance() {
+<span class="nc" id="L74">    return SINGLETON;</span>
+  }
+
+  private IViewListener() {}
+
+  public void eventDispatched(AWTEvent event) {
+    // catch all mousePressed events
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    if (event.getID() != MouseEvent.MOUSE_PRESSED) return;</span>
+
+<span class="nc" id="L83">    MouseEvent evt = (MouseEvent) event;</span>
+<span class="nc" id="L84">    Component c = (Component) evt.getSource();</span>
+
+    // check to see if the event was targeted at the deepest component at
+    // the current mouse loaction
+<span class="nc bnc" id="L88" title="All 2 branches missed.">    Container container = c instanceof Container ? (Container) c : null;</span>
+<span class="nc bnc" id="L89" title="All 4 branches missed.">    if (container != null &amp;&amp; container.getComponentCount() &gt; 1) {</span>
+      // if not, find the deepest component
+<span class="nc" id="L91">      Point p = evt.getPoint();</span>
+<span class="nc" id="L92">      c = SwingUtilities.getDeepestComponentAt(c, p.x, p.y);</span>
+    }
+
+    // request activation of the view that encloses this component
+<span class="nc" id="L96">    IViewTracker.requestViewActivation(c);</span>
+<span class="nc" id="L97">  }</span>
+
+  public void propertyChange(PropertyChangeEvent evt) {
+<span class="nc" id="L100">    String pName = evt.getPropertyName();</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (!PROP_EVENTS.contains(pName)) return;</span>
+
+<span class="nc" id="L103">    Component oldVal = toComponent(evt.getOldValue());</span>
+<span class="nc" id="L104">    Component newVal = toComponent(evt.getNewValue());</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">    boolean switchTo = newVal != null;</span>
+
+<span class="nc" id="L107">    log.debug(&quot;Focus change signalled from &quot; + oldVal + &quot; to &quot; + newVal);</span>
+
+<span class="nc bnc" id="L109" title="All 2 branches missed.">    if (ACTIVE_WINDOW.equals(pName)) handleWindowChange(evt, oldVal, newVal, switchTo);</span>
+<span class="nc" id="L110">    else handleFocusChange(evt, oldVal, newVal, switchTo);</span>
+<span class="nc" id="L111">  }</span>
+
+  private void handleWindowChange(
+      PropertyChangeEvent evt, Component oldVal, Component newVal, boolean activate) {
+    // notify the IViewTracker of the window change
+<span class="nc" id="L116">    IViewTracker.windowActivated(newVal);</span>
+
+<span class="nc bnc" id="L118" title="All 2 branches missed.">    Component srcComponent = activate ? newVal : oldVal;</span>
+<span class="nc" id="L119">    IViewTracker tracker = IViewTracker.getTracker(srcComponent);</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">    if (tracker != null) tracker.setActive(activate);</span>
+<span class="nc" id="L121">  }</span>
+
+  private void handleFocusChange(
+      PropertyChangeEvent evt, Component oldVal, Component newVal, boolean switchTo) {
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    if (!switchTo) return;</span>
+
+<span class="nc bnc" id="L127" title="All 2 branches missed.">    if (newVal instanceof JTabbedPane) {</span>
+<span class="nc" id="L128">      final JTabbedPane tabbed = (JTabbedPane) newVal;</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">      if (tabbed.getClientProperty(&quot;gui4jPortletContainer&quot;) != null) {</span>
+        // if tabbed pane is container for stacked portlets/views,
+        // we transfer focus to tab content
+<span class="nc" id="L132">        EventQueue.invokeLater(</span>
+<span class="nc" id="L133">            new Runnable() {</span>
+              public void run() {
+<span class="nc" id="L135">                Component selected = tabbed.getSelectedComponent();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">                if (selected != null) {</span>
+<span class="nc" id="L137">                  selected.requestFocus();</span>
+                } else {
+<span class="nc" id="L139">                  tabbed.requestFocus();</span>
+                }
+<span class="nc" id="L141">              }</span>
+            });
+      } else {
+<span class="nc" id="L144">        activateComponent(tabbed.getSelectedComponent());</span>
+      }
+<span class="nc" id="L146">    } else {</span>
+<span class="nc" id="L147">      activateComponent(newVal);</span>
+    }
+<span class="nc" id="L149">  }</span>
+
+  private void activateComponent(Component c) {
+<span class="nc" id="L152">    log.debug(&quot;Will activate component: &quot; + c);</span>
+<span class="nc" id="L153">    IViewTracker tracker = IViewTracker.getTracker(c);</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">    if (tracker != null) {</span>
+      IView view =
+<span class="nc bnc" id="L156" title="All 2 branches missed.">          c instanceof IView</span>
+<span class="nc" id="L157">              ? (IView) c</span>
+<span class="nc" id="L158">              : (IView) SwingUtilities.getAncestorOfClass(IView.class, c);</span>
+<span class="nc" id="L159">      tracker.setActive(view);</span>
+    }
+<span class="nc" id="L161">  }</span>
+
+  public void stateChanged(ChangeEvent e) {
+<span class="nc" id="L164">    Object obj = e.getSource();</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">    if (obj instanceof JTabbedPane) {</span>
+<span class="nc" id="L166">      JTabbedPane pane = (JTabbedPane) obj;</span>
+<span class="nc" id="L167">      Component c = pane.getSelectedComponent();</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">      if (c instanceof IView) activateComponent(c);</span>
+    }
+<span class="nc" id="L170">  }</span>
+
+  private static Component toComponent(Object obj) {
+<span class="nc bnc" id="L173" title="All 2 branches missed.">    return obj instanceof Component ? (Component) obj : null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

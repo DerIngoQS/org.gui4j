@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jListenerEdit.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.listener</a> &gt; <span class="el_source">Gui4jListenerEdit.java</span></div><h1>Gui4jListenerEdit.java</h1><pre class="source lang-java linenums">package org.gui4j.core.listener;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.util.Map;
+import javax.swing.JTextField;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.component.Gui4jEdit;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jMap1;
+
+/** */
+public class Gui4jListenerEdit extends Gui4jActionListener implements FocusListener {
+<span class="nc" id="L17">  private static final Log log = LogFactory.getLog(Gui4jListenerEdit.class);</span>
+
+  private Gui4jCall mSetValue;
+<span class="nc" id="L20">  private String lastContent = null;</span>
+
+  /**
+   * Constructor for Gui4jListenerEdit.
+   *
+   * @param gui4jComponentInstance
+   */
+  public Gui4jListenerEdit(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L28">    super(gui4jComponentInstance);</span>
+<span class="nc" id="L29">  }</span>
+
+  public void setSetValue(Gui4jCall setValue) {
+<span class="nc" id="L32">    mSetValue = setValue;</span>
+<span class="nc" id="L33">  }</span>
+
+  public void actionPerformed(ActionEvent e) {
+<span class="nc" id="L36">    JTextField textField = (JTextField) mGui4jComponentInstance.getComponent();</span>
+<span class="nc" id="L37">    String value = textField.getText();</span>
+<span class="nc" id="L38">    Map paramMap = new Gui4jMap1(Gui4jEdit.PARAM_VALUE, value);</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">    if (mSetValue != null) {</span>
+<span class="nc" id="L40">      Gui4jCall[] work = {mSetValue};</span>
+<span class="nc" id="L41">      lastContent = textField.getText();</span>
+<span class="nc" id="L42">      textField.selectAll();</span>
+<span class="nc" id="L43">      log.debug(&quot;Asking ThreadManager to perform work for setValue.&quot;); // XXX</span>
+<span class="nc" id="L44">      mGui4jThreadManager.performWorkHighPriority(</span>
+          mGui4jController, work, paramMap, mGui4jComponentInstance);
+    }
+    // if (mActionPerformed != null &amp;&amp; mSetValue != null)
+    // {
+    // Gui4jCall[] work = { mSetValue, mActionPerformed };
+    // mGui4jThreadManager.performWork(mGui4jController, work, paramMap,
+    // mGui4jComponentInstance);
+    // }
+<span class="nc bnc" id="L53" title="All 2 branches missed.">    if (mActionPerformed != null) {</span>
+<span class="nc" id="L54">      log.debug(&quot;Asking ThreadManager to perform work for actionCommand.&quot;); // XXX</span>
+<span class="nc" id="L55">      mGui4jThreadManager.performWork(</span>
+          mGui4jController, mActionPerformed, paramMap, mGui4jComponentInstance);
+    }
+    // if (mActionPerformed == null &amp;&amp; mSetValue != null)
+    // {
+    // Gui4jCall[] work = { mSetValue };
+    // lastContent = textField.getText();
+    // textField.selectAll();
+    // mGui4jThreadManager.performWork(mGui4jController, work, paramMap,
+    // mGui4jComponentInstance);
+    // }
+<span class="nc" id="L66">  }</span>
+
+  /**
+   * @see java.awt.event.FocusListener#focusGained(FocusEvent)
+   */
+  public void focusGained(FocusEvent e) {
+<span class="nc" id="L72">    lastContent = null;</span>
+<span class="nc" id="L73">  }</span>
+
+  /**
+   * @see java.awt.event.FocusListener#focusLost(FocusEvent)
+   */
+  public void focusLost(FocusEvent e) {
+<span class="nc" id="L79">    saveValue(true);</span>
+<span class="nc" id="L80">  }</span>
+
+  /**
+   * This method can be used directly by client code to manually circumvent the problem where a
+   * worker thread needs to work with current model values but the current value for an edit field
+   * has not been set because no focus lost event has been triggered. In this case, the controller
+   * can get the currently focused Swing component from {@link
+   * java.awt.KeyboardFocusManager#getFocusOwner()}, check for the presence of a listener of this
+   * type and call this method. &lt;br&gt;
+   * Note: This method is regarded as a workaround for a problem that should really be solved
+   * conceptually in Gui4j.
+   */
+  public void saveValueImmediately() {
+<span class="nc" id="L93">    saveValue(false);</span>
+<span class="nc" id="L94">  }</span>
+
+  private void saveValue(boolean useWorkerThread) {
+<span class="nc bnc" id="L97" title="All 2 branches missed.">    if (mSetValue != null) {</span>
+<span class="nc" id="L98">      JTextField textField = (JTextField) mGui4jComponentInstance.getComponent();</span>
+<span class="nc" id="L99">      String fieldValue = textField.getText();</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">      if (!fieldValue.equals(lastContent)) {</span>
+<span class="nc" id="L101">        Map paramMap = new Gui4jMap1(Gui4jEdit.PARAM_VALUE, fieldValue);</span>
+<span class="nc" id="L102">        Gui4jCall[] work = {mSetValue};</span>
+<span class="nc" id="L103">        lastContent = fieldValue;</span>
+<span class="nc" id="L104">        textField.selectAll();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        mGui4jThreadManager.performWorkHighPriority(</span>
+            mGui4jController, work, paramMap, mGui4jComponentInstance, !useWorkerThread);
+      }
+    }
+<span class="nc" id="L109">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,920 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jComponentContainerManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core</a> &gt; <span class="el_source">Gui4jComponentContainerManager.java</span></div><h1>Gui4jComponentContainerManager.java</h1><pre class="source lang-java linenums">package org.gui4j.core;
+
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.Attribute;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.LElement;
+import org.dom4j.io.LNSAXReader;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.Gui4jResourceProvider;
+import org.gui4j.core.util.Extract;
+import org.gui4j.exception.ErrorTags;
+import org.gui4j.exception.Gui4jUncheckedException;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+/**
+ * The Gui4jComponentContainerManager manages different instances of Gui4jComponentContainer.
+ * Whenever an instance of Gui4jComponentContainer for a given resource file and given controller
+ * class type is requested, the Gui4jComponentManager creates that instance or returns an already
+ * created instance for the same arguments.
+ */
+public final class Gui4jComponentContainerManager implements Serializable, ErrorTags {
+  private final Map mGui4jComponentContainerClassMap;
+  private final Map mResourceMap;
+  private final Gui4jInternal mGui4j;
+
+<span class="nc" id="L43">  protected static final Log mLogger = LogFactory.getLog(Gui4jComponentContainerManager.class);</span>
+
+<span class="nc" id="L45">  private Gui4jComponentContainerManager(Gui4jInternal gui4j) {</span>
+<span class="nc" id="L46">    mGui4j = gui4j;</span>
+<span class="nc" id="L47">    mGui4jComponentContainerClassMap = new HashMap();</span>
+<span class="nc" id="L48">    mResourceMap = new HashMap();</span>
+<span class="nc" id="L49">    mLogger.debug(&quot;Gui4jComponentContainerClassMap initialisiert&quot;);</span>
+<span class="nc" id="L50">  }</span>
+
+  public static String getResourceNameFullyQuantified(String baseName, String resourceName) {
+    {
+<span class="nc" id="L54">      int idx = baseName.lastIndexOf('/');</span>
+<span class="nc" id="L55">      baseName = baseName.substring(0, idx);</span>
+    }
+<span class="nc bnc" id="L57" title="All 2 branches missed.">    if (resourceName.startsWith(&quot;/&quot;)) {</span>
+<span class="nc" id="L58">      return resourceName;</span>
+    }
+<span class="nc bnc" id="L60" title="All 2 branches missed.">    while (resourceName.startsWith(&quot;../&quot;)) {</span>
+<span class="nc" id="L61">      int idx = baseName.lastIndexOf('/');</span>
+<span class="nc" id="L62">      baseName = baseName.substring(0, idx);</span>
+<span class="nc" id="L63">      resourceName = resourceName.substring(3);</span>
+<span class="nc" id="L64">    }</span>
+<span class="nc" id="L65">    return baseName + &quot;/&quot; + resourceName;</span>
+  }
+
+  public static String getBaseName(Class c) {
+<span class="nc" id="L69">    return &quot;/&quot; + c.getName().replace('.', '/');</span>
+  }
+
+  public static Gui4jComponentContainerManager getNewInstance(Gui4jInternal gui4j) {
+<span class="nc" id="L73">    return new Gui4jComponentContainerManager(gui4j);</span>
+  }
+
+  synchronized Resource getResource(String resourceNameFullyQuantified) {
+<span class="nc bnc" id="L77" title="All 2 branches missed.">    assert resourceNameFullyQuantified != null;</span>
+
+<span class="nc" id="L79">    Resource resource = (Resource) mResourceMap.get(resourceNameFullyQuantified);</span>
+
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    if (resource == null) {</span>
+<span class="nc" id="L82">      mLogger.debug(&quot;Resource &quot; + resourceNameFullyQuantified + &quot; not in cache.&quot;);</span>
+      // no entry for specified resource file
+<span class="nc" id="L84">      resource = new Resource(mGui4j, resourceNameFullyQuantified);</span>
+<span class="nc" id="L85">      Map classMap = new HashMap();</span>
+
+<span class="nc" id="L87">      mResourceMap.put(resourceNameFullyQuantified, resource);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">      if (!mGui4jComponentContainerClassMap.containsKey(resourceNameFullyQuantified)) {</span>
+<span class="nc" id="L89">        mGui4jComponentContainerClassMap.put(resourceNameFullyQuantified, classMap);</span>
+      }
+    }
+<span class="nc" id="L92">    return resource;</span>
+  }
+
+  public void clearResources() {
+<span class="nc" id="L96">    mResourceMap.clear();</span>
+<span class="nc" id="L97">  }</span>
+
+  /**
+   * If a &lt;code&gt;Gui4jComponentContainer&lt;/code&gt; for the specified combination is already loaded, then
+   * it is returned. Otherwise, a new instance is created. Note that one instance of &lt;code&gt;
+   * Gui4jComponentContainer&lt;/code&gt; might be shared by several instances of &lt;code&gt;
+   * Gui4jSwingContainer&lt;/code&gt;.
+   *
+   * @param controllerClass
+   * @param resourceNameFullyQuantified
+   * @return Gui4jComponentContainer
+   */
+  public synchronized Gui4jComponentContainer getGui4jComponentContainer(
+      Class controllerClass, String resourceNameFullyQuantified) {
+<span class="nc" id="L111">    mLogger.debug(</span>
+        &quot;Resource &quot;
+            + resourceNameFullyQuantified
+            + &quot; for controller &quot;
+            + controllerClass
+            + &quot; requested&quot;);
+
+<span class="nc" id="L118">    Gui4jComponentContainer container = null;</span>
+<span class="nc" id="L119">    Map classMap = null;</span>
+
+<span class="nc bnc" id="L121" title="All 2 branches missed.">    if (mGui4jComponentContainerClassMap.containsKey(resourceNameFullyQuantified)) {</span>
+<span class="nc" id="L122">      classMap = (Map) mGui4jComponentContainerClassMap.get(resourceNameFullyQuantified);</span>
+<span class="nc" id="L123">      container = (Gui4jComponentContainer) classMap.get(controllerClass);</span>
+    }
+
+<span class="nc bnc" id="L126" title="All 2 branches missed.">    if (container == null) {</span>
+<span class="nc" id="L127">      Resource resource = getResource(resourceNameFullyQuantified);</span>
+<span class="nc" id="L128">      classMap = (Map) mGui4jComponentContainerClassMap.get(resourceNameFullyQuantified);</span>
+      // no resource file for specified class
+<span class="nc" id="L130">      container =</span>
+          new Gui4jComponentContainerImpl(
+              mGui4j, controllerClass, resourceNameFullyQuantified, resource);
+<span class="nc" id="L133">      classMap.put(controllerClass, container);</span>
+    }
+<span class="nc" id="L135">    return container;</span>
+  }
+
+<span class="nc" id="L138">  static class ImportInfo {</span>
+    String alias;
+    String relName;
+    String controller;
+    String refresh;
+    int controllerLineNo;
+    int refreshLineNo;
+    int urlLineNo;
+    Map paramMap; // ParamId -&gt; Id
+  }
+
+  static class Resource implements Serializable, ErrorTags {
+<span class="nc" id="L150">    private static final Log mResourceLogger = LogFactory.getLog(Resource.class);</span>
+
+    private final Gui4jInternal mGui4j;
+    private final String mResourceNameFullyQualified;
+    private boolean mAlreadyLoaded;
+    private List mChildren;
+    private Map mToplevelAttributes;
+    private final Gui4jStyleContainer mStyleContainer;
+    private final List mGui4jImportList; // List(ImportInfo)
+    private final Map mClassAliasMap; // String -&gt; Class
+    private final Map mClassAliasMapResourceName; // String -&gt; String
+    private final Map mDefMap; // String -&gt; String
+    private final Map mDefMapResourceName; // String -&gt; String
+    private final Set mParamIds; // Set(String)
+    private final List mErrorList;
+    private int mLineNoOfTopLevelAttrs;
+
+<span class="nc" id="L167">    public Resource(Gui4jInternal gui4j, String resourceNameFullyQuantified) {</span>
+<span class="nc" id="L168">      mResourceLogger.debug(&quot;Reading resource &quot; + resourceNameFullyQuantified);</span>
+<span class="nc" id="L169">      mGui4j = gui4j;</span>
+<span class="nc" id="L170">      mResourceNameFullyQualified = resourceNameFullyQuantified;</span>
+<span class="nc" id="L171">      mStyleContainer = new Gui4jStyleContainer(mResourceNameFullyQualified);</span>
+<span class="nc" id="L172">      mGui4jImportList = new ArrayList();</span>
+<span class="nc" id="L173">      mClassAliasMap = new HashMap();</span>
+<span class="nc" id="L174">      mClassAliasMapResourceName = new HashMap();</span>
+<span class="nc" id="L175">      mDefMap = new HashMap();</span>
+<span class="nc" id="L176">      mDefMapResourceName = new HashMap();</span>
+<span class="nc" id="L177">      mParamIds = new HashSet();</span>
+<span class="nc" id="L178">      mToplevelAttributes = new HashMap();</span>
+<span class="nc" id="L179">      mErrorList = new ArrayList();</span>
+<span class="nc" id="L180">      load();</span>
+<span class="nc" id="L181">    }</span>
+
+    public int getLineNoOfTopLevelAttrs() {
+<span class="nc" id="L184">      return mLineNoOfTopLevelAttrs;</span>
+    }
+
+    public List getToplevelDefinitions() {
+<span class="nc bnc" id="L188" title="All 2 branches missed.">      assert mChildren != null;</span>
+<span class="nc" id="L189">      return mChildren;</span>
+    }
+
+    public Map getToplevelAttributes() {
+<span class="nc" id="L193">      return mToplevelAttributes;</span>
+    }
+
+    public List getErrorList() {
+<span class="nc" id="L197">      return mErrorList;</span>
+    }
+
+    private void load() {
+<span class="nc bnc" id="L201" title="All 2 branches missed.">      if (mAlreadyLoaded) {</span>
+<span class="nc" id="L202">        return;</span>
+      }
+
+      try {
+<span class="nc" id="L206">        LNSAXReader builder = new LNSAXReader(mGui4j.validateXML());</span>
+<span class="nc" id="L207">        builder.setValidation(mGui4j.validateXML());</span>
+<span class="nc" id="L208">        final Gui4jResourceProvider resourceProvider = mGui4j.getResourceProvider();</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">        assert resourceProvider != null;</span>
+<span class="nc" id="L210">        InputStream in = resourceProvider.getResource(mResourceNameFullyQualified);</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        if (in == null) {</span>
+<span class="nc" id="L212">          throw new NullPointerException(</span>
+              &quot;Resource provider did not return InputStream for requested resource: &quot;
+                  + mResourceNameFullyQualified);
+        }
+<span class="nc" id="L216">        final EntityResolver entityResolver = builder.getEntityResolver();</span>
+<span class="nc" id="L217">        builder.setEntityResolver(</span>
+<span class="nc" id="L218">            new EntityResolver() {</span>
+
+              public InputSource resolveEntity(String publicId, String systemId)
+                  throws SAXException, IOException {
+<span class="nc" id="L222">                mLogger.debug(</span>
+                    &quot;Resolving entity for: PublicId: &quot; + publicId + &quot;, SystemId: &quot; + systemId);
+<span class="nc bnc" id="L224" title="All 2 branches missed.">                if (systemId != null) {</span>
+                  // In Java 1.5 the system Id starts with file (very
+                  // strange)
+<span class="nc" id="L227">                  systemId = systemId.replaceFirst(&quot;file://&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L228" title="All 2 branches missed.">                  while (systemId.indexOf(&quot;../&quot;) != -1) {</span>
+<span class="nc" id="L229">                    systemId = systemId.replaceFirst(&quot;/[^/]+/\\.\\./&quot;, &quot;/&quot;);</span>
+                  }
+<span class="nc" id="L231">                  InputStream dtdResource = resourceProvider.getResource(systemId);</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">                  if (dtdResource == null) {</span>
+<span class="nc" id="L233">                    throw new NullPointerException(</span>
+                        &quot;Resource Provider did not return Input Stream for DTD. Requested resource: &quot;
+                            + systemId);
+                  }
+<span class="nc" id="L237">                  return new InputSource(dtdResource);</span>
+                } else {
+<span class="nc" id="L239">                  return entityResolver.resolveEntity(publicId, systemId);</span>
+                }
+              }
+            });
+<span class="nc" id="L243">        Document doc = builder.read(in, mResourceNameFullyQualified);</span>
+<span class="nc" id="L244">        analyzeDocument(doc);</span>
+<span class="nc" id="L245">      } catch (DocumentException e) {</span>
+<span class="nc" id="L246">        String[] args = new String[] {e.getMessage()};</span>
+<span class="nc" id="L247">        throw new Gui4jUncheckedException.ResourceError(</span>
+            mResourceNameFullyQualified, -1, RESOURCE_ERROR_jdom_exception, args, e);
+<span class="nc" id="L249">      }</span>
+
+<span class="nc" id="L251">      mAlreadyLoaded = true;</span>
+<span class="nc" id="L252">    }</span>
+
+    private void analyzeDocument(Document doc) {
+<span class="nc" id="L255">      LElement root = (LElement) doc.getRootElement();</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">      for (Iterator iter = root.attributeIterator(); iter.hasNext(); ) {</span>
+<span class="nc" id="L257">        Attribute attribute = (Attribute) iter.next();</span>
+<span class="nc" id="L258">        mToplevelAttributes.put(attribute.getName(), attribute.getValue());</span>
+<span class="nc" id="L259">      }</span>
+<span class="nc" id="L260">      mLineNoOfTopLevelAttrs = root.getLineNumber();</span>
+<span class="nc" id="L261">      mChildren = root.elements();</span>
+<span class="nc" id="L262">      Stack gui4jStyles = new Stack();</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">      for (Iterator it = mChildren.iterator(); it.hasNext(); ) {</span>
+        try {
+<span class="nc" id="L265">          LElement e = (LElement) it.next();</span>
+<span class="nc" id="L266">          String name = e.getName();</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">          if (gui4jStyles.size() &gt; 0</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">              &amp;&amp; mGui4j.getGui4jComponentManager().getInstalledComponentNames().contains(name)) {</span>
+<span class="nc" id="L269">            insertGui4jStyle((String) gui4jStyles.peek(), e);</span>
+          }
+<span class="nc bnc" id="L271" title="All 2 branches missed.">          if (name.equals(Gui4jComponentManager.ELEMENT_Gui4jStyleBegin)) {</span>
+<span class="nc" id="L272">            String styleName = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jStyleName);</span>
+<span class="nc" id="L273">            gui4jStyles.push(styleName);</span>
+          }
+<span class="nc bnc" id="L275" title="All 2 branches missed.">          if (name.equals(Gui4jComponentManager.ELEMENT_Gui4jStyleEnd)) {</span>
+<span class="nc bnc" id="L276" title="All 2 branches missed.">            if (gui4jStyles.size() &gt; 0) {</span>
+<span class="nc" id="L277">              gui4jStyles.pop();</span>
+            } else {
+<span class="nc" id="L279">              throw new Gui4jUncheckedException.ResourceError(</span>
+                  mResourceNameFullyQualified,
+<span class="nc" id="L281">                  e.getLineNumber(),</span>
+                  RESOURCE_ERROR_unexpected_gui4jStyle_end);
+            }
+          }
+<span class="nc bnc" id="L285" title="All 2 branches missed.">          if (name.equals(Gui4jComponentManager.ELEMENT_Gui4jParam)) {</span>
+<span class="nc" id="L286">            String id = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jParamId);</span>
+<span class="nc" id="L287">            mParamIds.add(id);</span>
+          }
+<span class="nc bnc" id="L289" title="All 2 branches missed.">          if (name.equals(Gui4jComponentManager.ELEMENT_Gui4jStyle)) {</span>
+<span class="nc" id="L290">            String styleName = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jStyleName);</span>
+<span class="nc" id="L291">            String styleExtends = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jStyleExtends);</span>
+<span class="nc" id="L292">            mStyleContainer.createStyle(mResourceNameFullyQualified, styleName, styleExtends);</span>
+<span class="nc" id="L293">            int startIdx = Gui4jComponentManager.ELEMENT_Gui4jStyle.length() + 1;</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">            for (Iterator it2 = e.elementIterator(); it2.hasNext(); ) {</span>
+<span class="nc" id="L295">              LElement child = (LElement) it2.next();</span>
+<span class="nc" id="L296">              mStyleContainer.addAttributes(</span>
+<span class="nc" id="L297">                  child.getName().substring(startIdx), styleName, child.attributes());</span>
+<span class="nc" id="L298">            }</span>
+<span class="nc" id="L299">            it.remove();</span>
+          }
+<span class="nc bnc" id="L301" title="All 2 branches missed.">          if (name.equals(Gui4jComponentManager.ELEMENT_Gui4jInclude)) {</span>
+<span class="nc" id="L302">            Map paramMap = new HashMap();</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">            for (Iterator itInclude = e.elementIterator(); itInclude.hasNext(); ) {</span>
+<span class="nc" id="L304">              LElement child = (LElement) itInclude.next();</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">              assert child.getName().equals(Gui4jComponentManager.ELEMENT_Gui4jArg);</span>
+<span class="nc" id="L306">              String paramId = child.attributeValue(Gui4jComponentManager.FIELD_Gui4jArgParam);</span>
+<span class="nc" id="L307">              String id = child.attributeValue(Gui4jComponentManager.FIELD_Gui4jArgId);</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">              assert paramId != null;</span>
+<span class="nc bnc" id="L309" title="All 2 branches missed.">              assert id != null;</span>
+<span class="nc" id="L310">              paramMap.put(paramId, id);</span>
+<span class="nc" id="L311">            }</span>
+<span class="nc" id="L312">            String alias = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jIncludeAlias);</span>
+<span class="nc" id="L313">            String includeNameRel = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jIncludeURL);</span>
+<span class="nc" id="L314">            String baseController =</span>
+<span class="nc" id="L315">                e.attributeValue(Gui4jComponentManager.FIELD_Gui4jIncludeController);</span>
+<span class="nc" id="L316">            String refreshCall = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jIncludeRefresh);</span>
+            // try
+            {
+<span class="nc" id="L319">              String resourceIncludeName =</span>
+<span class="nc" id="L320">                  getResourceNameFullyQuantified(mResourceNameFullyQualified, includeNameRel);</span>
+<span class="nc" id="L321">              ImportInfo importInfo = new ImportInfo();</span>
+<span class="nc" id="L322">              importInfo.paramMap = paramMap;</span>
+<span class="nc" id="L323">              importInfo.alias = alias;</span>
+<span class="nc" id="L324">              importInfo.controller = baseController;</span>
+<span class="nc" id="L325">              importInfo.refresh = refreshCall;</span>
+<span class="nc" id="L326">              importInfo.relName = includeNameRel;</span>
+<span class="nc" id="L327">              importInfo.urlLineNo =</span>
+<span class="nc" id="L328">                  getLineNumber(e.attribute(Gui4jComponentManager.FIELD_Gui4jIncludeURL));</span>
+<span class="nc" id="L329">              importInfo.controllerLineNo =</span>
+<span class="nc" id="L330">                  getLineNumber(e.attribute(Gui4jComponentManager.FIELD_Gui4jIncludeController));</span>
+<span class="nc" id="L331">              importInfo.refreshLineNo =</span>
+<span class="nc" id="L332">                  getLineNumber(e.attribute(Gui4jComponentManager.FIELD_Gui4jIncludeRefresh));</span>
+<span class="nc" id="L333">              mGui4jImportList.add(importInfo);</span>
+<span class="nc" id="L334">              Resource importResource =</span>
+<span class="nc" id="L335">                  mGui4j.getGui4jComponentContainerManager().getResource(resourceIncludeName);</span>
+<span class="nc" id="L336">              mStyleContainer.extendBy(importResource.getGui4jStyleContainer());</span>
+<span class="nc" id="L337">              Map importClassAliasMap = importResource.getClassAliasMap();</span>
+<span class="nc" id="L338">              mErrorList.addAll(importResource.getErrorList());</span>
+<span class="nc" id="L339">              Map importClassAliasMapResourceName = importResource.getClassAliasMapResourceName();</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">              for (Iterator it2 = importClassAliasMap.entrySet().iterator(); it2.hasNext(); ) {</span>
+<span class="nc" id="L341">                Map.Entry entry = (Map.Entry) it2.next();</span>
+<span class="nc" id="L342">                String aliasName = (String) entry.getKey();</span>
+<span class="nc" id="L343">                insertAlias(</span>
+<span class="nc" id="L344">                    (String) importClassAliasMapResourceName.get(aliasName),</span>
+                    aliasName,
+<span class="nc" id="L346">                    (Class) entry.getValue());</span>
+<span class="nc" id="L347">              }</span>
+
+<span class="nc" id="L349">              Map importDefMap = importResource.getDefMap();</span>
+<span class="nc" id="L350">              Map importDefMapResourceName = importResource.getDefMapResourceName();</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">              for (Iterator it2 = importDefMap.entrySet().iterator(); it2.hasNext(); ) {</span>
+<span class="nc" id="L352">                Map.Entry entry = (Map.Entry) it2.next();</span>
+<span class="nc" id="L353">                String defName = (String) entry.getKey();</span>
+<span class="nc" id="L354">                insertDef(</span>
+<span class="nc" id="L355">                    (String) importDefMapResourceName.get(defName),</span>
+                    defName,
+<span class="nc" id="L357">                    (String) entry.getValue());</span>
+<span class="nc" id="L358">              }</span>
+            }
+            /*
+             * // XXX catch (MalformedURLException me) { Object[]
+             * args = { urlRel }; throw new
+             * Gui4jUncheckedException.ResourceError(
+             * mConfigurationSource, getLineLineNumber(e),
+             * RESOURCE_ERROR_invalid_url, args, me); }
+             */
+
+<span class="nc" id="L368">            it.remove();</span>
+          }
+<span class="nc bnc" id="L370" title="All 2 branches missed.">          if (name.equals(Gui4jComponentManager.ELEMENT_Gui4jClassAlias)) {</span>
+<span class="nc" id="L371">            String aliasName = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jClassAliasName);</span>
+<span class="nc" id="L372">            String className = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jClassAliasClass);</span>
+            try {
+<span class="nc" id="L374">              Class c = Class.forName(className);</span>
+<span class="nc" id="L375">              insertAlias(mResourceNameFullyQualified, aliasName, c);</span>
+<span class="nc" id="L376">            } catch (ClassNotFoundException exc) {</span>
+<span class="nc" id="L377">              Object[] args = {aliasName, className};</span>
+<span class="nc" id="L378">              throw new Gui4jUncheckedException.ResourceError(</span>
+                  mResourceNameFullyQualified,
+<span class="nc" id="L380">                  e.getLineNumber(),</span>
+                  RESOURCE_ERROR_alias_class_not_found,
+                  args,
+                  exc);
+<span class="nc" id="L384">            }</span>
+<span class="nc" id="L385">            it.remove();</span>
+          }
+<span class="nc bnc" id="L387" title="All 2 branches missed.">          if (name.equals(Gui4jComponentManager.ELEMENT_Gui4jDef)) {</span>
+<span class="nc" id="L388">            String defName = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jDefName);</span>
+<span class="nc" id="L389">            String defValue = e.attributeValue(Gui4jComponentManager.FIELD_Gui4jDefValue);</span>
+<span class="nc" id="L390">            insertDef(mResourceNameFullyQualified, defName, defValue);</span>
+<span class="nc" id="L391">            it.remove();</span>
+          }
+<span class="nc" id="L393">        } catch (Throwable t) {</span>
+<span class="nc" id="L394">          mErrorList.add(t);</span>
+<span class="nc" id="L395">        }</span>
+      }
+<span class="nc" id="L397">    }</span>
+
+    private void insertGui4jStyle(String styleName, LElement e) {
+<span class="nc bnc" id="L400" title="All 2 branches missed.">      if (e.attributeValue(Gui4jComponentFactory.FIELD_Style) == null) {</span>
+<span class="nc" id="L401">        e.addAttribute(Gui4jComponentFactory.FIELD_Style, styleName);</span>
+      }
+<span class="nc bnc" id="L403" title="All 2 branches missed.">      for (Iterator it = e.elementIterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L404">        LElement child = (LElement) it.next();</span>
+<span class="nc" id="L405">        insertGui4jStyle(styleName, child);</span>
+<span class="nc" id="L406">      }</span>
+<span class="nc" id="L407">    }</span>
+
+    private void insertDef(String resourceName, String name, String value) {
+<span class="nc bnc" id="L410" title="All 4 branches missed.">      if (mDefMap.containsKey(name) &amp;&amp; !resourceName.equals(mDefMapResourceName.get(name))) {</span>
+<span class="nc" id="L411">        Gui4jComponentContainerManager.mLogger.warn(</span>
+<span class="nc" id="L412">            &quot;macro '&quot; + name + &quot;' already defined with value '&quot; + mDefMap.get(name) + &quot;'&quot;);</span>
+      } else {
+<span class="nc" id="L414">        mDefMap.put(name, value);</span>
+<span class="nc" id="L415">        mDefMapResourceName.put(name, resourceName);</span>
+      }
+<span class="nc" id="L417">    }</span>
+
+    private void insertAlias(String resourceName, String aliasName, Class c) {
+<span class="nc bnc" id="L420" title="All 2 branches missed.">      if (mClassAliasMap.containsKey(aliasName)</span>
+<span class="nc bnc" id="L421" title="All 2 branches missed.">          &amp;&amp; !resourceName.equals(mClassAliasMapResourceName.get(aliasName))) {</span>
+<span class="nc" id="L422">        Object[] args = {aliasName};</span>
+<span class="nc" id="L423">        throw new Gui4jUncheckedException.ResourceError(</span>
+            mResourceNameFullyQualified, -1, RESOURCE_ERROR_alias_already_defined, args);
+      }
+<span class="nc" id="L426">      mClassAliasMap.put(aliasName, c);</span>
+<span class="nc" id="L427">      mClassAliasMapResourceName.put(aliasName, resourceName);</span>
+<span class="nc" id="L428">    }</span>
+
+    public Gui4jStyleContainer getGui4jStyleContainer() {
+<span class="nc" id="L431">      return mStyleContainer;</span>
+    }
+
+    public String toString() {
+<span class="nc" id="L435">      return mResourceNameFullyQualified;</span>
+    }
+
+    public ImportInfo[] getImportList() {
+<span class="nc" id="L439">      ImportInfo[] info = new ImportInfo[mGui4jImportList.size()];</span>
+<span class="nc" id="L440">      int i = 0;</span>
+<span class="nc bnc" id="L441" title="All 2 branches missed.">      for (Iterator it = mGui4jImportList.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L442">        ImportInfo importInfo = (ImportInfo) it.next();</span>
+<span class="nc" id="L443">        info[i] = importInfo;</span>
+<span class="nc" id="L444">        i++;</span>
+<span class="nc" id="L445">      }</span>
+<span class="nc" id="L446">      return info;</span>
+    }
+
+    public Set getParamIds() {
+<span class="nc" id="L450">      return mParamIds;</span>
+    }
+
+    Map getClassAliasMap() {
+<span class="nc" id="L454">      return mClassAliasMap;</span>
+    }
+
+    Map getClassAliasMapResourceName() {
+<span class="nc" id="L458">      return mClassAliasMapResourceName;</span>
+    }
+
+    Map getDefMap() {
+<span class="nc" id="L462">      return mDefMap;</span>
+    }
+
+    Map getDefMapResourceName() {
+<span class="nc" id="L466">      return mDefMapResourceName;</span>
+    }
+  }
+
+  static class Gui4jComponentContainerImpl implements Serializable, Gui4jComponentContainer {
+    private final Class mGui4jControllerClass;
+    private final Map mElements; // String -&gt; Element
+    private final Map mGui4jComponentsInPath; // Id -&gt;
+    // Gui4jComponentInPath
+    private final Gui4jInternal mGui4j;
+    private final Gui4jStyleContainer mGui4jStyleContainer;
+    private final Set mParamIds;
+    private final Map mParamInstantiation;
+    private final Map mToplevelAttributes;
+    private final Gui4jCall mTitleCall;
+    private final Gui4jCall mWindowNameCall;
+
+    /** // List(Gui4jComponentContainerInclude) */
+    private final List mGui4jComponentContainerImports;
+
+    // private final Map mGui4jComponentContainerMap;
+    private final Map mClassAliasMap;
+    private final Map mDefMap;
+    private final String mRessourceNameFullyQualified;
+    private final List mErrorList;
+
+<span class="nc" id="L492">    private static final Log mLoggerComponentContainer =</span>
+<span class="nc" id="L493">        LogFactory.getLog(Gui4jComponentContainerImpl.class);</span>
+
+    protected Gui4jComponentContainerImpl(
+        Gui4jInternal gui4j,
+        Class gui4jControllerClass,
+        String resourceNameFullyQuantified,
+<span class="nc" id="L499">        Resource resource) {</span>
+<span class="nc" id="L500">      mGui4j = gui4j;</span>
+<span class="nc" id="L501">      mGui4jControllerClass = gui4jControllerClass;</span>
+<span class="nc" id="L502">      mElements = new HashMap();</span>
+<span class="nc" id="L503">      mGui4jComponentsInPath = new HashMap();</span>
+<span class="nc" id="L504">      mGui4jStyleContainer = resource.getGui4jStyleContainer();</span>
+<span class="nc" id="L505">      mGui4jComponentContainerImports = new ArrayList();</span>
+      // mGui4jComponentContainerMap = new HashMap();
+<span class="nc" id="L507">      mClassAliasMap = resource.getClassAliasMap();</span>
+<span class="nc" id="L508">      mDefMap = resource.getDefMap();</span>
+<span class="nc" id="L509">      mRessourceNameFullyQualified = resourceNameFullyQuantified;</span>
+<span class="nc" id="L510">      mParamIds = resource.getParamIds();</span>
+<span class="nc" id="L511">      mToplevelAttributes = resource.getToplevelAttributes();</span>
+<span class="nc" id="L512">      mErrorList = new ArrayList(resource.getErrorList());</span>
+<span class="nc" id="L513">      String titleCallStr = getToplevelAttrValue(Gui4jComponentManager.FIELD_Gui4jViewTitle);</span>
+<span class="nc" id="L514">      String windowNameCallStr = getToplevelAttrValue(Gui4jComponentManager.FIELD_Gui4jViewName);</span>
+
+<span class="nc" id="L516">      Gui4jCallFactory parser = gui4j.createCallFactory();</span>
+<span class="nc" id="L517">      Gui4jAbstractComponent dummyComponent =</span>
+<span class="nc" id="L518">          new Gui4jAbstractComponent(this, Object.class, &quot;&quot;) {</span>
+            protected Gui4jComponentInstance createComponentInstance(
+                Gui4jSwingContainer gui4jSwingContainer,
+                Gui4jCallBase gui4jCallBase,
+                Gui4jQualifiedComponent gui4jComponentInPath) {
+<span class="nc" id="L523">              assert false;</span>
+<span class="nc" id="L524">              return null;</span>
+            }
+
+            public final void showPopupMenu(
+<span class="nc" id="L528">                Gui4jComponentInstance gui4jComponentInstance, MouseEvent mouseEvent) {}</span>
+          };
+
+<span class="nc bnc" id="L531" title="All 2 branches missed.">      if (titleCallStr != null) {</span>
+<span class="nc" id="L532">        mTitleCall =</span>
+<span class="nc" id="L533">            parser.getInstance(dummyComponent, resource.getLineNoOfTopLevelAttrs(), titleCallStr);</span>
+<span class="nc" id="L534">        Gui4jTypeCheck.ensureType(String.class, mTitleCall, titleCallStr);</span>
+      } else {
+<span class="nc" id="L536">        mTitleCall = null;</span>
+      }
+<span class="nc bnc" id="L538" title="All 2 branches missed.">      if (windowNameCallStr != null) {</span>
+<span class="nc" id="L539">        mWindowNameCall =</span>
+<span class="nc" id="L540">            parser.getInstance(</span>
+<span class="nc" id="L541">                dummyComponent, resource.getLineNoOfTopLevelAttrs(), windowNameCallStr);</span>
+<span class="nc" id="L542">        Gui4jTypeCheck.ensureType(String.class, mWindowNameCall, windowNameCallStr);</span>
+      } else {
+<span class="nc" id="L544">        mWindowNameCall = null;</span>
+      }
+
+<span class="nc bnc" id="L547" title="All 2 branches missed.">      for (Iterator it = mParamIds.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L548">        String id = (String) it.next();</span>
+<span class="nc" id="L549">        Gui4jComponentPath gui4jComponentPath = new Gui4jComponentPath();</span>
+<span class="nc" id="L550">        Gui4jComponent gui4jComponent = new Gui4jComponentArg(getGui4j(), id);</span>
+<span class="nc" id="L551">        mGui4jComponentsInPath.put(</span>
+            id, new Gui4jQualifiedComponent(gui4jComponentPath, gui4jComponent));
+<span class="nc" id="L553">      }</span>
+
+      // add imported components
+<span class="nc" id="L556">      ImportInfo[] importInfo = resource.getImportList();</span>
+<span class="nc bnc" id="L557" title="All 2 branches missed.">      for (int i = 0; i &lt; importInfo.length; i++) {</span>
+        try {
+<span class="nc" id="L559">          Class baseController = mGui4jControllerClass;</span>
+<span class="nc" id="L560">          Gui4jCall call = null;</span>
+<span class="nc" id="L561">          Gui4jCall[] refresh = null;</span>
+<span class="nc bnc" id="L562" title="All 2 branches missed.">          if (importInfo[i].controller != null) {</span>
+            // Anderer Base-Controller definiert
+<span class="nc" id="L564">            Gui4jCall refreshCall =</span>
+<span class="nc" id="L565">                parser.getInstance(</span>
+                    dummyComponent, importInfo[i].refreshLineNo, importInfo[i].refresh);
+<span class="nc bnc" id="L567" title="All 2 branches missed.">            if (refreshCall != null) {</span>
+<span class="nc" id="L568">              refresh = refreshCall.getDependantProperties();</span>
+<span class="nc bnc" id="L569" title="All 4 branches missed.">              if (refresh == null || refresh.length == 0) {</span>
+<span class="nc" id="L570">                mLoggerComponentContainer.warn(&quot;Set of dependant events is empty&quot;);</span>
+              }
+            }
+<span class="nc" id="L573">            call =</span>
+<span class="nc" id="L574">                parser.getInstance(</span>
+                    dummyComponent,
+                    importInfo[i].controllerLineNo,
+                    baseController,
+                    importInfo[i].controller);
+<span class="nc bnc" id="L579" title="All 2 branches missed.">            if (call != null) {</span>
+<span class="nc" id="L580">              baseController = call.getResultClass();</span>
+            }
+          }
+<span class="nc" id="L583">          Gui4jComponentContainer gui4jComponentContainer =</span>
+              mGui4j
+<span class="nc" id="L585">                  .getGui4jComponentContainerManager()</span>
+<span class="nc" id="L586">                  .getGui4jComponentContainer(</span>
+                      baseController,
+<span class="nc" id="L588">                      getResourceNameFullyQuantified(</span>
+                          resourceNameFullyQuantified, importInfo[i].relName));
+<span class="nc bnc" id="L590" title="All 2 branches missed.">          for (Iterator it = gui4jComponentContainer.getParamIds().iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L591">            String paramId = (String) it.next();</span>
+<span class="nc bnc" id="L592" title="All 2 branches missed.">            if (!importInfo[i].paramMap.containsKey(paramId)) {</span>
+<span class="nc" id="L593">              Object[] args = {paramId, gui4jComponentContainer.getConfigurationName()};</span>
+<span class="nc" id="L594">              throw new Gui4jUncheckedException.ResourceError(</span>
+                  mRessourceNameFullyQualified, -1, RESOURCE_ERROR_unknown_param, args);
+            }
+<span class="nc" id="L597">          }</span>
+<span class="nc bnc" id="L598" title="All 2 branches missed.">          for (Iterator it = importInfo[i].paramMap.keySet().iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L599">            String paramId = (String) it.next();</span>
+<span class="nc bnc" id="L600" title="All 2 branches missed.">            if (!gui4jComponentContainer.getParamIds().contains(paramId)) {</span>
+<span class="nc" id="L601">              Object[] args = {paramId, gui4jComponentContainer.getConfigurationName()};</span>
+<span class="nc" id="L602">              throw new Gui4jUncheckedException.ResourceError(</span>
+                  mRessourceNameFullyQualified, -1, RESOURCE_ERROR_unknown_param_in_include, args);
+            }
+<span class="nc" id="L605">          }</span>
+<span class="nc" id="L606">          Gui4jComponentContainerInclude gui4jComponentContainerInclude =</span>
+              new Gui4jComponentContainerInclude(
+                  this, gui4jComponentContainer, importInfo[i].paramMap, importInfo[i].alias);
+<span class="nc" id="L609">          gui4jComponentContainerInclude.setGui4jBaseController(call);</span>
+<span class="nc" id="L610">          gui4jComponentContainerInclude.setRefresh(refresh);</span>
+<span class="nc" id="L611">          mGui4jComponentContainerImports.add(gui4jComponentContainerInclude);</span>
+<span class="nc" id="L612">        } catch (Throwable t) {</span>
+<span class="nc" id="L613">          mErrorList.add(t);</span>
+<span class="nc" id="L614">        }</span>
+      }
+
+      // add local components
+<span class="nc" id="L618">      mLoggerComponentContainer.debug(</span>
+          &quot;Looping through top-level definition of resource &quot; + resourceNameFullyQuantified);
+<span class="nc bnc" id="L620" title="All 2 branches missed.">      for (Iterator it = resource.getToplevelDefinitions().iterator(); it.hasNext(); ) {</span>
+        try {
+<span class="nc" id="L622">          LElement e = (LElement) it.next();</span>
+<span class="nc" id="L623">          String id = e.attributeValue(Gui4jComponentFactory.FIELD_Id);</span>
+<span class="nc bnc" id="L624" title="All 2 branches missed.">          if (id != null) {</span>
+<span class="nc bnc" id="L625" title="All 2 branches missed.">            if (isDefined(id)) {</span>
+<span class="nc" id="L626">              Object[] args = {id};</span>
+<span class="nc" id="L627">              throw new Gui4jUncheckedException.ResourceError(</span>
+                  mRessourceNameFullyQualified,
+<span class="nc" id="L629">                  e.getLineNumber(),</span>
+                  RESOURCE_ERROR_gui4jComponent_already_defined,
+                  args);
+            } else {
+<span class="nc" id="L633">              mElements.put(id, e);</span>
+            }
+          }
+<span class="nc" id="L636">        } catch (Throwable t) {</span>
+<span class="nc" id="L637">          mErrorList.add(t);</span>
+<span class="nc" id="L638">        }</span>
+      }
+
+<span class="nc" id="L641">      mParamInstantiation = computeParamInstantiation();</span>
+
+<span class="nc bnc" id="L643" title="All 2 branches missed.">      if (mErrorList.size() &gt; 0) {</span>
+<span class="nc" id="L644">        throw new Gui4jUncheckedException.ErrorList(mErrorList);</span>
+      }
+<span class="nc" id="L646">    }</span>
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.gui4j.core.Gui4jComponentContainer#getTitleCall()
+     */
+    public Gui4jCall getTitleCall() {
+<span class="nc" id="L654">      return mTitleCall;</span>
+    }
+
+    /* (non-Javadoc)
+     * @see org.gui4j.core.Gui4jComponentContainer#getWindowNameCall()
+     */
+    public Gui4jCall getWindowNameCall() {
+<span class="nc" id="L661">      return mWindowNameCall;</span>
+    }
+
+    public Gui4jInternal getGui4j() {
+<span class="nc" id="L665">      return mGui4j;</span>
+    }
+
+    public Set getParamIds() {
+<span class="nc" id="L669">      return mParamIds;</span>
+    }
+
+    public Set getMappedIds() {
+<span class="nc" id="L673">      Set ids = new HashSet();</span>
+<span class="nc bnc" id="L674" title="All 2 branches missed.">      for (Iterator it = mGui4jComponentContainerImports.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L675">        Gui4jComponentContainerInclude include = (Gui4jComponentContainerInclude) it.next();</span>
+<span class="nc" id="L676">        ids.addAll(include.getParamMap().values());</span>
+<span class="nc" id="L677">      }</span>
+<span class="nc" id="L678">      return ids;</span>
+    }
+
+    public Map getParamInstantiation() {
+<span class="nc" id="L682">      return mParamInstantiation;</span>
+    }
+
+    private Map computeParamInstantiation() {
+<span class="nc" id="L686">      Map m = new HashMap();</span>
+<span class="nc bnc" id="L687" title="All 2 branches missed.">      for (Iterator it = mGui4jComponentContainerImports.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L688">        Gui4jComponentContainerInclude include = (Gui4jComponentContainerInclude) it.next();</span>
+<span class="nc" id="L689">        Gui4jComponentPath path = new Gui4jComponentPath(include);</span>
+        // modifiziere include Instanziierung
+<span class="nc" id="L691">        for (Iterator itInclude =</span>
+<span class="nc" id="L692">                include.getGui4jComponentContainer().getParamInstantiation().entrySet().iterator();</span>
+<span class="nc bnc" id="L693" title="All 2 branches missed.">            itInclude.hasNext(); ) {</span>
+<span class="nc" id="L694">          Map.Entry entry = (Map.Entry) itInclude.next();</span>
+<span class="nc" id="L695">          Gui4jQualifiedComponent param = (Gui4jQualifiedComponent) entry.getKey();</span>
+<span class="nc" id="L696">          Gui4jQualifiedComponent id = (Gui4jQualifiedComponent) entry.getValue();</span>
+<span class="nc" id="L697">          m.put(new Gui4jQualifiedComponent(path, param), new Gui4jQualifiedComponent(path, id));</span>
+<span class="nc" id="L698">        }</span>
+<span class="nc" id="L699">        for (Iterator itInclude = include.getParamMap().entrySet().iterator();</span>
+<span class="nc bnc" id="L700" title="All 2 branches missed.">            itInclude.hasNext(); ) {</span>
+<span class="nc" id="L701">          Map.Entry entry = (Map.Entry) itInclude.next();</span>
+<span class="nc" id="L702">          String param = (String) entry.getKey();</span>
+<span class="nc" id="L703">          String id = (String) entry.getValue();</span>
+<span class="nc" id="L704">          m.put(</span>
+              new Gui4jQualifiedComponent(
+<span class="nc" id="L706">                  path, include.getGui4jComponentContainer().getGui4jQualifiedComponent(param)),</span>
+<span class="nc" id="L707">              getGui4jQualifiedComponent(id));</span>
+<span class="nc" id="L708">        }</span>
+<span class="nc" id="L709">      }</span>
+<span class="nc" id="L710">      return m;</span>
+    }
+
+    public Class getClassForAliasName(String aliasName) {
+<span class="nc" id="L714">      return (Class) mClassAliasMap.get(aliasName);</span>
+    }
+
+    public synchronized Gui4jQualifiedComponent extractGui4jComponent(LElement e) {
+<span class="nc" id="L718">      String name = e.getName();</span>
+<span class="nc bnc" id="L719" title="All 2 branches missed.">      if (name.equals(Gui4jComponentManager.ELEMENT_Gui4jRef)) {</span>
+<span class="nc" id="L720">        return getGui4jQualifiedComponent(e.attributeValue(Gui4jComponentFactory.FIELDGui4jRef_Id));</span>
+      } else {
+<span class="nc" id="L722">        autoExtend(e);</span>
+<span class="nc" id="L723">        String id = e.attributeValue(Gui4jComponentFactory.FIELD_Id);</span>
+<span class="nc" id="L724">        Gui4jComponentFactory factory =</span>
+<span class="nc" id="L725">            mGui4j.getGui4jComponentManager().getGui4jComponentFactory(name);</span>
+<span class="nc" id="L726">        Gui4jComponent gui4jComponent = factory.defineBy(this, id, e);</span>
+<span class="nc" id="L727">        Gui4jQualifiedComponent gui4jComponentInPath =</span>
+            new Gui4jQualifiedComponent(new Gui4jComponentPath(), gui4jComponent);
+<span class="nc bnc" id="L729" title="All 2 branches missed.">        if (id != null) {</span>
+<span class="nc bnc" id="L730" title="All 2 branches missed.">          if (isDefined(id)) {</span>
+<span class="nc" id="L731">            Object[] args = {id};</span>
+<span class="nc" id="L732">            throw new Gui4jUncheckedException.ResourceError(</span>
+                mRessourceNameFullyQualified,
+<span class="nc" id="L734">                e.getLineNumber(),</span>
+                RESOURCE_ERROR_gui4jComponent_already_defined,
+                args);
+          } else {
+<span class="nc" id="L738">            mGui4jComponentsInPath.put(id, gui4jComponentInPath);</span>
+          }
+        }
+<span class="nc" id="L741">        return gui4jComponentInPath;</span>
+      }
+    }
+
+    public void autoExtend(LElement e) {
+<span class="nc" id="L746">      mGui4jStyleContainer.extend(e);</span>
+<span class="nc" id="L747">    }</span>
+
+    public String getAttrValueReplaceAll(LElement e, String field) {
+<span class="nc" id="L750">      String str = e.attributeValue(field);</span>
+<span class="nc bnc" id="L751" title="All 6 branches missed.">      if (str != null &amp;&amp; str.length() &gt; 0 &amp;&amp; str.indexOf('$') != -1) {</span>
+<span class="nc bnc" id="L752" title="All 2 branches missed.">        for (Iterator it = mDefMap.entrySet().iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L753">          Map.Entry entry = (Map.Entry) it.next();</span>
+<span class="nc" id="L754">          String macroName = (String) entry.getKey();</span>
+<span class="nc" id="L755">          String macroValue = (String) entry.getValue();</span>
+<span class="nc" id="L756">          str = str.replaceAll(&quot;\\$&quot; + macroName, macroValue);</span>
+<span class="nc" id="L757">        }</span>
+      }
+<span class="nc" id="L759">      return str;</span>
+    }
+
+    public String getAttrValue(LElement e, String field) {
+<span class="nc" id="L763">      String str = e.attributeValue(field);</span>
+<span class="nc bnc" id="L764" title="All 6 branches missed.">      if (str != null &amp;&amp; str.length() &gt; 0 &amp;&amp; str.charAt(0) == '$') {</span>
+<span class="nc" id="L765">        String value = (String) mDefMap.get(str.substring(1));</span>
+<span class="nc bnc" id="L766" title="All 2 branches missed.">        if (value != null) {</span>
+<span class="nc" id="L767">          return value;</span>
+        } else {
+<span class="nc" id="L769">          mLoggerComponentContainer.warn(&quot;Cannot find definition for '&quot; + str.substring(1) + &quot;'&quot;);</span>
+        }
+      }
+<span class="nc" id="L772">      return str;</span>
+    }
+
+    public boolean getBooleanAttrValue(LElement e, String field, boolean dflt) {
+<span class="nc" id="L776">      String value = getAttrValue(e, field);</span>
+<span class="nc bnc" id="L777" title="All 2 branches missed.">      if (value == null) {</span>
+<span class="nc" id="L778">        return dflt;</span>
+      }
+<span class="nc" id="L780">      return &quot;true&quot;.equalsIgnoreCase(value);</span>
+    }
+
+    public synchronized Gui4jQualifiedComponent getGui4jQualifiedComponent(String id) {
+<span class="nc" id="L784">      Gui4jQualifiedComponent gui4jComponentInPath =</span>
+<span class="nc" id="L785">          (Gui4jQualifiedComponent) mGui4jComponentsInPath.get(id);</span>
+<span class="nc bnc" id="L786" title="All 2 branches missed.">      if (gui4jComponentInPath == null) {</span>
+<span class="nc" id="L787">        LElement e = (LElement) mElements.get(id);</span>
+<span class="nc bnc" id="L788" title="All 2 branches missed.">        if (e == null) {</span>
+<span class="nc" id="L789">          int idxSep = id.indexOf('/');</span>
+<span class="nc bnc" id="L790" title="All 2 branches missed.">          if (idxSep != -1) {</span>
+<span class="nc" id="L791">            String prefix = id.substring(0, idxSep);</span>
+<span class="nc" id="L792">            String suffix = id.substring(idxSep + 1);</span>
+            // look in imported resources
+<span class="nc bnc" id="L794" title="All 2 branches missed.">            for (Iterator it = mGui4jComponentContainerImports.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L795">              Gui4jComponentContainerInclude gui4jComponentContainerInclude =</span>
+<span class="nc" id="L796">                  (Gui4jComponentContainerInclude) it.next();</span>
+<span class="nc bnc" id="L797" title="All 2 branches missed.">              if (gui4jComponentContainerInclude.getAliasName().equals(prefix)) {</span>
+<span class="nc" id="L798">                Gui4jComponentContainer gui4jComponentContainer =</span>
+<span class="nc" id="L799">                    gui4jComponentContainerInclude.getGui4jComponentContainer();</span>
+<span class="nc bnc" id="L800" title="All 2 branches missed.">                if (gui4jComponentContainer.isDefined(suffix)) {</span>
+<span class="nc" id="L801">                  Gui4jQualifiedComponent path =</span>
+<span class="nc" id="L802">                      gui4jComponentContainer.getGui4jQualifiedComponent(suffix);</span>
+<span class="nc" id="L803">                  return new Gui4jQualifiedComponent(gui4jComponentContainerInclude, path);</span>
+                }
+              }
+<span class="nc" id="L806">            }</span>
+          }
+
+<span class="nc" id="L809">          Object[] args = {id};</span>
+<span class="nc" id="L810">          throw new Gui4jUncheckedException.ResourceError(</span>
+              mRessourceNameFullyQualified, -1, RESOURCE_ERROR_gui4jComponent_not_defined, args);
+        }
+
+<span class="nc" id="L814">        String name = e.getName();</span>
+<span class="nc" id="L815">        Gui4jComponentFactory factory =</span>
+<span class="nc" id="L816">            mGui4j.getGui4jComponentManager().getGui4jComponentFactory(name);</span>
+<span class="nc" id="L817">        mGui4jStyleContainer.extend(e);</span>
+<span class="nc" id="L818">        Gui4jComponent gui4jComponent = factory.defineBy(this, id, e);</span>
+<span class="nc bnc" id="L819" title="All 2 branches missed.">        if (gui4jComponent == null) {</span>
+<span class="nc" id="L820">          throw new Gui4jUncheckedException.ProgrammingError(PROGRAMMING_ERROR_parameter_null);</span>
+        } else {
+<span class="nc" id="L822">          Gui4jQualifiedComponent path =</span>
+              new Gui4jQualifiedComponent(new Gui4jComponentPath(), gui4jComponent);
+<span class="nc" id="L824">          mGui4jComponentsInPath.put(id, path);</span>
+
+          // Remove JDOM tree entry for 'id', because it is no longer
+          // needed for this swingContainerClass type
+<span class="nc" id="L828">          mElements.remove(id);</span>
+<span class="nc" id="L829">          return path;</span>
+        }
+      } else {
+<span class="nc" id="L832">        return gui4jComponentInPath;</span>
+      }
+    }
+
+    public Class getGui4jControllerClass() {
+<span class="nc" id="L837">      return mGui4jControllerClass;</span>
+    }
+
+    public boolean isDefined(String id) {
+<span class="nc bnc" id="L841" title="All 2 branches missed.">      assert id != null;</span>
+<span class="nc" id="L842">      Gui4jQualifiedComponent gui4jComponentInPath =</span>
+<span class="nc" id="L843">          (Gui4jQualifiedComponent) mGui4jComponentsInPath.get(id);</span>
+<span class="nc bnc" id="L844" title="All 2 branches missed.">      boolean found = gui4jComponentInPath != null;</span>
+<span class="nc bnc" id="L845" title="All 2 branches missed.">      if (!found) {</span>
+<span class="nc" id="L846">        LElement e = (LElement) mElements.get(id);</span>
+<span class="nc bnc" id="L847" title="All 2 branches missed.">        found = e != null;</span>
+      }
+
+<span class="nc" id="L850">      int idxSep = id.indexOf('/');</span>
+<span class="nc bnc" id="L851" title="All 2 branches missed.">      if (idxSep != -1) {</span>
+<span class="nc" id="L852">        String prefix = id.substring(0, idxSep);</span>
+<span class="nc" id="L853">        String suffix = id.substring(idxSep + 1);</span>
+        // look in imported containers
+<span class="nc bnc" id="L855" title="All 4 branches missed.">        for (Iterator it = mGui4jComponentContainerImports.iterator(); !found &amp;&amp; it.hasNext(); ) {</span>
+<span class="nc" id="L856">          Gui4jComponentContainerInclude gui4jComponentContainerInclude =</span>
+<span class="nc" id="L857">              (Gui4jComponentContainerInclude) it.next();</span>
+<span class="nc bnc" id="L858" title="All 2 branches missed.">          if (gui4jComponentContainerInclude.getAliasName().equals(prefix)) {</span>
+<span class="nc" id="L859">            found = gui4jComponentContainerInclude.getGui4jComponentContainer().isDefined(suffix);</span>
+          }
+<span class="nc" id="L861">        }</span>
+      }
+<span class="nc" id="L863">      return found;</span>
+    }
+
+    public String getConfigurationName() {
+<span class="nc" id="L867">      return mRessourceNameFullyQualified;</span>
+    }
+
+    /*
+     * public List
+     * getGui4jComponentContainerIncludePath(Gui4jComponentContainer
+     * gui4jComponentContainer) { if
+     * (mGui4jComponentContainerMap.containsKey(gui4jComponentContainer)) {
+     * return (List)
+     * mGui4jComponentContainerMap.get(gui4jComponentContainer); }
+     *
+     * if (this == gui4jComponentContainer) { List path = new ArrayList();
+     * mGui4jComponentContainerMap.put(gui4jComponentContainer, path);
+     * return path; } else { // look in imported containers for (Iterator it =
+     * mGui4jComponentContainerImports.iterator(); it.hasNext();) {
+     * Gui4jComponentContainerInclude gui4jComponentContainerInclude =
+     * (Gui4jComponentContainerInclude) it.next(); List path =
+     * gui4jComponentContainerInclude .getGui4jComponentContainer()
+     * .getGui4jComponentContainerIncludePath( gui4jComponentContainer); if
+     * (path != null) { path = new ArrayList(path); path.add(0,
+     * gui4jComponentContainerInclude);
+     * mGui4jComponentContainerMap.put(gui4jComponentContainer, path);
+     * return path; } }
+     * mGui4jComponentContainerMap.put(gui4jComponentContainer, null);
+     * return null; } }
+     */
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+<span class="nc" id="L898">      return Extract.getClassname(getClass()) + &quot;[&quot; + getConfigurationName() + &quot;]&quot;;</span>
+    }
+
+    public String getToplevelAttrValue(String field) {
+<span class="nc" id="L902">      return (String) mToplevelAttributes.get(field);</span>
+    }
+  }
+
+  public static int getLineNumber(Attribute attribute) {
+<span class="nc bnc" id="L907" title="All 2 branches missed.">    if (attribute == null) {</span>
+<span class="nc" id="L908">      return -1;</span>
+    }
+<span class="nc" id="L910">    return getLineNumber(attribute.getParent());</span>
+  }
+
+  public static int getLineNumber(Element element) {
+<span class="nc bnc" id="L914" title="All 2 branches missed.">    if (element == null) {</span>
+<span class="nc" id="L915">      return -1;</span>
+    }
+<span class="nc" id="L917">    return ((LElement) element).getLineNumber();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

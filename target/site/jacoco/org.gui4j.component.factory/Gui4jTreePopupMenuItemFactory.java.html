@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jTreePopupMenuItemFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jTreePopupMenuItemFactory.java</span></div><h1>Gui4jTreePopupMenuItemFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JMenuItem;
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.component.Gui4jTree;
+import org.gui4j.component.Gui4jTreePopupMenuItem;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeEnumeration;
+import org.gui4j.util.Filter;
+
+<span class="nc" id="L17">public class Gui4jTreePopupMenuItemFactory extends Gui4jPopupMenuItemFactory {</span>
+  public static final String TREE_POPUP_MENUITEM_NAME = &quot;treePopupMenuItem&quot;;
+  private static final String COMMAND = &quot;command&quot;;
+
+  private static final Map mCommand;
+
+  static {
+<span class="nc" id="L24">    mCommand = new HashMap();</span>
+<span class="nc" id="L25">    mCommand.put(&quot;collapse&quot;, new Integer(Gui4jTree.COMMAND_COLLAPSE));</span>
+<span class="nc" id="L26">    mCommand.put(&quot;expand&quot;, new Integer(Gui4jTree.COMMAND_EXPAND));</span>
+<span class="nc" id="L27">    mCommand.put(&quot;setroot&quot;, new Integer(Gui4jTree.COMMAND_SETROOT));</span>
+<span class="nc" id="L28">    mCommand.put(&quot;resetroot&quot;, new Integer(Gui4jTree.COMMAND_RESETROOT));</span>
+<span class="nc" id="L29">    mCommand.put(&quot;collapseall&quot;, new Integer(Gui4jTree.COMMAND_COLLAPSE_ALL));</span>
+<span class="nc" id="L30">    mCommand.put(&quot;expandall&quot;, new Integer(Gui4jTree.COMMAND_EXPAND_ALL));</span>
+<span class="nc" id="L31">  }</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.component.factory.Gui4jJComponentFactory#defineGui4jJComponentBy(org.gui4j.core.Gui4jComponentContainer, java.lang.String, org.dom4j.LElement)
+   */
+  protected Gui4jJComponent defineGui4jJComponentBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e) {
+<span class="nc" id="L38">    Class contextType = extractContextType(gui4jComponentContainer, e);</span>
+<span class="nc" id="L39">    int command =</span>
+<span class="nc" id="L40">        getMapValue(gui4jComponentContainer, e, COMMAND, mCommand, Gui4jTree.COMMAND_EXPAND);</span>
+<span class="nc" id="L41">    return new Gui4jTreePopupMenuItem(</span>
+        gui4jComponentContainer, JMenuItem.class, contextType, command, id);
+  }
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc" id="L46">    super.addToplevelAttributes(attrList, filter);</span>
+<span class="nc bnc" id="L47" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jTreePopupMenuItemFactory.class)) {</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">      for (Iterator it = attrList.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L49">        Attribute attribute = (Attribute) it.next();</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (attribute.getName().equals(ACTIONCOMMAND)) {</span>
+<span class="nc" id="L51">          it.remove();</span>
+        }
+<span class="nc" id="L53">      }</span>
+
+<span class="nc" id="L55">      attrList.add(new Attribute(COMMAND, new AttributeTypeEnumeration(mCommand), REQUIRED, false));</span>
+    }
+<span class="nc" id="L57">  }</span>
+
+  /**
+   * @see org.gui4j.core.Gui4jComponentFactory#getName()
+   */
+  public String getName() {
+<span class="nc" id="L63">    return TREE_POPUP_MENUITEM_NAME;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jJTable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">Gui4jJTable.java</span></div><h1>Gui4jJTable.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing;
+
+import java.awt.Component;
+import java.awt.EventQueue;
+import java.awt.event.FocusEvent;
+import java.util.Map;
+import javax.swing.CellEditor;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.Gui4jGetValue;
+import org.gui4j.core.Gui4jComponentInstance;
+
+public class Gui4jJTable extends JTable {
+  private final Gui4jTableListener mGui4jTableListener;
+  private final Gui4jGetValue mAutomaticRefresh;
+
+  /**
+   * Constructor for Gui4jJTable.
+   *
+   * @param dm
+   * @param gui4jTableListener
+   */
+  public Gui4jJTable(TableModel dm, Gui4jTableListener gui4jTableListener) {
+<span class="nc" id="L31">    super(dm);</span>
+<span class="nc" id="L32">    mGui4jTableListener = gui4jTableListener;</span>
+<span class="nc" id="L33">    mAutomaticRefresh =</span>
+<span class="nc" id="L34">        new Gui4jGetValue() {</span>
+          public Object getValue(Gui4jCallBase gui4jController, Map paramMap, Object defaultValue) {
+<span class="nc" id="L36">            TableModel tableModel = getModel();</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">            if (tableModel instanceof AbstractTableModel) {</span>
+              // follow Swing's single thread rule when updating components
+<span class="nc" id="L39">              final AbstractTableModel abstractTableModel = (AbstractTableModel) tableModel;</span>
+<span class="nc" id="L40">              EventQueue.invokeLater(</span>
+<span class="nc" id="L41">                  new Runnable() {</span>
+                    public void run() {
+<span class="nc" id="L43">                      abstractTableModel.fireTableDataChanged();</span>
+<span class="nc" id="L44">                    }</span>
+                  });
+            }
+<span class="nc" id="L47">            return null;</span>
+          }
+
+          public Object getValueNoErrorChecking(
+              Gui4jCallBase gui4jController,
+              Map paramMap,
+              Gui4jComponentInstance componentInstance) {
+<span class="nc" id="L54">            return getValue(gui4jController, paramMap, null);</span>
+          }
+
+          public String toString() {
+<span class="nc" id="L58">            return AbstractTableModel.class.getName() + &quot;.fireTableDataChanged()&quot;;</span>
+          }
+        };
+<span class="nc" id="L61">  }</span>
+
+  public Gui4jGetValue getAutomaticRefreshAction() {
+<span class="nc" id="L64">    return mAutomaticRefresh;</span>
+  }
+
+  protected void processFocusEvent(FocusEvent e) {
+<span class="nc bnc" id="L68" title="All 4 branches missed.">    boolean ok = e.getID() == FocusEvent.FOCUS_LOST &amp;&amp; cellEditor != null;</span>
+<span class="nc" id="L69">    Component c = e.getOppositeComponent();</span>
+<span class="nc bnc" id="L70" title="All 4 branches missed.">    if (ok &amp;&amp; c instanceof Gui4jCellEditor.CellEditorTextField) {</span>
+<span class="nc" id="L71">      Gui4jCellEditor.CellEditorTextField textField = (Gui4jCellEditor.CellEditorTextField) c;</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">      ok = textField.getCellEditor() != getCellEditor();</span>
+    }
+<span class="nc bnc" id="L74" title="All 4 branches missed.">    if (ok &amp;&amp; c instanceof ComboBoxHorizontalScroll) {</span>
+<span class="nc" id="L75">      ComboBoxHorizontalScroll comboBoxHorizontalScroll = (ComboBoxHorizontalScroll) c;</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">      ok = comboBoxHorizontalScroll.getCellEditor() != getCellEditor();</span>
+    }
+<span class="nc bnc" id="L78" title="All 4 branches missed.">    if (ok &amp;&amp; c instanceof JCheckBox) {</span>
+<span class="nc" id="L79">      CellEditor lCellEditor = getDefaultEditor(Boolean.class);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">      if (lCellEditor instanceof DefaultCellEditor) {</span>
+<span class="nc" id="L81">        DefaultCellEditor defaultCellEditor = (DefaultCellEditor) lCellEditor;</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        ok = defaultCellEditor.getComponent() != c;</span>
+      }
+    }
+<span class="nc bnc" id="L85" title="All 2 branches missed.">    if (ok) {</span>
+<span class="nc" id="L86">      cellEditor.stopCellEditing();</span>
+    }
+<span class="nc" id="L88">    super.processFocusEvent(e);</span>
+<span class="nc" id="L89">  }</span>
+
+  public void endCellEditing() {
+<span class="nc" id="L92">    TableCellEditor lCellEditor = getCellEditor();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (lCellEditor != null) {</span>
+<span class="nc" id="L94">      lCellEditor.stopCellEditing();</span>
+    }
+<span class="nc" id="L96">  }</span>
+
+  /**
+   * @see javax.swing.JTable#getCellEditor(int, int)
+   */
+  public TableCellEditor getCellEditor(int row, int column) {
+<span class="nc" id="L102">    TableColumn tableColumn = getColumnModel().getColumn(column);</span>
+<span class="nc" id="L103">    TableCellEditor editor = tableColumn.getCellEditor();</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">    if (editor == null) {</span>
+<span class="nc" id="L105">      Class c = getColumnClass(column);</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">      if (c.equals(Object.class)) {</span>
+<span class="nc" id="L107">        Object o = getValueAt(row, column);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (o != null) {</span>
+<span class="nc" id="L109">          c = getValueAt(row, column).getClass();</span>
+        }
+      }
+<span class="nc" id="L112">      editor = getDefaultEditor(c);</span>
+    }
+<span class="nc" id="L114">    return mGui4jTableListener.getCellEditor(editor, row, column);</span>
+  }
+
+  /*
+   * (non-Javadoc comment)
+   *
+   * @see javax.swing.JTable#getCellRenderer(int, int)
+   */
+  public TableCellRenderer getCellRenderer(int row, int column) {
+<span class="nc" id="L123">    TableColumn tableColumn = getColumnModel().getColumn(column);</span>
+<span class="nc" id="L124">    TableCellRenderer renderer = tableColumn.getCellRenderer();</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    if (renderer == null) {</span>
+<span class="nc" id="L126">      Class c = getColumnClass(column);</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">      if (c.equals(Object.class)) {</span>
+<span class="nc" id="L128">        Object o = getValueAt(row, column);</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        if (o != null) {</span>
+<span class="nc" id="L130">          c = o.getClass();</span>
+        }
+      }
+<span class="nc" id="L133">      renderer = getDefaultRenderer(c);</span>
+    }
+<span class="nc" id="L135">    return mGui4jTableListener.getCellRenderer(renderer, row, column);</span>
+  }
+
+  /**
+   * @see javax.swing.JTable#prepareEditor(TableCellEditor, int, int)
+   */
+  public Component prepareEditor(TableCellEditor editor, int row, int column) {
+<span class="nc" id="L142">    Component component = super.prepareEditor(editor, row, column);</span>
+<span class="nc" id="L143">    mGui4jTableListener.prepareEditor(editor, row, column);</span>
+<span class="nc" id="L144">    return component;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jComponentInstance.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core</a> &gt; <span class="el_source">Gui4jComponentInstance.java</span></div><h1>Gui4jComponentInstance.java</h1><pre class="source lang-java linenums">package org.gui4j.core;
+
+import java.awt.Component;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.JComponent;
+import org.gui4j.Gui4jCallBase;
+
+/**
+ * Contains the combination of a Gui4jComponent and a Swing instance. Note that a Gui4jComponent
+ * depends only on a given resource name and a given controller class. Additionally, the same
+ * instance of a Gui4jComponent might be used for several Swing instances. On the other side, there
+ * is always one instance of Gui4jComponentInstance for each Swing instance.
+ */
+public final class Gui4jComponentInstance {
+  private Component mComponent;
+  private Gui4jQualifiedComponent mGui4jComponentInPath;
+  private Gui4jSwingContainer mGui4jSwingContainer;
+  private Map mStorage;
+  private Gui4jInternal mGui4j;
+  private Gui4jCallBase mGui4jCallBase;
+<span class="nc" id="L22">  private Object mContext = CONTEXT_NOT_INIT;</span>
+
+<span class="nc" id="L24">  private static final Object CONTEXT_NOT_INIT = new Object();</span>
+
+  public Gui4jComponentInstance(
+      Gui4jSwingContainer gui4jSwingContainer,
+      Component component,
+<span class="nc" id="L29">      Gui4jQualifiedComponent gui4jComponentInPath) {</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">    assert gui4jComponentInPath != null;</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">    assert component != null;</span>
+<span class="nc" id="L32">    mComponent = component;</span>
+<span class="nc" id="L33">    mGui4jComponentInPath = gui4jComponentInPath;</span>
+<span class="nc" id="L34">    mGui4jSwingContainer = gui4jSwingContainer;</span>
+<span class="nc" id="L35">    mStorage = new HashMap();</span>
+<span class="nc" id="L36">    mGui4j = gui4jComponentInPath.getGui4jComponent().getGui4j();</span>
+<span class="nc" id="L37">    mGui4jCallBase = gui4jSwingContainer.getGui4jCallBase(gui4jComponentInPath);</span>
+<span class="nc" id="L38">  }</span>
+
+  public Gui4jInternal getGui4j() {
+<span class="nc" id="L41">    return mGui4j;</span>
+  }
+
+  public Object getContext() {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    if (mContext == CONTEXT_NOT_INIT) {</span>
+<span class="nc" id="L46">      mContext = mGui4jComponentInPath.getGui4jComponent().evaluateContext(getGui4jCallBase());</span>
+    }
+<span class="nc" id="L48">    return mContext;</span>
+  }
+
+  public Component getComponent() {
+<span class="nc" id="L52">    return mComponent;</span>
+  }
+
+  public JComponent getSwingComponent() {
+<span class="nc" id="L56">    return (JComponent) mComponent;</span>
+  }
+
+  public Gui4jComponent getGui4jComponent() {
+<span class="nc bnc" id="L60" title="All 2 branches missed.">    return mGui4jComponentInPath == null ? null : mGui4jComponentInPath.getGui4jComponent();</span>
+  }
+
+  public Gui4jQualifiedComponent getGui4jComponentInPath() {
+<span class="nc" id="L64">    return mGui4jComponentInPath;</span>
+  }
+
+  public Gui4jSwingContainer getGui4jSwingContainer() {
+<span class="nc" id="L68">    return mGui4jSwingContainer;</span>
+  }
+
+  public void handleSuccess() {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">    if (mGui4jComponentInPath != null) {</span>
+<span class="nc" id="L73">      Gui4jComponent gui4jComponent = mGui4jComponentInPath.getGui4jComponent();</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">      if (gui4jComponent != null) {</span>
+<span class="nc" id="L75">        gui4jComponent.handleSuccess(this);</span>
+<span class="nc" id="L76">        return;</span>
+      }
+    }
+    // nur ausführen, wenn oben etwas nicht definiert ist (=&gt; Fehler)
+<span class="nc" id="L80">    getGui4j().handleSuccess(getGui4jCallBase(), null);</span>
+<span class="nc" id="L81">  }</span>
+
+  public void handleException(Throwable t) {
+<span class="nc bnc" id="L84" title="All 2 branches missed.">    if (mGui4jComponentInPath != null) {</span>
+<span class="nc" id="L85">      Gui4jComponent gui4jComponent = mGui4jComponentInPath.getGui4jComponent();</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">      if (gui4jComponent != null) {</span>
+<span class="nc" id="L87">        gui4jComponent.handleException(this, t);</span>
+<span class="nc" id="L88">        return;</span>
+      }
+    }
+    // nur ausführen, wenn oben etwas nicht definiert ist (=&gt; Fehler)
+<span class="nc" id="L92">    Gui4jInternal gui4j = getGui4j();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (gui4j != null) {</span>
+<span class="nc" id="L94">      getGui4j().handleException(getGui4jCallBase(), t, null);</span>
+    }
+<span class="nc" id="L96">  }</span>
+
+  /**
+   * Convenience method.
+   *
+   * @param path
+   * @return Gui4jComponentInstance
+   */
+  public Gui4jComponentInstance getGui4jComponentInstance(Gui4jQualifiedComponent path) {
+<span class="nc" id="L105">    return mGui4jSwingContainer.getGui4jComponentInstance(</span>
+<span class="nc" id="L106">        mGui4jComponentInPath.getGui4jComponentPath(), path);</span>
+  }
+
+  public Gui4jCallBase getGui4jCallBase() {
+<span class="nc" id="L110">    return mGui4jCallBase;</span>
+  }
+
+  /**
+   * Returns the storage.
+   *
+   * @param tag
+   * @return Object
+   */
+  public Object getStorage(Object tag) {
+<span class="nc" id="L120">    return mStorage.get(tag);</span>
+  }
+
+  /**
+   * Sets the storage.
+   *
+   * @param tag
+   * @param storage The storage to set
+   */
+  public void setStorage(Object tag, Object storage) {
+<span class="nc" id="L130">    mStorage.put(tag, storage);</span>
+<span class="nc" id="L131">  }</span>
+
+  public void refreshComponent() {
+<span class="nc" id="L134">    getGui4jComponent().refreshComponent(this);</span>
+<span class="nc" id="L135">  }</span>
+
+  /** Gibt Speicher frei */
+  public void dispose() {
+<span class="nc bnc" id="L139" title="All 2 branches missed.">    if (mGui4jComponentInPath != null) {</span>
+<span class="nc" id="L140">      mGui4jComponentInPath.getGui4jComponent().dispose(this);</span>
+    }
+<span class="nc" id="L142">    mGui4jSwingContainer = null;</span>
+<span class="nc" id="L143">    mComponent = null;</span>
+<span class="nc" id="L144">    mGui4jComponentInPath = null;</span>
+<span class="nc" id="L145">    mGui4jSwingContainer = null;</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">    if (mStorage != null) {</span>
+<span class="nc" id="L147">      mStorage.clear();</span>
+    }
+<span class="nc" id="L149">    mStorage = null;</span>
+<span class="nc" id="L150">    mGui4j = null;</span>
+<span class="nc" id="L151">    mGui4jCallBase = null;</span>
+<span class="nc" id="L152">    mContext = null;</span>
+<span class="nc" id="L153">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LElement.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.dom4j</a> &gt; <span class="el_source">LElement.java</span></div><h1>LElement.java</h1><pre class="source lang-java linenums">package org.dom4j;
+
+import org.dom4j.tree.DefaultElement;
+
+public class LElement extends DefaultElement {
+  private int lineNumber;
+
+  public LElement(String name) {
+<span class="nc" id="L9">    super(name);</span>
+<span class="nc" id="L10">  }</span>
+
+  public LElement(QName qname) {
+<span class="nc" id="L13">    super(qname);</span>
+<span class="nc" id="L14">  }</span>
+
+  public String toString() {
+<span class="nc" id="L17">    return super.toString() + &quot; lineNumber: &quot; + lineNumber;</span>
+  }
+
+  public Object clone() {
+<span class="nc" id="L21">    LElement answer = (LElement) super.clone();</span>
+
+<span class="nc bnc" id="L23" title="All 2 branches missed.">    if (answer != this) {</span>
+<span class="nc" id="L24">      answer.lineNumber = lineNumber;</span>
+    }
+
+<span class="nc" id="L27">    return answer;</span>
+  }
+
+  // Implementation methods
+  // -------------------------------------------------------------------------
+
+  protected Element createElement(String name) {
+<span class="nc" id="L34">    LElement answer = (LElement) getDocumentFactory().createElement(name);</span>
+<span class="nc" id="L35">    answer.setLineNumber(getLineNumber());</span>
+
+<span class="nc" id="L37">    return answer;</span>
+  }
+
+  protected Element createElement(QName qName) {
+<span class="nc" id="L41">    LElement answer = (LElement) getDocumentFactory().createElement(qName);</span>
+<span class="nc" id="L42">    answer.setLineNumber(getLineNumber());</span>
+
+<span class="nc" id="L44">    return answer;</span>
+  }
+
+  /**
+   * @return Returns the lineNumber.
+   */
+  public int getLineNumber() {
+<span class="nc" id="L51">    return lineNumber;</span>
+  }
+
+  /**
+   * @param lineNumber The lineNumber to set.
+   */
+  public void setLineNumber(int lineNumber) {
+<span class="nc" id="L58">    this.lineNumber = lineNumber;</span>
+<span class="nc" id="L59">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

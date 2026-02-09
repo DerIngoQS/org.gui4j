@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jListFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jListFactory.java</span></div><h1>Gui4jListFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.ListSelectionModel;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.component.Gui4jList;
+import org.gui4j.constants.Const;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentContainerManager;
+import org.gui4j.core.Gui4jMap1;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeAlias;
+import org.gui4j.core.definition.AttributeTypeEnumeration;
+import org.gui4j.core.definition.AttributeTypeInteger;
+import org.gui4j.core.definition.AttributeTypeMethodCall;
+import org.gui4j.core.definition.Param;
+import org.gui4j.exception.Gui4jUncheckedException;
+import org.gui4j.util.Filter;
+
+<span class="nc" id="L28">public final class Gui4jListFactory extends Gui4jJComponentFactory {</span>
+  private static final String NAME = &quot;list&quot;;
+  private static final String ARRAYCONTENT = &quot;arrayContent&quot;;
+  private static final String CONTENT = &quot;content&quot;;
+  private static final String CONTENTTYPE = &quot;contentType&quot;;
+  private static final String SELECTIONMODE = &quot;selectionMode&quot;;
+  private static final String SELECTEDINDICES = &quot;selectedIndices&quot;;
+  private static final String SELECTEDITEMS = &quot;selectedItems&quot;;
+  private static final String SELECTEDITEM = &quot;selectedItem&quot;;
+  private static final String ROWVALUE = &quot;value&quot;;
+  private static final String ONSELECT = &quot;onSelect&quot;;
+  private static final String ONDOUBLECLICK = &quot;onDoubleClick&quot;;
+  private static final String VISIBLEROWCOUNT = &quot;visibleRowCount&quot;;
+
+<span class="nc" id="L42">  private static final Log mLogger = LogFactory.getLog(Gui4jListFactory.class);</span>
+
+  public static final Map mSelectionMode;
+
+  static {
+<span class="nc" id="L47">    mSelectionMode = new HashMap();</span>
+<span class="nc" id="L48">    mSelectionMode.put(&quot;multiple&quot;, new Integer(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION));</span>
+<span class="nc" id="L49">    mSelectionMode.put(</span>
+        &quot;single_interval&quot;, new Integer(ListSelectionModel.SINGLE_INTERVAL_SELECTION));
+<span class="nc" id="L51">    mSelectionMode.put(&quot;single&quot;, new Integer(ListSelectionModel.SINGLE_SELECTION));</span>
+<span class="nc" id="L52">  }</span>
+
+  public static String listSelectionModeType() {
+<span class="nc" id="L55">    return &quot;(multiple|single_interval|single)&quot;;</span>
+  }
+
+  public static Collection listSelectionModeTypeParams() {
+<span class="nc" id="L59">    List l = new ArrayList();</span>
+<span class="nc" id="L60">    l.add(new Param(&quot;multiple&quot;));</span>
+<span class="nc" id="L61">    l.add(new Param(&quot;singleInterval&quot;));</span>
+<span class="nc" id="L62">    l.add(new Param(&quot;single&quot;));</span>
+<span class="nc" id="L63">    return l;</span>
+  }
+
+  public static int getSelectionMode(String selectionMode) {
+<span class="nc" id="L67">    Integer i = (Integer) mSelectionMode.get(selectionMode);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">    if (i != null) {</span>
+<span class="nc" id="L69">      return i.intValue();</span>
+    } else {
+<span class="nc" id="L71">      mLogger.warn(&quot;Unknown list-selection-mode &quot; + selectionMode);</span>
+<span class="nc" id="L72">      return ListSelectionModel.SINGLE_SELECTION;</span>
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.gui4j.component.factory.Gui4jJComponentFactory#defineGui4jJComponentBy(org.gui4j.core.Gui4jComponentContainer, java.lang.String, org.dom4j.LElement)
+   */
+  protected Gui4jJComponent defineGui4jJComponentBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e) {
+<span class="nc" id="L81">    String contentTypeAlias = gui4jComponentContainer.getAttrValue(e, CONTENTTYPE);</span>
+<span class="nc" id="L82">    Class contentType = gui4jComponentContainer.getClassForAliasName(contentTypeAlias);</span>
+<span class="nc bnc" id="L83" title="All 4 branches missed.">    if (contentTypeAlias != null &amp;&amp; contentType == null) {</span>
+<span class="nc" id="L84">      Object[] args = {contentTypeAlias, contentTypeAlias};</span>
+<span class="nc" id="L85">      throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L86">          gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L87">          Gui4jComponentContainerManager.getLineNumber(e.attribute(CONTENTTYPE)),</span>
+          RESOURCE_ERROR_alias_not_defined_in_path,
+          args);
+    }
+<span class="nc bnc" id="L91" title="All 2 branches missed.">    if (contentType == null) {</span>
+<span class="nc" id="L92">      contentType = Object.class;</span>
+    }
+<span class="nc" id="L94">    int visibleRowCount = getIntValue(gui4jComponentContainer, e, VISIBLEROWCOUNT, 0);</span>
+<span class="nc" id="L95">    Gui4jList gui4jList = new Gui4jList(gui4jComponentContainer, id, visibleRowCount);</span>
+    {
+<span class="nc" id="L97">      Map m = new Gui4jMap1(Const.PARAM_ITEM, contentType);</span>
+<span class="nc" id="L98">      Gui4jCall rowValue = getGui4jAccessInstance(Object.class, m, gui4jList, e, ROWVALUE);</span>
+<span class="nc" id="L99">      gui4jList.setRowValue(rowValue);</span>
+    }
+<span class="nc" id="L101">    gui4jList.definePropertySetter(</span>
+<span class="nc" id="L102">        ARRAYCONTENT, getGui4jAccessInstance(Object[].class, gui4jList, e, ARRAYCONTENT));</span>
+<span class="nc" id="L103">    gui4jList.definePropertySetter(</span>
+<span class="nc" id="L104">        CONTENT, getGui4jAccessInstance(Collection.class, gui4jList, e, CONTENT));</span>
+<span class="nc" id="L105">    gui4jList.definePropertySetter(</span>
+<span class="nc" id="L106">        SELECTEDINDICES, getGui4jAccessInstance(int[].class, gui4jList, e, SELECTEDINDICES));</span>
+
+<span class="nc" id="L108">    Gui4jCall selectedItemsCall =</span>
+<span class="nc" id="L109">        getGui4jAccessInstance(Collection.class, gui4jList, e, SELECTEDITEMS);</span>
+<span class="nc" id="L110">    gui4jList.setSelectedItemsCall(selectedItemsCall);</span>
+<span class="nc" id="L111">    gui4jList.definePropertySetter(SELECTEDITEMS, selectedItemsCall);</span>
+
+<span class="nc" id="L113">    Gui4jCall selectedItemCall = getGui4jAccessInstance(Object.class, gui4jList, e, SELECTEDITEM);</span>
+<span class="nc" id="L114">    gui4jList.setSelectedItemCall(selectedItemCall);</span>
+<span class="nc" id="L115">    gui4jList.definePropertySetter(SELECTEDITEM, selectedItemCall);</span>
+
+    {
+<span class="nc" id="L118">      String listSelectionMode = gui4jComponentContainer.getAttrValue(e, SELECTIONMODE);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">      if (listSelectionMode != null) {</span>
+<span class="nc" id="L120">        gui4jList.setSelectionMode(getSelectionMode(listSelectionMode));</span>
+      }
+    }
+
+    {
+<span class="nc" id="L125">      Map paramMap = new HashMap();</span>
+<span class="nc" id="L126">      paramMap.put(Const.PARAM_ITEM, contentType);</span>
+<span class="nc" id="L127">      paramMap.put(Const.PARAM_INDEX, Integer.TYPE);</span>
+<span class="nc" id="L128">      paramMap.put(Const.PARAM_INDICES, int[].class);</span>
+<span class="nc" id="L129">      paramMap.put(Const.PARAM_ITEMS, Object[].class);</span>
+<span class="nc" id="L130">      gui4jList.setOnSelect(getGui4jAccessInstance(null, paramMap, gui4jList, e, ONSELECT));</span>
+<span class="nc" id="L131">      gui4jList.setOnDoubleClick(</span>
+<span class="nc" id="L132">          getGui4jAccessInstance(null, paramMap, gui4jList, e, ONDOUBLECLICK));</span>
+    }
+<span class="nc" id="L134">    return gui4jList;</span>
+  }
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc" id="L138">    super.addToplevelAttributes(attrList, filter);</span>
+<span class="nc bnc" id="L139" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jListFactory.class)) {</span>
+<span class="nc" id="L140">      attrList.add(</span>
+          new Attribute(ARRAYCONTENT, new AttributeTypeMethodCall(Object[].class), IMPLIED, false));
+<span class="nc" id="L142">      attrList.add(</span>
+          new Attribute(CONTENT, new AttributeTypeMethodCall(Collection.class), IMPLIED, false));
+<span class="nc" id="L144">      attrList.add(</span>
+          new Attribute(
+              SELECTIONMODE,
+<span class="nc" id="L147">              new AttributeTypeEnumeration(listSelectionModeTypeParams()),</span>
+              IMPLIED,
+              false));
+<span class="nc" id="L150">      attrList.add(</span>
+          new Attribute(SELECTEDINDICES, new AttributeTypeMethodCall(int[].class), IMPLIED, false));
+<span class="nc" id="L152">      attrList.add(</span>
+          new Attribute(
+              SELECTEDITEMS, new AttributeTypeMethodCall(Collection.class), IMPLIED, false));
+<span class="nc" id="L155">      attrList.add(</span>
+          new Attribute(SELECTEDITEM, new AttributeTypeMethodCall(Object.class), IMPLIED, false));
+<span class="nc" id="L157">      attrList.add(new Attribute(CONTENTTYPE, new AttributeTypeAlias(), IMPLIED, false));</span>
+      {
+<span class="nc" id="L159">        List params = new ArrayList();</span>
+<span class="nc" id="L160">        params.add(new Param(Const.PARAM_ITEM));</span>
+<span class="nc" id="L161">        attrList.add(</span>
+            new Attribute(
+                ROWVALUE, new AttributeTypeMethodCall(Object.class, params), IMPLIED, false));
+      }
+      {
+<span class="nc" id="L166">        List params = new ArrayList();</span>
+<span class="nc" id="L167">        params.add(new Param(Const.PARAM_ITEM));</span>
+<span class="nc" id="L168">        params.add(new Param(Const.PARAM_INDEX));</span>
+<span class="nc" id="L169">        params.add(new Param(Const.PARAM_INDICES));</span>
+<span class="nc" id="L170">        params.add(new Param(Const.PARAM_ITEMS));</span>
+<span class="nc" id="L171">        attrList.add(</span>
+            new Attribute(ONSELECT, new AttributeTypeMethodCall(null, params), IMPLIED, false));
+<span class="nc" id="L173">        attrList.add(</span>
+            new Attribute(
+                ONDOUBLECLICK, new AttributeTypeMethodCall(null, params), IMPLIED, false));
+      }
+<span class="nc" id="L177">      attrList.add(new Attribute(VISIBLEROWCOUNT, new AttributeTypeInteger(), IMPLIED, false));</span>
+    }
+<span class="nc" id="L179">  }</span>
+
+  /**
+   * @see org.gui4j.core.Gui4jComponentFactory#getName()
+   */
+  public String getName() {
+<span class="nc" id="L185">    return NAME;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

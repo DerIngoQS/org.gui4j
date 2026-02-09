@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SimpleEvent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.event</a> &gt; <span class="el_source">SimpleEvent.java</span></div><h1>SimpleEvent.java</h1><pre class="source lang-java linenums">package org.gui4j.event;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/** An event is fired only if the &lt;code&gt;fireEvent&lt;/code&gt; method is called */
+public class SimpleEvent implements Gui4jEvent {
+  private final List listeners;
+<span class="nc" id="L9">  private boolean enabled = true;</span>
+
+<span class="nc" id="L11">  public SimpleEvent() {</span>
+<span class="nc" id="L12">    listeners = new ArrayList();</span>
+<span class="nc" id="L13">  }</span>
+
+  public synchronized void addEventListener(Gui4jEventListener listener) {
+<span class="nc" id="L16">    listeners.add(listener);</span>
+<span class="nc" id="L17">  }</span>
+
+  public synchronized void removeEventListener(Gui4jEventListener listener) {
+<span class="nc" id="L20">    listeners.remove(listener);</span>
+<span class="nc" id="L21">  }</span>
+
+  public final void fireEvent() {
+<span class="nc bnc" id="L24" title="All 2 branches missed.">    if (enabled) {</span>
+      // We take a snapshot of the listeners in a synchronized
+      // block but notify the listeners outside of it.
+      // Otherwise we have a Concurrent Modification problem if
+      // the notification code tries to add or remove a listener.
+      Object[] listenersSnapshot;
+<span class="nc" id="L30">      synchronized (this) {</span>
+<span class="nc" id="L31">        listenersSnapshot = listeners.toArray();</span>
+<span class="nc" id="L32">      }</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">      for (int i = listenersSnapshot.length - 1; i &gt;= 0; i--) {</span>
+<span class="nc" id="L34">        ((Gui4jEventListener) listenersSnapshot[i]).eventOccured();</span>
+      }
+    }
+<span class="nc" id="L37">  }</span>
+
+  /**
+   * Returns the enabled.
+   *
+   * @return boolean
+   */
+  public boolean isEnabled() {
+<span class="nc" id="L45">    return enabled;</span>
+  }
+
+  /**
+   * Sets the enabled.
+   *
+   * @param enabled The enabled to set
+   */
+  public void setEnabled(boolean enabled) {
+<span class="nc" id="L54">    this.enabled = enabled;</span>
+<span class="nc" id="L55">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

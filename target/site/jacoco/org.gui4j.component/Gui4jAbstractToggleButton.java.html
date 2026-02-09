@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jAbstractToggleButton.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jAbstractToggleButton.java</span></div><h1>Gui4jAbstractToggleButton.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import javax.swing.JToggleButton;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.listener.Gui4jActionListenerButton;
+
+public abstract class Gui4jAbstractToggleButton extends Gui4jAbstractButton {
+
+  public static final String PARAM_VALUE = &quot;value&quot;;
+
+  private Gui4jCall mOnSelect;
+
+  /**
+   * @param gui4jComponentContainer
+   * @param buttonClass
+   * @param id
+   */
+  public Gui4jAbstractToggleButton(
+      Gui4jComponentContainer gui4jComponentContainer, Class buttonClass, String id) {
+<span class="nc" id="L22">    super(gui4jComponentContainer, buttonClass, id);</span>
+<span class="nc" id="L23">  }</span>
+
+  /**
+   * Sets the onSelect.
+   *
+   * @param onSelect The onSelect to set
+   */
+  public void setOnSelect(Gui4jCall onSelect) {
+<span class="nc" id="L31">    mOnSelect = onSelect;</span>
+<span class="nc" id="L32">  }</span>
+
+  /**
+   * @see org.gui4j.core.Gui4jAbstractComponent#setProperties(Gui4jComponentInstance)
+   */
+  protected void setProperties(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L38">    super.setProperties(gui4jComponentInstance);</span>
+<span class="nc" id="L39">    JToggleButton button = (JToggleButton) gui4jComponentInstance.getSwingComponent();</span>
+
+<span class="nc bnc" id="L41" title="All 2 branches missed.">    if (mOnSelect != null) {</span>
+<span class="nc" id="L42">      Gui4jActionListenerButton actionListener =</span>
+          new Gui4jActionListenerButton(gui4jComponentInstance);
+<span class="nc" id="L44">      button.addActionListener(actionListener);</span>
+<span class="nc" id="L45">      actionListener.setActionPerformed(mOnSelect);</span>
+    }
+<span class="nc" id="L47">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

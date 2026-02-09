@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BooleanTableCellRenderer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">BooleanTableCellRenderer.java</span></div><h1>BooleanTableCellRenderer.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing;
+
+import java.awt.Color;
+import java.awt.Component;
+import javax.swing.JCheckBox;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.table.TableCellRenderer;
+
+public class BooleanTableCellRenderer extends JCheckBox implements TableCellRenderer {
+
+  private final Border noFocusBorder;
+
+  // background color used when the cell is not selected
+  private Color unselectedBackground;
+
+  public BooleanTableCellRenderer(Border noFocusBorder) {
+<span class="nc" id="L20">    super();</span>
+<span class="nc" id="L21">    setHorizontalAlignment(SwingConstants.CENTER);</span>
+<span class="nc" id="L22">    this.noFocusBorder = noFocusBorder;</span>
+
+<span class="nc" id="L24">    setBorder(noFocusBorder);</span>
+<span class="nc" id="L25">    setBorderPainted(true);</span>
+<span class="nc" id="L26">    setOpaque(true);</span>
+<span class="nc" id="L27">  }</span>
+
+  public Component getTableCellRendererComponent(
+      JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+    // is the table cell selected?
+<span class="nc bnc" id="L33" title="All 2 branches missed.">    if (isSelected) {</span>
+<span class="nc" id="L34">      setForeground(table.getSelectionForeground());</span>
+<span class="nc" id="L35">      setBackground(table.getSelectionBackground());</span>
+    } else {
+<span class="nc" id="L37">      setForeground(table.getForeground());</span>
+<span class="nc" id="L38">      setBackground(table.getBackground());</span>
+    }
+
+    // should the checkmark be set?
+<span class="nc bnc" id="L42" title="All 4 branches missed.">    setSelected((value != null &amp;&amp; ((Boolean) value).booleanValue()));</span>
+
+    // should we paint a focus border?
+<span class="nc bnc" id="L45" title="All 2 branches missed.">    if (hasFocus) {</span>
+<span class="nc" id="L46">      setBorder(UIManager.getBorder(&quot;Table.focusCellHighlightBorder&quot;));</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">      if (table.isCellEditable(row, column)) {</span>
+<span class="nc" id="L48">        super.setForeground(UIManager.getColor(&quot;Table.focusCellForeground&quot;));</span>
+<span class="nc" id="L49">        super.setBackground(UIManager.getColor(&quot;Table.focusCellBackground&quot;));</span>
+      }
+    } else {
+<span class="nc" id="L52">      setBorder(noFocusBorder);</span>
+    }
+
+<span class="nc" id="L55">    return this;</span>
+  }
+
+  public void setUnselectedBackground(Color unselectedBackground) {
+<span class="nc" id="L59">    this.unselectedBackground = unselectedBackground;</span>
+<span class="nc" id="L60">  }</span>
+
+  /**
+   * This method returns the background color to use for an unselected table cell. This method is
+   * provided for custom swing UI delegates that need to know the original background color, e.g.
+   * for rendering the checkbox icon independently from the cell being selected or not.
+   *
+   * @return The currently active background color for non-selected table cells.
+   */
+  public Color getUnselectedBackground() {
+<span class="nc" id="L70">    return unselectedBackground;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

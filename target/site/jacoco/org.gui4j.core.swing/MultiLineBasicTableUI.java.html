@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MultiLineBasicTableUI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.swing</a> &gt; <span class="el_source">MultiLineBasicTableUI.java</span></div><h1>MultiLineBasicTableUI.java</h1><pre class="source lang-java linenums">package org.gui4j.core.swing;
+
+/**
+ * FlexiBasicTableUI.java
+ *
+ * &lt;p&gt;Created: Tue May 18 11:19:04 1999
+ *
+ * @author Thomas Wernitz, Da Vinci Communications Ltd &lt;thomas_wernitz@clear.net.nz&gt;
+ *     &lt;p&gt;credit to Zafir Anjum for JTableEx and thanks to SUN for their source code ;)
+ */
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Enumeration;
+import javax.swing.JComponent;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+
+public class MultiLineBasicTableUI extends javax.swing.plaf.basic.BasicTableUI {
+
+  public MultiLineBasicTableUI() {
+<span class="nc" id="L26">    super();</span>
+<span class="nc" id="L27">  }</span>
+
+  private Dimension createTableSize(long width) {
+<span class="nc" id="L30">    int numCols = table.getColumnCount();</span>
+<span class="nc" id="L31">    int numRows = table.getRowCount();</span>
+<span class="nc" id="L32">    TableModel tm = table.getModel();</span>
+<span class="nc" id="L33">    int fontHeight = table.getFontMetrics(table.getFont()).getHeight();</span>
+<span class="nc" id="L34">    int[] height = new int[numRows];</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">    for (int i = 0; i &lt; numRows; i++) height[i] = fontHeight; // init to font height as minimum</span>
+
+<span class="nc" id="L37">    Enumeration cols = table.getColumnModel().getColumns();</span>
+<span class="nc" id="L38">    int i = 0;</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">    while (cols.hasMoreElements()) {</span>
+<span class="nc" id="L40">      TableColumn col = (TableColumn) cols.nextElement();</span>
+<span class="nc" id="L41">      TableCellRenderer tcr = col.getCellRenderer();</span>
+<span class="nc" id="L42">      int colWidth = col.getWidth();</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">      for (int j = 0; j &lt; numRows; j++) {</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (tcr instanceof MultiLineCellRenderer) {</span>
+<span class="nc" id="L45">          height[j] =</span>
+<span class="nc" id="L46">              Math.max(</span>
+                  height[j],
+<span class="nc" id="L48">                  ((MultiLineTable) table).getHeight((String) tm.getValueAt(j, i), colWidth));</span>
+        }
+      }
+<span class="nc" id="L51">      i++;</span>
+<span class="nc" id="L52">    }</span>
+
+<span class="nc" id="L54">    int totalMarginWidth = table.getColumnModel().getColumnMargin() * numCols;</span>
+    // Width is always positive. The call to abs() is a workaround for
+    // a bug in the 1.1.6 JIT on Windows.
+<span class="nc" id="L57">    long widthWithMargin = Math.abs(width) + totalMarginWidth;</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (widthWithMargin &gt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L59">      widthWithMargin = Integer.MAX_VALUE;</span>
+    }
+<span class="nc" id="L61">    int totalHeight = 0;</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    for (int k = 0; k &lt; numRows; k++) totalHeight += height[k];</span>
+<span class="nc" id="L63">    return new Dimension((int) widthWithMargin, totalHeight + numRows * table.getRowMargin());</span>
+  }
+
+  public Dimension getMinimumSize(JComponent c) {
+<span class="nc" id="L67">    long width = 0;</span>
+<span class="nc" id="L68">    Enumeration enumeration = table.getColumnModel().getColumns();</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">    while (enumeration.hasMoreElements()) {</span>
+<span class="nc" id="L70">      TableColumn aColumn = (TableColumn) enumeration.nextElement();</span>
+<span class="nc" id="L71">      width = width + aColumn.getMinWidth();</span>
+<span class="nc" id="L72">    }</span>
+<span class="nc" id="L73">    return createTableSize(width);</span>
+  }
+
+  /**
+   * Return the preferred size of the table. The preferred height is the row height (plus inter-cell
+   * spacing) times the number of rows. The preferred width is the sum of the preferred widths of
+   * each column (plus inter-cell spacing).
+   *
+   * @param c
+   * @return Dimension
+   */
+  public Dimension getPreferredSize(JComponent c) {
+<span class="nc" id="L85">    long width = 0;</span>
+<span class="nc" id="L86">    Enumeration enumeration = table.getColumnModel().getColumns();</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">    while (enumeration.hasMoreElements()) {</span>
+<span class="nc" id="L88">      TableColumn aColumn = (TableColumn) enumeration.nextElement();</span>
+<span class="nc" id="L89">      width = width + aColumn.getPreferredWidth();</span>
+<span class="nc" id="L90">    }</span>
+<span class="nc" id="L91">    return createTableSize(width);</span>
+  }
+
+  /**
+   * Return the maximum size of the table. The maximum height is the row height (plus inter-cell
+   * spacing) times the number of rows. The maximum width is the sum of the maximum widths of each
+   * column (plus inter-cell spacing).
+   *
+   * @param c
+   * @return Dimension
+   */
+  public Dimension getMaximumSize(JComponent c) {
+<span class="nc" id="L103">    long width = 0;</span>
+<span class="nc" id="L104">    Enumeration enumeration = table.getColumnModel().getColumns();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">    while (enumeration.hasMoreElements()) {</span>
+<span class="nc" id="L106">      TableColumn aColumn = (TableColumn) enumeration.nextElement();</span>
+<span class="nc" id="L107">      width = width + aColumn.getMaxWidth();</span>
+<span class="nc" id="L108">    }</span>
+<span class="nc" id="L109">    return createTableSize(width);</span>
+  }
+
+  public void paint(Graphics g, JComponent c) {
+<span class="nc" id="L113">    Rectangle oldClipBounds = g.getClipBounds();</span>
+<span class="nc" id="L114">    Rectangle clipBounds = new Rectangle(oldClipBounds);</span>
+<span class="nc" id="L115">    int tableWidth = table.getColumnModel().getTotalColumnWidth();</span>
+<span class="nc" id="L116">    clipBounds.width = Math.min(clipBounds.width, tableWidth);</span>
+<span class="nc" id="L117">    g.setClip(clipBounds);</span>
+
+    // Paint the grid
+<span class="nc" id="L120">    paintGrid(g);</span>
+
+    // Paint the rows
+<span class="nc" id="L123">    int firstIndex = table.rowAtPoint(new Point(0, clipBounds.y));</span>
+<span class="nc" id="L124">    int lastIndex = lastVisibleRow(clipBounds);</span>
+
+<span class="nc" id="L126">    int rowMargin = table.getRowMargin();</span>
+<span class="nc" id="L127">    Rectangle rowRect =</span>
+        new Rectangle(
+<span class="nc" id="L129">            0, 0, tableWidth, ((MultiLineTable) table).getRowHeight(firstIndex) + rowMargin);</span>
+<span class="nc" id="L130">    rowRect.y = 0;</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">    for (int i = 0; i &lt; firstIndex; i++) {</span>
+<span class="nc" id="L132">      rowRect.y += ((MultiLineTable) table).getRowHeight(i) + rowMargin;</span>
+    }
+
+<span class="nc bnc" id="L135" title="All 2 branches missed.">    for (int index = firstIndex; index &lt;= lastIndex; index++) {</span>
+      // Paint any rows that need to be painted
+<span class="nc bnc" id="L137" title="All 2 branches missed.">      if (rowRect.intersects(clipBounds)) {</span>
+<span class="nc" id="L138">        paintRow(g, index);</span>
+      }
+<span class="nc" id="L140">      rowRect.y += ((MultiLineTable) table).getRowHeight(index) + rowMargin;</span>
+    }
+<span class="nc" id="L142">    g.setClip(oldClipBounds);</span>
+<span class="nc" id="L143">  }</span>
+
+  private void paintGrid(Graphics g) {
+<span class="nc" id="L146">    g.setColor(table.getGridColor());</span>
+
+<span class="nc bnc" id="L148" title="All 2 branches missed.">    if (table.getShowHorizontalLines()) {</span>
+<span class="nc" id="L149">      paintHorizontalLines(g);</span>
+    }
+<span class="nc bnc" id="L151" title="All 2 branches missed.">    if (table.getShowVerticalLines()) {</span>
+<span class="nc" id="L152">      paintVerticalLines(g);</span>
+    }
+<span class="nc" id="L154">  }</span>
+
+  /*
+   * This method paints horizontal lines regardless of whether the
+   * table is set to paint one automatically.
+   */
+  private void paintHorizontalLines(Graphics g) {
+<span class="nc" id="L161">    Rectangle r = g.getClipBounds();</span>
+<span class="nc" id="L162">    Rectangle rect = r;</span>
+
+<span class="nc" id="L164">    int firstIndex = table.rowAtPoint(new Point(0, r.y));</span>
+<span class="nc" id="L165">    int lastIndex = lastVisibleRow(r);</span>
+<span class="nc" id="L166">    int rowMargin = table.getRowMargin();</span>
+
+<span class="nc" id="L168">    int y = -rowMargin;</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    for (int i = 0; i &lt; firstIndex; i++) {</span>
+<span class="nc" id="L170">      y += ((MultiLineTable) table).getRowHeight(i) + rowMargin;</span>
+    }
+
+<span class="nc bnc" id="L173" title="All 2 branches missed.">    for (int index = firstIndex; index &lt;= lastIndex; index++) {</span>
+<span class="nc" id="L174">      y += ((MultiLineTable) table).getRowHeight(index) + rowMargin;</span>
+<span class="nc bnc" id="L175" title="All 4 branches missed.">      if ((y &gt;= rect.y) &amp;&amp; (y &lt;= (rect.y + rect.height))) {</span>
+<span class="nc" id="L176">        g.drawLine(rect.x, y, rect.x + rect.width - 1, y);</span>
+      }
+    }
+<span class="nc" id="L179">  }</span>
+
+  /*
+   * This method paints vertical lines regardless of whether the
+   * table is set to paint one automatically.
+   */
+  private void paintVerticalLines(Graphics g) {
+<span class="nc" id="L186">    Rectangle rect = g.getClipBounds();</span>
+<span class="nc" id="L187">    int x = 0;</span>
+<span class="nc" id="L188">    int count = table.getColumnCount();</span>
+<span class="nc" id="L189">    int horizontalSpacing = table.getIntercellSpacing().width;</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">    for (int index = 0; index &lt;= count; index++) {</span>
+<span class="nc bnc" id="L191" title="All 6 branches missed.">      if ((x &gt; 0) &amp;&amp; (((x - 1) &gt;= rect.x) &amp;&amp; ((x - 1) &lt;= (rect.x + rect.width)))) {</span>
+<span class="nc" id="L192">        g.drawLine(x - 1, rect.y, x - 1, rect.y + rect.height - 1);</span>
+      }
+
+<span class="nc bnc" id="L195" title="All 2 branches missed.">      if (index &lt; count)</span>
+<span class="nc" id="L196">        x += (table.getColumnModel().getColumn(index)).getWidth() + horizontalSpacing;</span>
+    }
+<span class="nc" id="L198">  }</span>
+
+  private void paintRow(Graphics g, int row) {
+<span class="nc" id="L201">    Rectangle rect = g.getClipBounds();</span>
+<span class="nc" id="L202">    int column = 0;</span>
+<span class="nc" id="L203">    boolean drawn = false;</span>
+<span class="nc" id="L204">    int draggedColumnIndex = -1;</span>
+<span class="nc" id="L205">    Rectangle draggedCellRect = null;</span>
+<span class="nc" id="L206">    Dimension spacing = table.getIntercellSpacing();</span>
+<span class="nc" id="L207">    JTableHeader header = table.getTableHeader();</span>
+
+    // Set up the cellRect
+<span class="nc" id="L210">    Rectangle cellRect = new Rectangle();</span>
+<span class="nc" id="L211">    cellRect.height = ((MultiLineTable) table).getRowHeight(row) + spacing.height;</span>
+<span class="nc" id="L212">    cellRect.y = 0;</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">    for (int i = 0; i &lt; row; i++) {</span>
+<span class="nc" id="L214">      cellRect.y += ((MultiLineTable) table).getRowHeight(i) + spacing.height;</span>
+    }
+
+<span class="nc" id="L217">    Enumeration enumeration = table.getColumnModel().getColumns();</span>
+
+    // Paint the non-dragged table cells first
+<span class="nc bnc" id="L220" title="All 2 branches missed.">    while (enumeration.hasMoreElements()) {</span>
+<span class="nc" id="L221">      TableColumn aColumn = (TableColumn) enumeration.nextElement();</span>
+
+<span class="nc" id="L223">      cellRect.width = aColumn.getWidth() + spacing.width;</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">      if (cellRect.intersects(rect)) {</span>
+<span class="nc" id="L225">        drawn = true;</span>
+<span class="nc bnc" id="L226" title="All 4 branches missed.">        if ((header == null) || (aColumn != header.getDraggedColumn())) {</span>
+<span class="nc" id="L227">          paintCell(g, cellRect, row, column);</span>
+        } else {
+          // Paint a gray well in place of the moving column
+          // This would be unnecessary if we drew the grid more cleverly
+<span class="nc" id="L231">          g.setColor(table.getParent().getBackground());</span>
+<span class="nc" id="L232">          g.fillRect(cellRect.x, cellRect.y, cellRect.width, cellRect.height);</span>
+<span class="nc" id="L233">          draggedCellRect = new Rectangle(cellRect);</span>
+<span class="nc" id="L234">          draggedColumnIndex = column;</span>
+        }
+      } else {
+<span class="nc bnc" id="L237" title="All 2 branches missed.">        if (drawn)</span>
+          // Don't need to iterate through the rest
+<span class="nc" id="L239">          break;</span>
+      }
+
+<span class="nc" id="L242">      cellRect.x += cellRect.width;</span>
+<span class="nc" id="L243">      column++;</span>
+<span class="nc" id="L244">    }</span>
+
+    // paint the dragged cell if we are dragging
+<span class="nc bnc" id="L247" title="All 4 branches missed.">    if (draggedColumnIndex != -1 &amp;&amp; draggedCellRect != null) {</span>
+<span class="nc" id="L248">      draggedCellRect.x += header.getDraggedDistance();</span>
+
+      // Fill the background
+<span class="nc" id="L251">      g.setColor(table.getBackground());</span>
+<span class="nc" id="L252">      g.fillRect(</span>
+          draggedCellRect.x, draggedCellRect.y, draggedCellRect.width, draggedCellRect.height);
+
+      // paint grid if necessary.
+<span class="nc" id="L256">      g.setColor(table.getGridColor());</span>
+<span class="nc" id="L257">      int x1 = draggedCellRect.x;</span>
+<span class="nc" id="L258">      int y1 = draggedCellRect.y;</span>
+<span class="nc" id="L259">      int x2 = x1 + draggedCellRect.width - 1;</span>
+<span class="nc" id="L260">      int y2 = y1 + draggedCellRect.height - 1;</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">      if (table.getShowVerticalLines()) {</span>
+        // Left
+        // g.drawLine(x1-1, y1, x1-1, y2);
+        // Right
+<span class="nc" id="L265">        g.drawLine(x2, y1, x2, y2);</span>
+      }
+      // Bottom
+<span class="nc bnc" id="L268" title="All 2 branches missed.">      if (table.getShowHorizontalLines()) {</span>
+<span class="nc" id="L269">        g.drawLine(x1, y2, x2, y2);</span>
+      }
+
+      // Render the cell value
+<span class="nc" id="L273">      paintCell(g, draggedCellRect, row, draggedColumnIndex);</span>
+    }
+<span class="nc" id="L275">  }</span>
+
+  private void paintCell(Graphics g, Rectangle cellRect, int row, int column) {
+    // The cellRect is inset by half the intercellSpacing before painted
+<span class="nc" id="L279">    int spacingHeight = table.getRowMargin();</span>
+<span class="nc" id="L280">    int spacingWidth = table.getColumnModel().getColumnMargin();</span>
+
+    // Round so that when the spacing is 1 the cell does not paint obscure lines.
+<span class="nc" id="L283">    cellRect.setBounds(</span>
+        cellRect.x + spacingWidth / 2,
+        cellRect.y + spacingHeight / 2,
+        cellRect.width - spacingWidth,
+        cellRect.height - spacingHeight);
+
+<span class="nc bnc" id="L289" title="All 6 branches missed.">    if (table.isEditing() &amp;&amp; table.getEditingRow() == row &amp;&amp; table.getEditingColumn() == column) {</span>
+<span class="nc" id="L290">      Component component = table.getEditorComponent();</span>
+<span class="nc" id="L291">      component.setBounds(cellRect);</span>
+<span class="nc" id="L292">      component.validate();</span>
+<span class="nc" id="L293">    } else {</span>
+<span class="nc" id="L294">      TableCellRenderer renderer = table.getCellRenderer(row, column);</span>
+<span class="nc" id="L295">      Component component = table.prepareRenderer(renderer, row, column);</span>
+
+<span class="nc bnc" id="L297" title="All 2 branches missed.">      if (component.getParent() == null) {</span>
+<span class="nc" id="L298">        rendererPane.add(component);</span>
+      }
+<span class="nc" id="L300">      rendererPane.paintComponent(</span>
+          g, component, table, cellRect.x, cellRect.y, cellRect.width, cellRect.height, true);
+    }
+    // Have to restore the cellRect back to it's orginial size
+<span class="nc" id="L304">    cellRect.setBounds(</span>
+        cellRect.x - spacingWidth / 2,
+        cellRect.y - spacingHeight / 2,
+        cellRect.width + spacingWidth,
+        cellRect.height + spacingHeight);
+<span class="nc" id="L309">  }</span>
+
+  private int lastVisibleRow(Rectangle clip) {
+<span class="nc" id="L312">    int lastIndex = table.rowAtPoint(new Point(0, clip.y + clip.height - 1));</span>
+    // If the table does not have enough rows to fill the view we'll get -1.
+    // Replace this with the index of the last row.
+<span class="nc bnc" id="L315" title="All 2 branches missed.">    if (lastIndex == -1) {</span>
+<span class="nc" id="L316">      lastIndex = table.getRowCount() - 1;</span>
+    }
+<span class="nc" id="L318">    return lastIndex;</span>
+  }
+} // MultiLineBasicTableUI
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

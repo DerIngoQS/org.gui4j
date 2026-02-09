@@ -1,0 +1,502 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jComponentFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core</a> &gt; <span class="el_source">Gui4jComponentFactory.java</span></div><h1>Gui4jComponentFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.core;
+
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.io.PrintWriter;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.LElement;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeID;
+import org.gui4j.core.definition.AttributeTypeMethodCall;
+import org.gui4j.core.definition.Param;
+import org.gui4j.exception.ErrorTags;
+import org.gui4j.exception.Gui4jUncheckedException;
+import org.gui4j.util.Filter;
+
+/**
+ * Base class for all component factories. In order to provide a new component, a sub-class of
+ * Gui4jComponentFactory must be defined. During initialization, instances of the factories defined
+ * in an initialization property file are created. These instances are used to extract the necessary
+ * information from the corresponding part in a given xml resource file. The Gui4jComponentManager
+ * is responsible for these factory instance. One instance a Gui4jComponentManager contains always
+ * at most one instance of a given factory class and one instance of Gui4j contains exactly one
+ * instance of Gui4jComponentManager. Hence, if one instance of Gui4j is used, there is always only
+ * one instance of a defined factory class.
+ */
+<span class="nc" id="L35">public abstract class Gui4jComponentFactory implements ErrorTags, Serializable {</span>
+<span class="nc" id="L36">  private static final Log mLog = LogFactory.getLog(Gui4jComponentFactory.class);</span>
+
+  public static final String FIELD_Id = &quot;guiId&quot;;
+  public static final String FIELDGui4jRef_Id = &quot;id&quot;;
+  public static final String FIELD_Style = &quot;style&quot;;
+
+  protected static final boolean IMPLIED = false;
+  protected static final boolean REQUIRED = true;
+  protected static final boolean NOT_EVENT_AWARE = false;
+  protected static final boolean EVENT_AWARE = true;
+  protected static final String DTD_IMPLIED = &quot;#IMPLIED&quot;;
+  protected static final String DTD_REQUIRED = &quot;#REQUIRED&quot;;
+  protected static final String CDATA = &quot;CDATA&quot;;
+
+  public static final String ELEMENT_GUI4JREF = &quot;Ref&quot;;
+  public static final String ELEMENT_COMPONENT = &quot;Component&quot;;
+
+  private static final String BACKGROUND = &quot;background&quot;;
+  private static final String APPLY = &quot;apply&quot;;
+  private static final String ONINIT = &quot;onInit&quot;;
+  private static final String CURSOR = &quot;cursor&quot;;
+  protected static final String ENABLED = &quot;enabled&quot;;
+  protected static final String VISIBLE = &quot;visible&quot;;
+  protected static final String FOCUSABLE = &quot;focusable&quot;;
+  private static final String FONT = &quot;font&quot;;
+  private static final String FOREGROUND = &quot;foreground&quot;;
+  private static final String ONCLICK = &quot;onClick&quot;;
+  private static final String POPUP = &quot;popup&quot;;
+  public static final String CONTEXT = &quot;context&quot;;
+
+<span class="nc" id="L66">  private static final Attribute[] ATTRIBUTE_ARRAY_TEMPLATE = new Attribute[0];</span>
+
+  private Gui4jInternal mGui4j;
+  private Gui4jCallFactory mGui4jCallFactory;
+
+  /**
+   * Defines the subelements this component allows. This default implementation returns a subelement
+   * representing an empty element. Factory classes for components that allow subelements have to
+   * override this method.
+   *
+   * @param elementName the element, whose SubElement should be returned.
+   * @return the SubElement for the specified element or &lt;code&gt;null&lt;/code&gt; if an unknown elementName
+   *     was specified.
+   */
+  public SubElement getSubElement(String elementName) {
+<span class="nc" id="L81">    return SubElement.empty();</span>
+  }
+
+  /**
+   * Writes the DTD of this component to the given stream.
+   *
+   * @param out
+   */
+  public final void writeDTD(PrintWriter out) {
+<span class="nc" id="L90">    writeToplevelElement(out, getSubElement(getName()));</span>
+
+<span class="nc" id="L92">    String[] elements = getInnerElements();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (elements != null) {</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">      for (int i = 0; i &lt; elements.length; i++) {</span>
+<span class="nc" id="L95">        String element = elements[i];</span>
+<span class="nc" id="L96">        List attributes = new ArrayList();</span>
+<span class="nc" id="L97">        addInnerAttributes(element, attributes);</span>
+<span class="nc" id="L98">        writeElement(out, element, getSubElement(element), attrList2Arr(attributes));</span>
+      }
+    }
+<span class="nc" id="L101">  }</span>
+
+  /**
+   * Generates a component by a given JDOM-Element
+   *
+   * @param gui4jComponentContainer
+   * @param id
+   * @param e
+   * @return Gui4jComponent
+   */
+  public abstract Gui4jComponent defineBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e);
+
+  /**
+   * Returns the name of the component
+   *
+   * @return String
+   */
+  public abstract String getName();
+
+  public void setGui4j(Gui4jInternal gui4j) {
+<span class="nc" id="L122">    mGui4j = gui4j;</span>
+<span class="nc" id="L123">  }</span>
+
+  public void setGui4jCallFactory(Gui4jCallFactory gui4jCallFactory) {
+<span class="nc" id="L126">    mGui4jCallFactory = gui4jCallFactory;</span>
+<span class="nc" id="L127">  }</span>
+
+  protected void defineProperties(Gui4jAbstractComponent gui4jComponent, LElement e) {
+<span class="nc" id="L130">    gui4jComponent.definePropertySetter(</span>
+        BACKGROUND,
+<span class="nc" id="L132">        getGui4jAccessInstance(</span>
+            Color.class, new Gui4jMap1(CONTEXT, Object.class), gui4jComponent, e, BACKGROUND),
+        true);
+<span class="nc" id="L135">    gui4jComponent.definePropertySetter(</span>
+<span class="nc" id="L136">        CURSOR, getGui4jAccessInstance(Cursor.class, gui4jComponent, e, CURSOR));</span>
+<span class="nc" id="L137">    gui4jComponent.definePropertySetter(</span>
+        FONT,
+<span class="nc" id="L139">        getGui4jAccessInstance(</span>
+            Font.class, new Gui4jMap1(CONTEXT, Object.class), gui4jComponent, e, FONT),
+        true);
+<span class="nc" id="L142">    gui4jComponent.definePropertySetter(</span>
+        FOREGROUND,
+<span class="nc" id="L144">        getGui4jAccessInstance(</span>
+            Color.class, new Gui4jMap1(CONTEXT, Object.class), gui4jComponent, e, FOREGROUND),
+        true);
+<span class="nc" id="L147">    gui4jComponent.setOnClick(</span>
+<span class="nc" id="L148">        getGui4jAccessInstance(null, MouseEvent.class, gui4jComponent, e, ONCLICK));</span>
+<span class="nc" id="L149">    gui4jComponent.setApply(</span>
+<span class="nc" id="L150">        getGui4jAccessInstance(null, gui4jComponent.getComponentClass(), gui4jComponent, e, APPLY));</span>
+<span class="nc" id="L151">    gui4jComponent.setOnInit(</span>
+<span class="nc" id="L152">        getGui4jAccessInstance(</span>
+<span class="nc" id="L153">            null, gui4jComponent.getComponentClass(), gui4jComponent, e, ONINIT));</span>
+<span class="nc" id="L154">    definePropertyEnabled(gui4jComponent, e);</span>
+<span class="nc" id="L155">    definePropertyVisible(gui4jComponent, e);</span>
+<span class="nc" id="L156">    gui4jComponent.definePropertySetter(</span>
+<span class="nc" id="L157">        FOCUSABLE, getGui4jAccessInstance(Boolean.TYPE, gui4jComponent, e, FOCUSABLE));</span>
+<span class="nc" id="L158">    gui4jComponent.setContext(getGui4jAccessInstance(Object.class, gui4jComponent, e, CONTEXT));</span>
+
+<span class="nc" id="L160">    String popupId = e.attributeValue(POPUP);</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">    if (popupId != null) {</span>
+<span class="nc" id="L162">      Gui4jQualifiedComponent popupComponent =</span>
+<span class="nc" id="L163">          gui4jComponent.getGui4jComponentContainer().getGui4jQualifiedComponent(popupId);</span>
+<span class="nc" id="L164">      gui4jComponent.setPopupMenu(popupComponent);</span>
+    }
+<span class="nc" id="L166">  }</span>
+
+  protected void definePropertyEnabled(Gui4jAbstractComponent gui4jComponent, LElement e) {
+<span class="nc" id="L169">    gui4jComponent.definePropertySetter(</span>
+<span class="nc" id="L170">        ENABLED, getGui4jAccessInstance(Boolean.TYPE, gui4jComponent, e, ENABLED));</span>
+<span class="nc" id="L171">  }</span>
+
+  protected void definePropertyVisible(Gui4jAbstractComponent gui4jComponent, LElement e) {
+<span class="nc" id="L174">    gui4jComponent.definePropertySetter(</span>
+<span class="nc" id="L175">        VISIBLE, getGui4jAccessInstance(Boolean.TYPE, gui4jComponent, e, VISIBLE));</span>
+<span class="nc" id="L176">  }</span>
+
+  protected void writeToplevelElement(PrintWriter out, SubElement subElement) {
+<span class="nc" id="L179">    List attrList = new ArrayList();</span>
+<span class="nc" id="L180">    addToplevelAttributes(attrList, null);</span>
+<span class="nc" id="L181">    Attribute[] attrs = attrList2Arr(attrList);</span>
+<span class="nc" id="L182">    writeElement(out, getName(), subElement, attrs);</span>
+<span class="nc" id="L183">  }</span>
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc bnc" id="L186" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jComponentFactory.class)) {</span>
+<span class="nc" id="L187">      List l = new ArrayList();</span>
+<span class="nc" id="L188">      l.add(new Param(CONTEXT));</span>
+<span class="nc" id="L189">      attrList.add(</span>
+          new Attribute(
+              BACKGROUND,
+              new AttributeTypeMethodCall(Color.class, l, EVENT_AWARE),
+              IMPLIED,
+              false));
+<span class="nc" id="L195">      attrList.add(</span>
+          new Attribute(
+              CURSOR, new AttributeTypeMethodCall(Cursor.class, EVENT_AWARE), IMPLIED, false));
+<span class="nc" id="L198">      attrList.add(</span>
+          new Attribute(
+              ENABLED, new AttributeTypeMethodCall(Boolean.TYPE, EVENT_AWARE), IMPLIED, false));
+<span class="nc" id="L201">      attrList.add(</span>
+          new Attribute(
+              VISIBLE, new AttributeTypeMethodCall(Boolean.TYPE, EVENT_AWARE), IMPLIED, false));
+<span class="nc" id="L204">      attrList.add(</span>
+          new Attribute(
+              FOCUSABLE, new AttributeTypeMethodCall(Boolean.TYPE, EVENT_AWARE), IMPLIED, false));
+<span class="nc" id="L207">      attrList.add(</span>
+          new Attribute(
+              FONT, new AttributeTypeMethodCall(Font.class, l, EVENT_AWARE), IMPLIED, false));
+<span class="nc" id="L210">      attrList.add(</span>
+          new Attribute(
+              FOREGROUND,
+              new AttributeTypeMethodCall(Color.class, l, EVENT_AWARE),
+              IMPLIED,
+              false));
+<span class="nc" id="L216">      attrList.add(new Attribute(ONCLICK, new AttributeTypeMethodCall(null), IMPLIED, false));</span>
+<span class="nc" id="L217">      attrList.add(new Attribute(APPLY, new AttributeTypeMethodCall(null), IMPLIED, false));</span>
+<span class="nc" id="L218">      attrList.add(new Attribute(ONINIT, new AttributeTypeMethodCall(null, l), IMPLIED, false));</span>
+<span class="nc" id="L219">      attrList.add(new Attribute(POPUP, new AttributeTypeID(), IMPLIED, false));</span>
+<span class="nc" id="L220">      attrList.add(</span>
+          new Attribute(CONTEXT, new AttributeTypeMethodCall(Object.class), IMPLIED, false));
+    }
+<span class="nc" id="L223">  }</span>
+
+  /**
+   * Adds the allowed attributes for the specified sub element of this component to the given list.
+   * Factory classes for components allowing sub elements have to override this method. The default
+   * implementation does not alter the list.
+   *
+   * @param elementName
+   * @param list
+   */
+<span class="nc" id="L233">  public void addInnerAttributes(String elementName, List list) {}</span>
+
+  protected void writeElement(
+      PrintWriter out, String elementName, SubElement subElement, Attribute[] attributes) {
+<span class="nc" id="L237">    out.println(&quot;&lt;!ELEMENT &quot; + elementName + &quot; &quot; + subElement + &quot;&gt;&quot;);</span>
+<span class="nc" id="L238">    boolean topLevelComponent = getName().equals(elementName);</span>
+<span class="nc" id="L239">    out.println(&quot;&lt;!ATTLIST &quot; + elementName);</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">    if (topLevelComponent) {</span>
+<span class="nc" id="L241">      out.println(&quot;  &quot; + FIELD_Id + &quot; &quot; + CDATA + &quot; &quot; + DTD_IMPLIED);</span>
+    }
+<span class="nc" id="L243">    out.println(&quot;  &quot; + FIELD_Style + &quot; &quot; + CDATA + &quot; &quot; + DTD_IMPLIED);</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">    for (int i = 0; i &lt; attributes.length; i++) {</span>
+<span class="nc" id="L245">      out.println(&quot;  &quot; + attributes[i]);</span>
+    }
+<span class="nc" id="L247">    out.println(&quot;&gt;&quot;);</span>
+    // print DTD part for style component
+<span class="nc" id="L249">    out.println(</span>
+        &quot;&lt;!ELEMENT &quot; + Gui4jComponentManager.ELEMENT_Gui4jStyle + &quot;_&quot; + elementName + &quot; EMPTY&gt;&quot;);
+<span class="nc bnc" id="L251" title="All 2 branches missed.">    if (attributes.length &gt; 0) {</span>
+<span class="nc" id="L252">      out.println(&quot;&lt;!ATTLIST &quot; + Gui4jComponentManager.ELEMENT_Gui4jStyle + &quot;_&quot; + elementName);</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">      for (int i = 0; i &lt; attributes.length; i++) {</span>
+<span class="nc" id="L254">        out.println(&quot;  &quot; + attributes[i].getOptional());</span>
+      }
+<span class="nc" id="L256">      out.println(&quot;&gt;&quot;);</span>
+    }
+<span class="nc" id="L258">  }</span>
+
+  /**
+   * Returns an array with all inner elements that are defined by this component. If other top level
+   * elements are allowed to be nested inside this component (i.e. are possible sub elements), they
+   * must NOT be included in the returned array. Factory classes for components allowing sub
+   * elements other than top-level components have to override this class. The default
+   * implementation returns &lt;code&gt;null&lt;/code&gt;.
+   *
+   * @return String[]
+   */
+  public String[] getInnerElements() {
+<span class="nc" id="L270">    return null;</span>
+  }
+
+  public int getIntValue(
+      Gui4jComponentContainer gui4jComponentContainer, LElement e, String field) {
+<span class="nc" id="L275">    String value = gui4jComponentContainer.getAttrValue(e, field);</span>
+    try {
+<span class="nc" id="L277">      return Integer.parseInt(value);</span>
+<span class="nc" id="L278">    } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L279">      Object[] args = {value};</span>
+<span class="nc" id="L280">      throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L281">          gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L282">          e.getLineNumber(),</span>
+          RESOURCE_ERROR_int_DataConversionException,
+          args,
+          ex);
+    }
+  }
+
+  public int getIntValue(
+      Gui4jComponentContainer gui4jComponentContainer, LElement e, String field, int defaultValue) {
+<span class="nc" id="L291">    String str = gui4jComponentContainer.getAttrValue(e, field);</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">    if (str == null) {</span>
+<span class="nc" id="L293">      return defaultValue;</span>
+    } else {
+      try {
+<span class="nc" id="L296">        return Integer.parseInt(str);</span>
+<span class="nc" id="L297">      } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L298">        Object[] args = {str};</span>
+<span class="nc" id="L299">        throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L300">            gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L301">            e.getLineNumber(),</span>
+            RESOURCE_ERROR_int_DataConversionException,
+            args,
+            ex);
+      }
+    }
+  }
+
+  public double getDoubleValue(
+      Gui4jComponentContainer gui4jComponentContainer,
+      LElement e,
+      String field,
+      double defaultValue) {
+<span class="nc" id="L314">    String str = gui4jComponentContainer.getAttrValue(e, field);</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">    if (str == null) {</span>
+<span class="nc" id="L316">      return defaultValue;</span>
+    } else {
+      try {
+<span class="nc" id="L319">        return Double.parseDouble(str);</span>
+<span class="nc" id="L320">      } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L321">        Object[] args = {str};</span>
+<span class="nc" id="L322">        throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L323">            gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L324">            e.getLineNumber(),</span>
+            RESOURCE_ERROR_double_DataConversionException,
+            args,
+            ex);
+      }
+    }
+  }
+
+  public String toString() {
+<span class="nc" id="L333">    return getClass().getName();</span>
+  }
+
+  public Gui4jCall getGui4jAccessInstance(
+      Class expectedType, Gui4jComponent gui4jComponent, LElement e, String field) {
+<span class="nc" id="L338">    String accessPath = gui4jComponent.getGui4jComponentContainer().getAttrValue(e, field);</span>
+<span class="nc" id="L339">    Gui4jCall gui4jAccess =</span>
+<span class="nc" id="L340">        mGui4jCallFactory.getInstance(gui4jComponent, e.getLineNumber(), accessPath);</span>
+<span class="nc" id="L341">    Gui4jTypeCheck.ensureType(expectedType, gui4jAccess, accessPath);</span>
+<span class="nc" id="L342">    return gui4jAccess;</span>
+  }
+
+  /**
+   * Creates a Gui4jCall from the method call declaration in an XML file. It searches for a method
+   * provided by the controller of the gui4jComponent that matches the method call declaration in
+   * the XML file.
+   *
+   * @param expectedType The expected return type of the method call. Specify &lt;code&gt;null&lt;/code&gt; if
+   *     the return type doesn't matter, i.e. all return types are acceptable.
+   * @param valueClassMap A map of parameter names to class objects. This is needed to search for
+   *     the correct method of the controller if the declared method call contains parameters.
+   * @param gui4jComponent The current Gui4jComponent
+   * @param e The current XML element.
+   * @param field The name of the XML attribute containing the method call declaration.
+   * @return Gui4jCall
+   */
+  public Gui4jCall getGui4jAccessInstance(
+      Class expectedType,
+      Map valueClassMap,
+      Gui4jComponent gui4jComponent,
+      LElement e,
+      String field) {
+<span class="nc" id="L365">    String accessPath = gui4jComponent.getGui4jComponentContainer().getAttrValue(e, field);</span>
+<span class="nc" id="L366">    Gui4jCall gui4jAccess =</span>
+<span class="nc" id="L367">        mGui4jCallFactory.getInstance(gui4jComponent, e.getLineNumber(), valueClassMap, accessPath);</span>
+<span class="nc" id="L368">    Gui4jTypeCheck.ensureType(expectedType, gui4jAccess, accessPath);</span>
+<span class="nc" id="L369">    return gui4jAccess;</span>
+  }
+
+  public Gui4jCall getGui4jAccessInstance(
+      Class expectedType,
+      Class valueType,
+      Gui4jComponent gui4jComponent,
+      LElement e,
+      String field) {
+<span class="nc" id="L378">    String accessPath = gui4jComponent.getGui4jComponentContainer().getAttrValue(e, field);</span>
+<span class="nc" id="L379">    Gui4jCall gui4jAccess =</span>
+<span class="nc" id="L380">        mGui4jCallFactory.getInstance(gui4jComponent, e.getLineNumber(), valueType, accessPath);</span>
+<span class="nc" id="L381">    Gui4jTypeCheck.ensureType(expectedType, gui4jAccess, accessPath);</span>
+<span class="nc" id="L382">    return gui4jAccess;</span>
+  }
+
+  protected Gui4jInternal getGui4j() {
+<span class="nc" id="L386">    return mGui4j;</span>
+  }
+
+  protected int getMapValue(
+      Gui4jComponentContainer gui4jComponentContainer,
+      LElement e,
+      String attrName,
+      Map valueMap,
+      int defaultValue) {
+<span class="nc" id="L395">    String valueStr = gui4jComponentContainer.getAttrValue(e, attrName);</span>
+<span class="nc bnc" id="L396" title="All 2 branches missed.">    if (valueStr != null) {</span>
+<span class="nc" id="L397">      Integer val = (Integer) valueMap.get(valueStr);</span>
+<span class="nc bnc" id="L398" title="All 2 branches missed.">      return val != null ? val.intValue() : defaultValue;</span>
+    } else {
+<span class="nc" id="L400">      return defaultValue;</span>
+    }
+  }
+
+  protected static Attribute[] attrList2Arr(List attrList) {
+<span class="nc" id="L405">    return (Attribute[]) attrList.toArray(ATTRIBUTE_ARRAY_TEMPLATE);</span>
+  }
+
+  protected static String constructAttributeType(Collection collection) {
+<span class="nc" id="L409">    StringBuffer buffer = new StringBuffer();</span>
+<span class="nc" id="L410">    buffer.append(&quot;(&quot;);</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">    for (Iterator iter = collection.iterator(); iter.hasNext(); ) {</span>
+<span class="nc" id="L412">      String type = (String) iter.next();</span>
+<span class="nc" id="L413">      buffer.append(type);</span>
+<span class="nc" id="L414">      buffer.append(&quot;|&quot;);</span>
+<span class="nc" id="L415">    }</span>
+<span class="nc" id="L416">    buffer.replace(buffer.length() - 1, buffer.length(), &quot;)&quot;);</span>
+<span class="nc" id="L417">    return buffer.toString();</span>
+  }
+
+  public static class SubElement {
+    private final String mStr;
+
+    public static SubElement empty() {
+<span class="nc" id="L424">      return new SubElement(&quot;EMPTY&quot;);</span>
+    }
+
+    public static SubElement gui4jComponent() {
+<span class="nc" id="L428">      return new SubElement(&quot;(%&quot; + ELEMENT_COMPONENT + &quot;;|&quot; + ELEMENT_GUI4JREF + &quot;)&quot;);</span>
+    }
+
+    public static SubElement gui4jRef() {
+<span class="nc" id="L432">      return new SubElement(ELEMENT_GUI4JREF);</span>
+    }
+
+    public static SubElement star(SubElement e) {
+<span class="nc" id="L436">      return new SubElement(&quot;(&quot; + e + &quot;*&quot; + &quot;)&quot;);</span>
+    }
+
+    public static SubElement plus(SubElement e) {
+<span class="nc" id="L440">      return new SubElement(&quot;(&quot; + e + &quot;+&quot; + &quot;)&quot;);</span>
+    }
+
+    public static SubElement once(SubElement e) {
+<span class="nc" id="L444">      return new SubElement(&quot;(&quot; + e + &quot;)&quot;);</span>
+    }
+
+    public static SubElement optional(SubElement e) {
+<span class="nc" id="L448">      return new SubElement(&quot;(&quot; + e + &quot;?&quot; + &quot;)&quot;);</span>
+    }
+
+    public static SubElement getInstance(String name) {
+<span class="nc" id="L452">      return new SubElement(name);</span>
+    }
+
+    public static SubElement or(SubElement[] subElement) {
+<span class="nc" id="L456">      StringBuffer sb = new StringBuffer();</span>
+<span class="nc" id="L457">      sb.append('(');</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">      for (int i = 0; i &lt; subElement.length; i++) {</span>
+<span class="nc bnc" id="L459" title="All 2 branches missed.">        if (i &gt; 0) {</span>
+<span class="nc" id="L460">          sb.append('|');</span>
+        }
+<span class="nc" id="L462">        sb.append(subElement[i]);</span>
+      }
+<span class="nc" id="L464">      sb.append(')');</span>
+<span class="nc" id="L465">      return new SubElement(sb.toString());</span>
+    }
+
+    public static SubElement seq(SubElement[] subElement) {
+<span class="nc" id="L469">      StringBuffer sb = new StringBuffer();</span>
+<span class="nc" id="L470">      sb.append('(');</span>
+<span class="nc bnc" id="L471" title="All 2 branches missed.">      for (int i = 0; i &lt; subElement.length; i++) {</span>
+<span class="nc bnc" id="L472" title="All 2 branches missed.">        if (i &gt; 0) {</span>
+<span class="nc" id="L473">          sb.append(',');</span>
+        }
+<span class="nc" id="L475">        sb.append(subElement[i]);</span>
+      }
+<span class="nc" id="L477">      sb.append(')');</span>
+<span class="nc" id="L478">      return new SubElement(sb.toString());</span>
+    }
+
+<span class="nc" id="L481">    private SubElement(String str) {</span>
+<span class="nc" id="L482">      mStr = str;</span>
+<span class="nc" id="L483">    }</span>
+
+    public String toString() {
+<span class="nc" id="L486">      return mStr;</span>
+    }
+  }
+
+  protected void checkErrorList(List errorList) {
+<span class="nc bnc" id="L491" title="All 2 branches missed.">    if (errorList.size() &gt; 0) {</span>
+<span class="nc bnc" id="L492" title="All 2 branches missed.">      for (Iterator it = errorList.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L493">        Throwable t = (Throwable) it.next();</span>
+<span class="nc bnc" id="L494" title="All 2 branches missed.">        if (!(t instanceof Gui4jUncheckedException.ErrorList)) {</span>
+<span class="nc" id="L495">          mLog.error(t, t);</span>
+        }
+<span class="nc" id="L497">      }</span>
+<span class="nc" id="L498">      throw new Gui4jUncheckedException.ErrorList(errorList);</span>
+    }
+<span class="nc" id="L500">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

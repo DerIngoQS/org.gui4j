@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jUncheckedException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.exception</a> &gt; <span class="el_source">Gui4jUncheckedException.java</span></div><h1>Gui4jUncheckedException.java</h1><pre class="source lang-java linenums">package org.gui4j.exception;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.util.DefaultTranslator;
+import org.gui4j.util.Translator;
+
+public abstract class Gui4jUncheckedException extends RuntimeException implements ErrorTags {
+  private final String mErrorTag;
+  private final Object[] mErrorArgs;
+
+<span class="fc" id="L18">  protected static final Log mLogger = LogFactory.getLog(Gui4jUncheckedException.class);</span>
+<span class="fc" id="L19">  protected static final Translator defaultTranslator =</span>
+      new DefaultTranslator(Locale.US, Gui4jUncheckedException.class, &quot;errorMessages&quot;);
+
+  public String getMessage() {
+<span class="fc" id="L23">    return getMessage(defaultTranslator);</span>
+  }
+
+  public String getMessage(Locale locale) {
+<span class="nc" id="L27">    Translator translator = new DefaultTranslator(locale, getClass(), &quot;errorMessages&quot;);</span>
+<span class="nc" id="L28">    return getMessage(translator);</span>
+  }
+
+  public String getMessage(Translator translator) {
+<span class="fc" id="L32">    return getContext(translator) + translator.translate(mErrorTag, mErrorArgs);</span>
+  }
+
+  public String getContext(Translator translator) {
+<span class="nc" id="L36">    return &quot;&quot;;</span>
+  }
+
+  protected Gui4jUncheckedException(String errorTag, Object[] errorArgs, Throwable e) {
+<span class="fc" id="L40">    super(errorTag, e);</span>
+<span class="fc" id="L41">    mErrorTag = errorTag;</span>
+<span class="fc" id="L42">    mErrorArgs = errorArgs;</span>
+<span class="fc" id="L43">  }</span>
+
+  public static class InternalError extends Gui4jUncheckedException {
+    protected InternalError(String errorTag, Object[] errorArgs, Throwable e) {
+<span class="fc" id="L47">      super(errorTag, errorArgs, e);</span>
+<span class="fc" id="L48">    }</span>
+
+    protected void printLogMessage() {
+<span class="fc" id="L51">      mLogger.warn(&quot;Exception created: &quot; + getMessage());</span>
+<span class="fc" id="L52">    }</span>
+  }
+
+  public static class ErrorList extends InternalError {
+    private final List errorList;
+
+    public ErrorList(List errorList) {
+<span class="nc" id="L59">      super(&quot;error_list&quot;, new String[] {getMessage(errorList)}, null);</span>
+<span class="nc" id="L60">      this.errorList = new ArrayList(errorList);</span>
+<span class="nc" id="L61">    }</span>
+
+    public List getErrorList() {
+<span class="nc" id="L64">      return errorList;</span>
+    }
+
+    private static String getMessage(List errorList) {
+<span class="nc" id="L68">      StringBuffer str = new StringBuffer();</span>
+<span class="nc" id="L69">      Set alreadyAdded = new HashSet();</span>
+<span class="nc" id="L70">      add(str, errorList, alreadyAdded);</span>
+<span class="nc" id="L71">      return str.toString();</span>
+    }
+
+    private static void add(StringBuffer str, List errorList, Set alreadyAdded) {
+<span class="nc bnc" id="L75" title="All 2 branches missed.">      for (Iterator it = errorList.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L76">        Throwable t = (Throwable) it.next();</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (t instanceof ErrorList) {</span>
+<span class="nc" id="L78">          ErrorList errorListExc = (ErrorList) t;</span>
+<span class="nc" id="L79">          add(str, errorListExc.getErrorList(), alreadyAdded);</span>
+<span class="nc" id="L80">        } else {</span>
+<span class="nc" id="L81">          String message = t.getMessage();</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">          if (message == null) {</span>
+<span class="nc" id="L83">            message = t.getClass().getName();</span>
+          }
+<span class="nc bnc" id="L85" title="All 2 branches missed.">          if (!alreadyAdded.contains(message)) {</span>
+<span class="nc" id="L86">            str.append(&quot;\n --&gt; &quot;);</span>
+<span class="nc" id="L87">            str.append(message);</span>
+<span class="nc" id="L88">            alreadyAdded.add(message);</span>
+          }
+        }
+<span class="nc" id="L91">      }</span>
+<span class="nc" id="L92">    }</span>
+  }
+
+  public static class ProgrammingError extends InternalError {
+    public ProgrammingError(String errorTag) {
+<span class="nc" id="L97">      super(errorTag, null, null);</span>
+<span class="nc" id="L98">      printLogMessage();</span>
+<span class="nc" id="L99">    }</span>
+
+    public ProgrammingError(String errorTag, Throwable e) {
+<span class="nc" id="L102">      super(errorTag, null, e);</span>
+<span class="nc" id="L103">      printLogMessage();</span>
+<span class="nc" id="L104">    }</span>
+
+    public ProgrammingError(String errorTag, Object[] args) {
+<span class="nc" id="L107">      super(errorTag, args, null);</span>
+<span class="nc" id="L108">      printLogMessage();</span>
+<span class="nc" id="L109">    }</span>
+
+    public String getContext(Translator translator) {
+<span class="nc" id="L112">      return translator.translate(PROGRAMMING_ERROR, null);</span>
+    }
+  }
+
+  public static class ResourceError extends InternalError {
+    private final String mRessourceName;
+    private final int mLineNumber;
+
+    public ResourceError(String ressourceName, int lineNumber, String errorTag) {
+<span class="nc" id="L121">      super(errorTag, null, null);</span>
+<span class="nc" id="L122">      mRessourceName = ressourceName;</span>
+<span class="nc" id="L123">      mLineNumber = lineNumber;</span>
+<span class="nc" id="L124">      printLogMessage();</span>
+<span class="nc" id="L125">    }</span>
+
+    public ResourceError(String ressourceName, int lineNumber, String errorTag, Object[] args) {
+<span class="fc" id="L128">      super(errorTag, args, null);</span>
+<span class="fc" id="L129">      mRessourceName = ressourceName;</span>
+<span class="fc" id="L130">      mLineNumber = lineNumber;</span>
+<span class="fc" id="L131">      printLogMessage();</span>
+<span class="fc" id="L132">    }</span>
+
+    public ResourceError(
+        String ressourceName, int lineNumber, String errorTag, Object[] args, Throwable e) {
+<span class="nc" id="L136">      super(errorTag, args, e);</span>
+<span class="nc" id="L137">      mRessourceName = ressourceName;</span>
+<span class="nc" id="L138">      mLineNumber = lineNumber;</span>
+<span class="nc" id="L139">      printLogMessage();</span>
+<span class="nc" id="L140">    }</span>
+
+    public ResourceError(String ressourceName, int lineNumber, String errorTag, Throwable e) {
+<span class="nc" id="L143">      super(errorTag, null, e);</span>
+<span class="nc" id="L144">      mRessourceName = ressourceName;</span>
+<span class="nc" id="L145">      mLineNumber = lineNumber;</span>
+<span class="nc" id="L146">      printLogMessage();</span>
+<span class="nc" id="L147">    }</span>
+
+    public String getContext(Translator translator) {
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">      if (mLineNumber == -1) {</span>
+<span class="nc" id="L151">        Object[] args = {mRessourceName};</span>
+<span class="nc" id="L152">        return translator.translate(RESOURCE_ERROR, args);</span>
+      } else {
+<span class="fc" id="L154">        Object[] args = {mRessourceName + &quot;:&quot; + mLineNumber};</span>
+<span class="fc" id="L155">        return translator.translate(RESOURCE_ERROR, args);</span>
+      }
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

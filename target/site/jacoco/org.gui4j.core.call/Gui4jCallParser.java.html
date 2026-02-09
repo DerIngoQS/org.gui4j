@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jCallParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.call</a> &gt; <span class="el_source">Gui4jCallParser.java</span></div><h1>Gui4jCallParser.java</h1><pre class="source lang-java linenums">package org.gui4j.core.call;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jCallFactory;
+import org.gui4j.core.Gui4jComponent;
+import org.gui4j.core.Gui4jMap1;
+import org.gui4j.core.Gui4jTypeCheck;
+import org.gui4j.event.Gui4jEvent;
+import org.gui4j.exception.ErrorTags;
+import org.gui4j.exception.Gui4jUncheckedException;
+
+public final class Gui4jCallParser implements Gui4jCallFactory, ErrorTags, Serializable {
+
+  /** Constructor for Gui4jCallParser. */
+  public Gui4jCallParser() {
+<span class="fc" id="L20">    super();</span>
+<span class="fc" id="L21">  }</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.core.Gui4jCallFactory#getInstance(org.gui4j.core.Gui4jComponent, int, java.lang.String)
+   */
+  public Gui4jCall getInstance(Gui4jComponent gui4jComponent, int lineNumber, String accessPath) {
+<span class="fc" id="L27">    Map m = null;</span>
+<span class="fc" id="L28">    return getInstance(gui4jComponent, lineNumber, m, accessPath);</span>
+  }
+
+  /* (non-Javadoc)
+   * @see org.gui4j.core.Gui4jCallFactory#getInstance(org.gui4j.core.Gui4jComponent, int, java.lang.Class, java.lang.String)
+   */
+  public Gui4jCall getInstance(
+      Gui4jComponent gui4jComponent, int lineNumber, Class valueClass, String accessPath) {
+<span class="nc" id="L36">    Map m = new Gui4jMap1(&quot;&quot;, valueClass);</span>
+<span class="nc" id="L37">    return getInstance(gui4jComponent, lineNumber, m, accessPath);</span>
+  }
+
+  /* (non-Javadoc)
+   * @see org.gui4j.core.Gui4jCallFactory#getInstance(org.gui4j.core.Gui4jComponent, int, java.util.Map, java.lang.String)
+   */
+  public Gui4jCall getInstance(
+      Gui4jComponent gui4jComponent, int lineNumber, Map valueClassMap, String accessPath) {
+<span class="fc" id="L45">    Class baseClass = gui4jComponent.getGui4jComponentContainer().getGui4jControllerClass();</span>
+<span class="pc bpc" id="L46" title="1 of 2 branches missed.">    if (accessPath == null) {</span>
+<span class="nc" id="L47">      return null;</span>
+    }
+
+<span class="fc" id="L50">    Gui4jAccessImpl baseAccess = new Gui4jAccessBase(baseClass);</span>
+
+<span class="fc" id="L52">    ParseCtx parseCtx =</span>
+        new ParseCtx(this, gui4jComponent, lineNumber, valueClassMap, baseAccess, accessPath);
+
+<span class="fc" id="L55">    List dependantProps = null;</span>
+<span class="pc bpc" id="L56" title="2 of 4 branches missed.">    if (accessPath.length() &gt; 0 &amp;&amp; accessPath.charAt(0) == '{') {</span>
+<span class="nc" id="L57">      dependantProps = parseDependantProperties(parseCtx, accessPath);</span>
+    }
+
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">    if (parseCtx.i == accessPath.length()) {</span>
+<span class="nc" id="L61">      return new Gui4jDefaultCall(gui4jComponent, null, dependantProps, valueClassMap);</span>
+    }
+
+    // support for &quot;internal action&quot; calls,
+    // e.g. maximization of portlets
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">    if (accessPath.charAt(parseCtx.i) == '!') {</span>
+<span class="nc" id="L67">      return new Gui4jInternalActionCall(gui4jComponent, accessPath.substring(parseCtx.i + 1));</span>
+    }
+
+<span class="fc" id="L70">    Gui4jAccessImpl result = parseSeqSequence(parseCtx, accessPath);</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">    if (parseCtx.i &lt; accessPath.length()) {</span>
+<span class="nc" id="L72">      Object[] args = {accessPath, new Integer(parseCtx.i)};</span>
+<span class="nc" id="L73">      throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L74">          parseCtx.getConfigurationName(),</span>
+<span class="nc" id="L75">          parseCtx.getLineNumber(),</span>
+          RESOURCE_ERROR_access_unexpected_character,
+          args);
+    }
+
+<span class="fc" id="L80">    return new Gui4jDefaultCall(</span>
+<span class="fc" id="L81">        gui4jComponent, result, dependantProps, valueClassMap, parseCtx.getUsedParams());</span>
+  }
+
+  private Gui4jAccessImpl getInstance(
+      ParseCtx parseCtx, Gui4jAccessImpl thisAccess, String accessPath) {
+<span class="fc" id="L86">    int pos = parseCtx.i;</span>
+<span class="fc" id="L87">    int len = accessPath.length();</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">    if (pos &gt;= len) {</span>
+<span class="nc" id="L89">      Object[] args = {accessPath, new Integer(pos)};</span>
+<span class="nc" id="L90">      throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L91">          parseCtx.getConfigurationName(),</span>
+<span class="nc" id="L92">          parseCtx.getLineNumber(),</span>
+          RESOURCE_ERROR_access_unexpected_end,
+          args);
+    }
+
+<span class="pc bpc" id="L97" title="7 of 10 branches missed.">    switch (accessPath.charAt(pos)) {</span>
+      case '\'':
+<span class="fc" id="L99">        return new Gui4jAccessConstant(parseCtx, accessPath);</span>
+      case '{':
+      case '}':
+      case ')':
+      case ',':
+      case '.':
+      case ';':
+        {
+<span class="nc" id="L107">          Object[] args = {accessPath, new Integer(pos)};</span>
+<span class="nc" id="L108">          throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L109">              parseCtx.getConfigurationName(),</span>
+<span class="nc" id="L110">              parseCtx.getLineNumber(),</span>
+              RESOURCE_ERROR_access_unexpected_end,
+              args);
+        }
+      case '(':
+<span class="nc" id="L115">        parseCtx.i = parseCtx.i + 1;</span>
+<span class="nc" id="L116">        Gui4jAccessImpl gui4jAccess = getInstance(parseCtx, thisAccess, accessPath);</span>
+<span class="nc bnc" id="L117" title="All 4 branches missed.">        if (len &gt;= parseCtx.i || accessPath.charAt(parseCtx.i) != ')') {</span>
+<span class="nc" id="L118">          Object[] args = {accessPath, new Integer(pos)};</span>
+<span class="nc" id="L119">          throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L120">              parseCtx.getConfigurationName(),</span>
+<span class="nc" id="L121">              parseCtx.getLineNumber(),</span>
+              RESOURCE_ERROR_access_unexpected_character,
+              args);
+        } else {
+<span class="nc" id="L125">          parseCtx.i = parseCtx.i + 1; // skip ')'</span>
+        }
+<span class="nc" id="L127">        return gui4jAccess;</span>
+      case ':':
+<span class="nc" id="L129">        return new Gui4jAccessStatic(parseCtx, accessPath);</span>
+      case '~':
+<span class="nc" id="L131">        return new Gui4jAccessBoolean(parseCtx, accessPath);</span>
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+        {
+<span class="fc" id="L143">          boolean isDouble = false;</span>
+<span class="fc" id="L144">          int i = pos;</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">          while (i &lt; len) {</span>
+<span class="fc" id="L146">            char c = accessPath.charAt(i);</span>
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">            if (c == '.') {</span>
+<span class="nc" id="L148">              isDouble = true;</span>
+<span class="nc" id="L149">              break;</span>
+<span class="pc bpc" id="L150" title="1 of 4 branches missed.">            } else if (c &gt;= '0' &amp;&amp; c &lt;= '9') {</span>
+              // go to next character
+<span class="fc" id="L152">              i++;</span>
+            } else {
+              break;
+            }
+<span class="fc" id="L156">          }</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">          return isDouble</span>
+<span class="nc" id="L158">              ? (Gui4jAccessImpl) new Gui4jAccessDouble(parseCtx, accessPath)</span>
+<span class="fc" id="L159">              : (Gui4jAccessImpl) new Gui4jAccessInteger(parseCtx, accessPath);</span>
+        }
+      case '%':
+<span class="nc" id="L162">        return new Gui4jAccessCharacter(parseCtx, accessPath);</span>
+      case '$':
+<span class="nc" id="L164">        parseCtx.i = parseCtx.i + 1;</span>
+<span class="nc" id="L165">        return parseCtx.getBaseAccess();</span>
+      case '?':
+<span class="nc" id="L167">        return new Gui4jAccessSetValue(parseCtx, accessPath);</span>
+      default:
+<span class="fc" id="L169">        return new Gui4jAccessMethod(parseCtx, thisAccess, accessPath);</span>
+    }
+  }
+
+  Gui4jAccessImpl parseCallSequence(ParseCtx parseCtx, String accessPath) {
+<span class="fc" id="L174">    Gui4jAccessImpl gui4jAccess = parseCtx.getBaseAccess();</span>
+<span class="fc" id="L175">    int len = accessPath.length();</span>
+    do {
+<span class="fc" id="L177">      gui4jAccess = getInstance(parseCtx, gui4jAccess, accessPath);</span>
+<span class="fc bfc" id="L178" title="All 4 branches covered.">      if (parseCtx.i &lt; len &amp;&amp; accessPath.charAt(parseCtx.i) == '.') {</span>
+<span class="fc" id="L179">        parseCtx.i = parseCtx.i + 1;</span>
+      } else {
+<span class="fc" id="L181">        return gui4jAccess;</span>
+      }
+    } while (true);
+  }
+
+  static void skipSpaces(ParseCtx parseCtx, int len) {
+<span class="pc bpc" id="L187" title="1 of 4 branches missed.">    while (parseCtx.i &lt; len &amp;&amp; parseCtx.mAccessPath.charAt(parseCtx.i) == ' ') {</span>
+<span class="nc" id="L188">      parseCtx.i++;</span>
+    }
+<span class="fc" id="L190">  }</span>
+
+  private Gui4jAccessImpl createSeq(Gui4jAccessImpl first, Gui4jAccessImpl second) {
+<span class="fc bfc" id="L193" title="All 2 branches covered.">    if (first == null) {</span>
+<span class="fc" id="L194">      return second;</span>
+    }
+<span class="fc" id="L196">    return new Gui4jAccessSeq(first, second);</span>
+  }
+
+  private Gui4jAccessImpl parseSeqSequence(ParseCtx parseCtx, String accessPath) {
+<span class="fc" id="L200">    Gui4jAccessImpl gui4jAccess = null;</span>
+<span class="fc" id="L201">    int len = accessPath.length();</span>
+    do {
+<span class="fc" id="L203">      gui4jAccess = createSeq(gui4jAccess, parseCallSequence(parseCtx, accessPath));</span>
+<span class="fc" id="L204">      skipSpaces(parseCtx, len);</span>
+<span class="pc bpc" id="L205" title="1 of 4 branches missed.">      if (parseCtx.i &lt; len &amp;&amp; accessPath.charAt(parseCtx.i) == ';') {</span>
+<span class="fc" id="L206">        parseCtx.i = parseCtx.i + 1;</span>
+      } else {
+<span class="fc" id="L208">        return gui4jAccess;</span>
+      }
+    } while (true);
+  }
+
+  private List parseDependantProperties(ParseCtx parseCtx, String accessPath) {
+<span class="nc" id="L214">    List dependantProps = new ArrayList();</span>
+<span class="nc" id="L215">    int len = accessPath.length();</span>
+<span class="nc" id="L216">    parseCtx.i++; // skip '{'</span>
+    loop:
+    do {
+<span class="nc" id="L219">      Gui4jAccessImpl property = parseCallSequence(parseCtx, accessPath);</span>
+<span class="nc" id="L220">      Gui4jTypeCheck.ensureType(</span>
+<span class="nc" id="L221">          property.getResultClass(), Gui4jEvent.class, parseCtx.getConfigurationName(), accessPath);</span>
+<span class="nc" id="L222">      dependantProps.add(new Gui4jDefaultCall(parseCtx.getGui4jComponent(), property, null, null));</span>
+<span class="nc" id="L223">      skipSpaces(parseCtx, len);</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">      if (parseCtx.i &lt; len) {</span>
+<span class="nc bnc" id="L225" title="All 3 branches missed.">        switch (accessPath.charAt(parseCtx.i)) {</span>
+          case '}':
+<span class="nc" id="L227">            parseCtx.i++;</span>
+<span class="nc" id="L228">            return dependantProps;</span>
+          case ',':
+<span class="nc" id="L230">            parseCtx.i++;</span>
+<span class="nc" id="L231">            break;</span>
+          default:
+<span class="nc" id="L233">            Object[] args = {accessPath, new Integer(parseCtx.i)};</span>
+<span class="nc" id="L234">            throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L235">                parseCtx.getConfigurationName(),</span>
+<span class="nc" id="L236">                parseCtx.getLineNumber(),</span>
+                RESOURCE_ERROR_access_unexpected_character,
+                args);
+        }
+      } else {
+<span class="nc" id="L241">        Object[] args = {accessPath, new Integer(parseCtx.i)};</span>
+<span class="nc" id="L242">        throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L243">            parseCtx.getConfigurationName(),</span>
+<span class="nc" id="L244">            parseCtx.getLineNumber(),</span>
+            RESOURCE_ERROR_access_unexpected_end,
+            args);
+      }
+<span class="nc" id="L248">    } while (true);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

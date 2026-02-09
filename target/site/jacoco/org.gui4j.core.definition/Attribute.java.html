@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Attribute.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.definition</a> &gt; <span class="el_source">Attribute.java</span></div><h1>Attribute.java</h1><pre class="source lang-java linenums">package org.gui4j.core.definition;
+
+public class Attribute {
+  private final String mName;
+  private final String mType;
+  private final String mKind;
+  private final boolean required;
+  private final boolean writeAsCDATA;
+  private final AttributeType mAttributeType;
+
+<span class="nc" id="L11">  public Attribute(String name, AttributeType type, boolean required, boolean writeAsCDATA) {</span>
+<span class="nc" id="L12">    mName = name;</span>
+<span class="nc" id="L13">    mType = type.getDTDTypeDefinition();</span>
+<span class="nc bnc" id="L14" title="All 2 branches missed.">    mKind = required ? DTDWriter.DTD_REQUIRED : DTDWriter.DTD_IMPLIED;</span>
+<span class="nc" id="L15">    this.required = required;</span>
+<span class="nc" id="L16">    this.writeAsCDATA = writeAsCDATA;</span>
+<span class="nc" id="L17">    mAttributeType = type;</span>
+<span class="nc" id="L18">  }</span>
+
+  public AttributeType getAttributeType() {
+<span class="nc" id="L21">    return mAttributeType;</span>
+  }
+
+  public String toString() {
+<span class="nc bnc" id="L25" title="All 2 branches missed.">    String lType = writeAsCDATA ? DTDWriter.CDATA : mType;</span>
+<span class="nc" id="L26">    return mName + &quot; &quot; + lType + &quot; &quot; + mKind;</span>
+  }
+
+  public String getName() {
+<span class="nc" id="L30">    return mName;</span>
+  }
+
+  /**
+   * For the attribute definition for the style-part in the DTD
+   *
+   * @return String
+   */
+  public String getOptional() {
+<span class="nc" id="L39">    return mName + &quot; &quot; + mType + &quot; &quot; + DTDWriter.DTD_IMPLIED;</span>
+  }
+
+  public String getKind() {
+<span class="nc" id="L43">    return mKind.substring(1);</span>
+  }
+
+  public boolean isRequired() {
+<span class="nc" id="L47">    return required;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

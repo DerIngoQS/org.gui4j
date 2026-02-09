@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Day.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.util</a> &gt; <span class="el_source">Day.java</span></div><h1>Day.java</h1><pre class="source lang-java linenums">package org.gui4j.util;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
+
+/**
+ * Represents a day.&lt;br&gt;
+ * Allows to conveniently work with days instead of dates that also include time info.
+ */
+public final class Day implements Comparable, Nameable {
+<span class="nc" id="L12">  private static final TimeZone UTC = TimeZone.getTimeZone(&quot;UTC&quot;);</span>
+
+  private Calendar calendar;
+
+  /**
+   * Private constructor for Day. Clients should use factory method {@link #getInstance(Date)}.
+   *
+   * @param date
+   */
+<span class="nc" id="L21">  private Day(Date date) {</span>
+<span class="nc" id="L22">    calendar = Calendar.getInstance(UTC);</span>
+<span class="nc" id="L23">    calendar.setTimeInMillis(date.getTime() + 2 * 60 * 60 * 1000);</span>
+<span class="nc bnc" id="L24" title="All 2 branches missed.">    if (calendar.get(Calendar.YEAR) &lt; 2000) {</span>
+<span class="nc" id="L25">      calendar.set(Calendar.YEAR, calendar.get(Calendar.YEAR) + 2000);</span>
+    }
+    // XXX: Verschiebung kann später entfallen
+<span class="nc" id="L28">    calendar.set(Calendar.MILLISECOND, 0);</span>
+<span class="nc" id="L29">    calendar.set(Calendar.SECOND, 0);</span>
+<span class="nc" id="L30">    calendar.set(Calendar.MINUTE, 0);</span>
+<span class="nc" id="L31">    calendar.set(Calendar.HOUR_OF_DAY, 0);</span>
+<span class="nc" id="L32">  }</span>
+
+  public Date getDate() {
+<span class="nc" id="L35">    return calendar.getTime();</span>
+  }
+
+  /**
+   * Decides if this Day is considered to be a working day. Working days are Monday to Friday, i.e.
+   * Saturday and Sunday are not working days.
+   *
+   * @return &lt;code&gt;true&lt;/code&gt;, if this Day represents a working day, &lt;code&gt;false&lt;/code&gt; otherwise.
+   */
+  public boolean isWorkday() {
+<span class="nc" id="L45">    return isWerktag();</span>
+  }
+
+  /**
+   * @return (see {@link #isWorkday()})
+   * @deprecated replaced by english named method {@link #isWorkday()}.
+   */
+  public boolean isWerktag() {
+<span class="nc" id="L53">    int day = calendar.get(Calendar.DAY_OF_WEEK);</span>
+<span class="nc bnc" id="L54" title="All 4 branches missed.">    return day != Calendar.SATURDAY &amp;&amp; day != Calendar.SUNDAY;</span>
+  }
+
+  /**
+   * Returns the day of the week represented by this &lt;code&gt;Day&lt;/code&gt;.
+   *
+   * @return The day of week, represented as one of the constants defined in {@link Calendar}, i.e.
+   *     {@link Calendar#SUNDAY} through {@link Calendar#SATURDAY}.
+   */
+  public int getDayOfWeek() {
+<span class="nc" id="L64">    return calendar.get(Calendar.DAY_OF_WEEK);</span>
+  }
+
+  /**
+   * Returns the month this &lt;code&gt;Day&lt;/code&gt; belongs to.
+   *
+   * @return the month as defined by the &lt;code&gt;Calendar&lt;/code&gt; constants {@link Calendar#JANUARY}
+   *     through {@link Calendar#DECEMBER}.
+   */
+  public int getMonth() {
+<span class="nc" id="L74">    return getMonat();</span>
+  }
+
+  /**
+   * @return (see {@link #getMonth()})
+   * @deprecated replaced by the english named method {@link #getMonth()}.
+   */
+  public int getMonat() {
+<span class="nc" id="L82">    return calendar.get(Calendar.MONTH);</span>
+  }
+
+  /**
+   * Returns the week of year (&quot;calendar week&quot;) this &lt;code&gt;Day&lt;/code&gt; belongs to.&lt;br&gt;
+   * Note: Currently this class implicitly uses the default locale to create its Calendar object so
+   * the criteria which define the first week of a year are taken from that default locale.
+   *
+   * @return the week of year
+   */
+  public int getWeek() {
+<span class="nc" id="L93">    return calendar.get(Calendar.WEEK_OF_YEAR);</span>
+  }
+
+  /**
+   * Returns the year this &lt;code&gt;Day&lt;/code&gt; belongs to.
+   *
+   * @return the year
+   */
+  public int getYear() {
+<span class="nc" id="L102">    return getJahr();</span>
+  }
+
+  /**
+   * @deprecated use the english named method {@link #getYear()} instead.
+   */
+  public int getJahr() {
+<span class="nc" id="L109">    return calendar.get(Calendar.YEAR);</span>
+  }
+
+  /**
+   * Returns the year the week containing this &lt;code&gt;Day&lt;/code&gt; belongs to. This is not necessarily
+   * the year this &lt;code&gt;Day&lt;/code&gt; belongs to: if this &lt;code&gt;Day&lt;/code&gt; is part of the first week
+   * of a year, the &lt;code&gt;Day&lt;/code&gt; itself could still be in the previous year while the week
+   * belongs to the next year.
+   *
+   * @return the year of this &lt;code&gt;Day&lt;/code&gt;'s week.
+   */
+  public int getYearForWeek() {
+<span class="nc" id="L121">    return getJahrForWeek();</span>
+  }
+
+  /**
+   * @return (see {@link #getYearForWeek()}).
+   * @deprecated use the english named method {@link #getYearForWeek()} instead.
+   */
+  public int getJahrForWeek() {
+<span class="nc" id="L129">    int week = getWeek();</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">    if (week == 1) {</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">      if (getMonat() == 0) {</span>
+<span class="nc" id="L132">        return calendar.get(Calendar.YEAR);</span>
+      } else {
+<span class="nc" id="L134">        return calendar.get(Calendar.YEAR) + 1;</span>
+      }
+    } else {
+<span class="nc" id="L137">      return calendar.get(Calendar.YEAR);</span>
+    }
+  }
+
+  /**
+   * Public factory method to get an instance of &lt;code&gt;Day&lt;/code&gt; from.
+   *
+   * @param date The date for which to create a &lt;code&gt;Day&lt;/code&gt;.
+   * @return a Day instance for the given date.
+   */
+  public static Day getInstance(Date date) {
+<span class="nc bnc" id="L148" title="All 2 branches missed.">    return date == null ? null : new Day(date);</span>
+  }
+
+  /**
+   * Get a &lt;code&gt;Day&lt;/code&gt; instance representing today.
+   *
+   * @return a &lt;code&gt;Day&lt;/code&gt; instance representing today.
+   */
+  public static Day getToday() {
+<span class="nc" id="L157">    return getInstance(new Date());</span>
+  }
+
+  /**
+   * Returns the first day of the specified month in the specified year.
+   *
+   * @param year year (fully qualified, i.e. four digits required)
+   * @param month month according to usage in {@link Calendar} (i.e. 0 is first month).
+   * @return Day
+   */
+  public static Day getFirstDayOf(int year, int month) {
+<span class="nc" id="L168">    Calendar calendar = Calendar.getInstance();</span>
+<span class="nc" id="L169">    calendar.set(Calendar.YEAR, year);</span>
+<span class="nc" id="L170">    calendar.set(Calendar.DAY_OF_MONTH, 1);</span>
+<span class="nc" id="L171">    calendar.set(Calendar.MONTH, month);</span>
+<span class="nc" id="L172">    return new Day(calendar.getTime());</span>
+  }
+
+  /**
+   * Returns the first day of the specified calendar week in the specified year. Note: the returned
+   * &lt;code&gt;Day&lt;/code&gt; might not be in the specified year if calendar week 1 was specified.
+   *
+   * @param year year (fully qualified, i.e. four digits required)
+   * @param week calendar week
+   * @return the first day of the specified calendar week in the specified year.
+   */
+  public static Day getFirstDayOfWeek(int year, int week) {
+<span class="nc" id="L184">    Calendar calendar = Calendar.getInstance();</span>
+<span class="nc" id="L185">    calendar.set(Calendar.YEAR, year);</span>
+<span class="nc" id="L186">    calendar.set(Calendar.WEEK_OF_YEAR, week);</span>
+<span class="nc" id="L187">    calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());</span>
+<span class="nc" id="L188">    return new Day(calendar.getTime());</span>
+  }
+
+  /**
+   * Returns the last day of the specified month in the specified year.
+   *
+   * @param year year (fully qualified, i.e. four digits required)
+   * @param month month according to usage in {@link Calendar} (i.e. 0 is first month).
+   * @return Day
+   */
+  public static Day getLastDayOf(int year, int month) {
+<span class="nc bnc" id="L199" title="All 2 branches missed.">    if (month == Calendar.DECEMBER) {</span>
+<span class="nc" id="L200">      return getLastDayOfYear(year);</span>
+    }
+<span class="nc" id="L202">    Day d = getFirstDayOf(year, month + 1);</span>
+<span class="nc" id="L203">    return d.prevDay();</span>
+  }
+
+  /**
+   * Returns the last day of the specified year.
+   *
+   * @param year year (fully qualified, i.e. four digits required)
+   * @return the last day of the specified year.
+   */
+  public static Day getLastDayOfYear(int year) {
+<span class="nc" id="L213">    Calendar calendar = Calendar.getInstance();</span>
+<span class="nc" id="L214">    calendar.set(Calendar.YEAR, year);</span>
+<span class="nc" id="L215">    calendar.set(Calendar.MONTH, Calendar.DECEMBER);</span>
+<span class="nc" id="L216">    calendar.set(Calendar.DAY_OF_MONTH, 31);</span>
+<span class="nc" id="L217">    return new Day(calendar.getTime());</span>
+  }
+
+  /**
+   * Returns the day following this day.
+   *
+   * @return Day
+   */
+  public Day nextDay() {
+<span class="nc" id="L226">    Calendar cal = Calendar.getInstance(UTC);</span>
+<span class="nc" id="L227">    cal.setTime(calendar.getTime());</span>
+<span class="nc" id="L228">    cal.add(Calendar.DATE, 1);</span>
+<span class="nc" id="L229">    return getInstance(cal.getTime());</span>
+  }
+
+  /**
+   * Returns the number of days between this &lt;code&gt;Day&lt;/code&gt; and the
+   * specified &lt;code&gt;Day&lt;/code&gt;. the result includes both this and the
+   * specified &lt;code&gt;Day&lt;/code&gt;.
+   *
+   * @param other
+   *            &lt;code&gt;Day for which to return the number of days between it and this &lt;code&gt;Day&lt;/code&gt;.
+   *            May not be &lt;code&gt;null&lt;/code&gt;.
+   * @return int the number of days between this &lt;code&gt;Day&lt;/code&gt; and the specified &lt;code&gt;Day&lt;/code&gt;.
+   */
+  public int getDiff(Day other) {
+<span class="nc bnc" id="L243" title="All 2 branches missed.">    assert other != null;</span>
+<span class="nc bnc" id="L244" title="All 2 branches missed.">    if (compareDay(other) &gt; 0) {</span>
+      // Aktueller Tag liegt nach dem uebergebenen
+<span class="nc" id="L246">      return 0;</span>
+    }
+<span class="nc" id="L248">    long ms1 = getDate().getTime();</span>
+<span class="nc" id="L249">    long ms2 = other.getDate().getTime();</span>
+<span class="nc" id="L250">    long diff = ms2 - ms1;</span>
+<span class="nc" id="L251">    diff /= 1000; // Sekunden</span>
+<span class="nc" id="L252">    diff /= 60; // Minuten</span>
+<span class="nc" id="L253">    diff /= 60; // Stunden</span>
+<span class="nc" id="L254">    diff /= 24; // Tage</span>
+<span class="nc" id="L255">    return (int) diff + 1; // +1, da beide Tage inklusiv gerechnet werden</span>
+  }
+
+  /**
+   * Returns the day &lt;code&gt;diff&lt;/code&gt; days after this &lt;code&gt;Day&lt;/code&gt;.&lt;br&gt;
+   * &lt;code&gt;nextDay(1)&lt;/code&gt; is equivalent to &lt;code&gt;nextDay()&lt;/code&gt;, &lt;code&gt;nextDay(2)&lt;/code&gt;
+   * returns the day after &lt;code&gt;nextDay()&lt;/code&gt; etc.
+   *
+   * @param diff defines the day to return based on this &lt;code&gt;Day&lt;/code&gt;
+   * @return Day
+   */
+  public Day nextDay(int diff) {
+<span class="nc" id="L267">    Calendar cal = Calendar.getInstance(UTC);</span>
+<span class="nc" id="L268">    cal.setTime(calendar.getTime());</span>
+<span class="nc" id="L269">    cal.add(Calendar.DATE, diff);</span>
+<span class="nc" id="L270">    return getInstance(cal.getTime());</span>
+  }
+
+  /**
+   * Returns the previous &lt;code&gt;Day&lt;/code&gt;.
+   *
+   * @return Day
+   */
+  public Day prevDay() {
+<span class="nc" id="L279">    Calendar cal = Calendar.getInstance(UTC);</span>
+<span class="nc" id="L280">    cal.setTime(calendar.getTime());</span>
+<span class="nc" id="L281">    cal.add(Calendar.DATE, -1);</span>
+<span class="nc" id="L282">    return getInstance(cal.getTime());</span>
+  }
+
+  /**
+   * Returns the first day of the month this &lt;code&gt;Day&lt;/code&gt; belongs to.
+   *
+   * @return the first day of the month this &lt;code&gt;Day&lt;/code&gt; belongs to.
+   */
+  public Day getFirstDayOfMonth() {
+<span class="nc" id="L291">    Calendar cal = Calendar.getInstance(UTC);</span>
+<span class="nc" id="L292">    cal.setTime(calendar.getTime());</span>
+<span class="nc" id="L293">    cal.add(Calendar.DATE, -cal.get(Calendar.DAY_OF_MONTH) + 1);</span>
+<span class="nc" id="L294">    return getInstance(cal.getTime());</span>
+  }
+
+  /**
+   * Returns the first day of the year this &lt;code&gt;Day&lt;/code&gt; belongs to.
+   *
+   * @return the first day of the year this &lt;code&gt;Day&lt;/code&gt; belongs to.
+   */
+  public Day getFirstDayOfYear() {
+<span class="nc" id="L303">    Calendar cal = Calendar.getInstance(UTC);</span>
+<span class="nc" id="L304">    cal.setTime(calendar.getTime());</span>
+<span class="nc" id="L305">    cal.add(Calendar.DATE, -cal.get(Calendar.DAY_OF_YEAR) + 1);</span>
+<span class="nc" id="L306">    return getInstance(cal.getTime());</span>
+  }
+
+  public int sub(Day otherDay) {
+<span class="nc" id="L310">    long thisTime = calendar.getTimeInMillis();</span>
+<span class="nc" id="L311">    long otherTime = otherDay.calendar.getTimeInMillis();</span>
+<span class="nc" id="L312">    long diff = thisTime - otherTime;</span>
+<span class="nc" id="L313">    return (int) (diff / (1000 * 60 * 60 * 24));</span>
+  }
+
+  /**
+   * Compares this &lt;code&gt;Day&lt;/code&gt; to parameter &lt;code&gt;day&lt;/code&gt;.&lt;br&gt;
+   * Returns &lt;code&gt;-1&lt;/code&gt; if this &lt;code&gt;Day&lt;/code&gt; is earlier than the specified one. Returns
+   * &lt;code&gt;0&lt;/code&gt; if the &lt;code&gt;Day&lt;/code&gt;s denote the same day. Returns 1 otherwise.
+   *
+   * @param day &lt;code&gt;Day&lt;/code&gt; to compare this day to.
+   * @return int see above
+   */
+  public int compareDay(Day day) {
+<span class="nc" id="L325">    long myDays =</span>
+<span class="nc" id="L326">        calendar.get(Calendar.YEAR) * 12l * 32l</span>
+<span class="nc" id="L327">            + calendar.get(Calendar.MONTH) * 32l</span>
+<span class="nc" id="L328">            + calendar.get(Calendar.DATE);</span>
+<span class="nc" id="L329">    long otherDays =</span>
+<span class="nc" id="L330">        day.calendar.get(Calendar.YEAR) * 12l * 32l</span>
+<span class="nc" id="L331">            + day.calendar.get(Calendar.MONTH) * 32l</span>
+<span class="nc" id="L332">            + day.calendar.get(Calendar.DATE);</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">    if (myDays == otherDays) {</span>
+<span class="nc" id="L334">      return 0;</span>
+    }
+<span class="nc bnc" id="L336" title="All 2 branches missed.">    return myDays &gt; otherDays ? 1 : -1;</span>
+  }
+
+  /**
+   * @see java.lang.Object#equals(Object)
+   */
+  public boolean equals(Object obj) {
+<span class="nc bnc" id="L343" title="All 2 branches missed.">    if (obj instanceof Day) {</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">      return compareDay((Day) obj) == 0;</span>
+    } else {
+<span class="nc" id="L346">      return false;</span>
+    }
+  }
+
+  /**
+   * @see java.lang.Object#hashCode()
+   */
+  public int hashCode() {
+<span class="nc" id="L354">    return calendar.get(Calendar.YEAR) * 12 * 32</span>
+<span class="nc" id="L355">        + calendar.get(Calendar.MONTH) * 32</span>
+<span class="nc" id="L356">        + calendar.get(Calendar.DATE);</span>
+  }
+
+  /**
+   * @see java.lang.Object#toString()
+   */
+  public String toString() {
+<span class="nc" id="L363">    int year = calendar.get(Calendar.YEAR);</span>
+<span class="nc" id="L364">    int month = calendar.get(Calendar.MONTH) + 1;</span>
+<span class="nc" id="L365">    int day = calendar.get(Calendar.DATE);</span>
+<span class="nc" id="L366">    return &quot;&quot; + day + &quot;.&quot; + month + &quot;.&quot; + year;</span>
+  }
+
+  /**
+   * @see java.lang.Comparable#compareTo(Object)
+   */
+  public int compareTo(Object o) {
+<span class="nc" id="L373">    Day other = (Day) o;</span>
+<span class="nc" id="L374">    return compareDay(other);</span>
+  }
+
+  /**
+   * @see org.gui4j.util.Nameable#getNameTag()
+   */
+  public String getNameTag() {
+<span class="nc" id="L381">    return getClass().getName() + &quot;_&quot; + getShortTag();</span>
+  }
+
+  /**
+   * @see org.gui4j.util.Nameable#getShortTag()
+   */
+  public String getShortTag() {
+<span class="nc" id="L388">    return String.valueOf(calendar.getTimeInMillis());</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

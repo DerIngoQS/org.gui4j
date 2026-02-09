@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jMouseListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core</a> &gt; <span class="el_source">Gui4jMouseListener.java</span></div><h1>Gui4jMouseListener.java</h1><pre class="source lang-java linenums">package org.gui4j.core;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.Gui4jDispose;
+
+public class Gui4jMouseListener implements MouseListener, Gui4jDispose {
+  protected Gui4jCallBase mGui4jController;
+  protected Gui4jComponentInstance mGui4jComponentInstance;
+  protected Gui4jCall mOnClick;
+  protected Gui4jThreadManager mGui4jThreadManager;
+  private boolean mPopup; // do we have a popup menu?
+
+  public void setOnClick(Gui4jCall onClick) {
+<span class="nc" id="L16">    mOnClick = onClick;</span>
+<span class="nc" id="L17">  }</span>
+
+  public void setPopup(boolean popup) {
+<span class="nc" id="L20">    mPopup = popup;</span>
+<span class="nc" id="L21">  }</span>
+
+  /**
+   * Constructor for Gui4jMouseListener.
+   *
+   * @param gui4jComponentInstance
+   */
+<span class="nc" id="L28">  public Gui4jMouseListener(Gui4jComponentInstance gui4jComponentInstance) {</span>
+<span class="nc" id="L29">    mGui4jComponentInstance = gui4jComponentInstance;</span>
+<span class="nc" id="L30">    mGui4jController = gui4jComponentInstance.getGui4jCallBase();</span>
+<span class="nc" id="L31">    mGui4jThreadManager = mGui4jComponentInstance.getGui4j().getGui4jThreadManager();</span>
+<span class="nc" id="L32">  }</span>
+
+  /**
+   * @see java.awt.event.MouseListener#mouseClicked(MouseEvent)
+   */
+  public void mouseClicked(MouseEvent event) {
+<span class="nc bnc" id="L38" title="All 4 branches missed.">    if (event.getClickCount() == 1 &amp;&amp; mOnClick != null) {</span>
+<span class="nc" id="L39">      mGui4jThreadManager.performWork(mGui4jController, mOnClick, new Gui4jMap1(&quot;&quot;, event));</span>
+    }
+<span class="nc" id="L41">  }</span>
+
+  /**
+   * @see java.awt.event.MouseListener#mousePressed(MouseEvent)
+   */
+  public void mousePressed(MouseEvent e) {
+<span class="nc" id="L47">    maybeShowPopup(e);</span>
+<span class="nc" id="L48">  }</span>
+
+  /**
+   * @see java.awt.event.MouseListener#mouseReleased(MouseEvent)
+   */
+  public void mouseReleased(MouseEvent e) {
+<span class="nc" id="L54">    maybeShowPopup(e);</span>
+<span class="nc" id="L55">  }</span>
+
+  /**
+   * @see java.awt.event.MouseListener#mouseEntered(MouseEvent)
+   */
+<span class="nc" id="L60">  public void mouseEntered(MouseEvent arg0) {}</span>
+
+  /**
+   * @see java.awt.event.MouseListener#mouseExited(MouseEvent)
+   */
+<span class="nc" id="L65">  public void mouseExited(MouseEvent arg0) {}</span>
+
+  /**
+   * @see org.gui4j.Gui4jDispose#dispose()
+   */
+  public void dispose() {
+<span class="nc" id="L71">    mGui4jController = null;</span>
+<span class="nc" id="L72">    mGui4jComponentInstance = null;</span>
+<span class="nc" id="L73">    mOnClick = null;</span>
+<span class="nc" id="L74">    mGui4jThreadManager = null;</span>
+<span class="nc" id="L75">  }</span>
+
+  private void maybeShowPopup(MouseEvent e) {
+<span class="nc bnc" id="L78" title="All 4 branches missed.">    if (mPopup &amp;&amp; e.isPopupTrigger()) {</span>
+<span class="nc" id="L79">      Gui4jComponent gui4jComponent = mGui4jComponentInstance.getGui4jComponent();</span>
+<span class="nc" id="L80">      gui4jComponent.showPopupMenu(mGui4jComponentInstance, e);</span>
+    }
+<span class="nc" id="L82">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

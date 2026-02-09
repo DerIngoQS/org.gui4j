@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jActionListener.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.listener</a> &gt; <span class="el_source">Gui4jActionListener.java</span></div><h1>Gui4jActionListener.java</h1><pre class="source lang-java linenums">package org.gui4j.core.listener;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.Gui4jDispose;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jMap1;
+import org.gui4j.core.Gui4jThreadManager;
+
+/**
+ * @author Joachim Schmid
+ */
+public class Gui4jActionListener implements ActionListener, Gui4jDispose {
+<span class="nc" id="L18">  private final Log mLogger = LogFactory.getLog(Gui4jActionListener.class);</span>
+
+  protected Gui4jCall mActionPerformed;
+  protected Gui4jComponentInstance mGui4jComponentInstance;
+  protected Gui4jCallBase mGui4jController;
+  protected Gui4jThreadManager mGui4jThreadManager;
+  protected String mConfigurationName;
+
+<span class="nc" id="L26">  public Gui4jActionListener(Gui4jComponentInstance gui4jComponentInstance) {</span>
+<span class="nc" id="L27">    mGui4jComponentInstance = gui4jComponentInstance;</span>
+<span class="nc" id="L28">    mGui4jController = mGui4jComponentInstance.getGui4jCallBase();</span>
+<span class="nc" id="L29">    mGui4jThreadManager = mGui4jComponentInstance.getGui4j().getGui4jThreadManager();</span>
+<span class="nc" id="L30">    mConfigurationName =</span>
+        mGui4jComponentInstance
+<span class="nc" id="L32">            .getGui4jComponent()</span>
+<span class="nc" id="L33">            .getGui4jComponentContainer()</span>
+<span class="nc" id="L34">            .getConfigurationName();</span>
+<span class="nc" id="L35">  }</span>
+
+  public void actionPerformed(ActionEvent e) {
+<span class="nc bnc" id="L38" title="All 2 branches missed.">    if (mActionPerformed != null) {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">      if (mLogger.isDebugEnabled()) {</span>
+<span class="nc" id="L40">        mLogger.debug(</span>
+            &quot;Invoking action for gui4jId '&quot;
+<span class="nc" id="L42">                + mGui4jComponentInstance.getGui4jComponent().getId()</span>
+                + &quot;' in xml file '&quot;
+                + mConfigurationName
+                + &quot;'&quot;);
+      }
+<span class="nc" id="L47">      mGui4jThreadManager.performWork(</span>
+          mGui4jController, mActionPerformed, new Gui4jMap1(&quot;&quot;, e), mGui4jComponentInstance);
+    }
+<span class="nc" id="L50">  }</span>
+
+  /**
+   * Sets the actionPeformed.
+   *
+   * @param actionPeformed The actionPeformed to set
+   */
+  public void setActionPerformed(Gui4jCall actionPeformed) {
+<span class="nc" id="L58">    mActionPerformed = actionPeformed;</span>
+<span class="nc" id="L59">  }</span>
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.gui4j.Gui4jDispose#dispose()
+   */
+  public void dispose() {
+<span class="nc" id="L67">    mActionPerformed = null;</span>
+<span class="nc" id="L68">    mGui4jComponentInstance = null;</span>
+<span class="nc" id="L69">    mGui4jController = null;</span>
+<span class="nc" id="L70">    mGui4jThreadManager = null;</span>
+<span class="nc" id="L71">    mConfigurationName = null;</span>
+<span class="nc" id="L72">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jMatrixFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jMatrixFactory.java</span></div><h1>Gui4jMatrixFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.swing.JTable;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.component.Gui4jMatrix;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentContainerManager;
+import org.gui4j.core.Gui4jTextAttribute;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeAlias;
+import org.gui4j.core.definition.AttributeTypeEnumeration;
+import org.gui4j.core.definition.AttributeTypeFloatingPoint;
+import org.gui4j.core.definition.AttributeTypeInteger;
+import org.gui4j.core.definition.AttributeTypeMethodCall;
+import org.gui4j.core.definition.Param;
+import org.gui4j.exception.Gui4jUncheckedException;
+import org.gui4j.util.Filter;
+import org.gui4j.util.Pair;
+
+<span class="nc" id="L35">public final class Gui4jMatrixFactory extends Gui4jJComponentFactory {</span>
+<span class="nc" id="L36">  private static final Log mLogger = LogFactory.getLog(Gui4jMatrixFactory.class);</span>
+  private static final String NAME = &quot;matrix&quot;;
+  private static final String ELEMENT_CELL = &quot;matrixCell&quot;;
+  private static final String ELEMENT_COLUMN = &quot;matrixCol&quot;;
+  private static final String ELEMENT_ROW = &quot;matrixRow&quot;;
+  private static final String VISIBLEROWS = &quot;visibleRows&quot;;
+  private static final String HEADERLINES = &quot;headerLines&quot;;
+  private static final String COLS = &quot;columns&quot;;
+  private static final String ROWS = &quot;rows&quot;;
+  private static final String CONTENT = &quot;content&quot;;
+  private static final String VALUE = &quot;value&quot;;
+  private static final String SETVALUE = &quot;setValue&quot;;
+  private static final String NOTIFY_TEMP_VALUE = &quot;notifyTempValue&quot;;
+  private static final String REFRESH = &quot;refresh&quot;;
+  private static final String AUTOMATIC_REFRESH = &quot;automaticRefresh&quot;;
+  private static final String ONSETVALUE = &quot;onSetValue&quot;;
+  private static final String WEIGHT = &quot;weight&quot;;
+  private static final String CHARACTERS = &quot;characters&quot;;
+  private static final String MAXCHARACTERS = &quot;maxCharacters&quot;;
+  private static final String USECACHE = &quot;useCache&quot;;
+  private static final String REORDERINGALLOWED = &quot;reorderingAllowed&quot;;
+  private static final String ROWSELECTIONALLOWED = &quot;rowSelectionAllowed&quot;;
+  private static final String ROWSELECTIONMODE = &quot;rowSelectionMode&quot;;
+  private static final String COLSELECTIONMODE = &quot;colSelectionMode&quot;;
+  private static final String CELLSELECTIONPAIR = &quot;cellSelectionPair&quot;;
+  private static final String ROWHEADERS = &quot;rowHeaders&quot;;
+  private static final String COLUMNHEADERS = &quot;columnHeaders&quot;;
+  private static final String LIST = &quot;list&quot;;
+  private static final String LISTTYPE = &quot;listType&quot;;
+  private static final String LISTITEM = &quot;listItem&quot;;
+  private static final String LISTNULLITEM = &quot;listNullItem&quot;;
+  private static final String LISTEDITABLE = &quot;listEditable&quot;;
+  private static final String STRINGCONVERT = &quot;stringConvert&quot;;
+  private static final String COLUMN_TYPE = &quot;columnType&quot;;
+  private static final String ROW_TYPE = &quot;rowType&quot;;
+  private static final String COLUMN_NAME = &quot;columnName&quot;;
+  private static final String ROW_NAME = &quot;rowName&quot;;
+  private static final String RESIZEMODE = &quot;resizeMode&quot;;
+  private static final String ONCELLSELECT = &quot;onCellSelect&quot;;
+  private static final String ONCELLCLICK = &quot;onCellClick&quot;;
+  private static final String ONCELLDBLCLICK = &quot;onCellDblClick&quot;;
+  private static final String BACKGROUND_HEADER = &quot;headerBackground&quot;;
+  private static final String TOOLTIP = &quot;tooltip&quot;;
+  private static final String ALIGNMENT = Gui4jTextAttribute.ALIGNMENT;
+  private static final String FOREGROUND = Gui4jTextAttribute.FOREGROUND;
+  private static final String BACKGROUND = Gui4jTextAttribute.BACKGROUND;
+  private static final String EVEN_BACKGROUND = Gui4jTextAttribute.EVEN_BACKGROUND;
+  private static final String FONT = Gui4jTextAttribute.FONT;
+  private static final String POPUP_CONTEXT = &quot;popupContext&quot;;
+
+  private static final Map mResizeMode;
+
+  static {
+<span class="nc" id="L89">    mResizeMode = new HashMap();</span>
+<span class="nc" id="L90">    mResizeMode.put(&quot;off&quot;, new Integer(JTable.AUTO_RESIZE_OFF));</span>
+<span class="nc" id="L91">    mResizeMode.put(&quot;nextColumn&quot;, new Integer(JTable.AUTO_RESIZE_NEXT_COLUMN));</span>
+<span class="nc" id="L92">    mResizeMode.put(&quot;subsequentColumns&quot;, new Integer(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS));</span>
+<span class="nc" id="L93">    mResizeMode.put(&quot;lastColumn&quot;, new Integer(JTable.AUTO_RESIZE_LAST_COLUMN));</span>
+<span class="nc" id="L94">    mResizeMode.put(&quot;allColumns&quot;, new Integer(JTable.AUTO_RESIZE_ALL_COLUMNS));</span>
+<span class="nc" id="L95">  }</span>
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.gui4j.component.factory.Gui4jJComponentFactory#defineGui4jJComponentBy(org.gui4j.core.Gui4jComponentContainer,
+   *      java.lang.String, org.dom4j.LElement)
+   */
+  protected Gui4jJComponent defineGui4jJComponentBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e) {
+<span class="nc" id="L105">    int visibleRows = getIntValue(gui4jComponentContainer, e, VISIBLEROWS, -1);</span>
+<span class="nc" id="L106">    int headerLines = getIntValue(gui4jComponentContainer, e, HEADERLINES, 1);</span>
+
+<span class="nc" id="L108">    boolean useRowHeaders = gui4jComponentContainer.getBooleanAttrValue(e, ROWHEADERS, false);</span>
+<span class="nc" id="L109">    boolean useCache = gui4jComponentContainer.getBooleanAttrValue(e, USECACHE, false);</span>
+<span class="nc" id="L110">    boolean useColumnHeaders = gui4jComponentContainer.getBooleanAttrValue(e, COLUMNHEADERS, true);</span>
+<span class="nc" id="L111">    boolean automaticRefresh =</span>
+<span class="nc" id="L112">        gui4jComponentContainer.getBooleanAttrValue(e, AUTOMATIC_REFRESH, true);</span>
+
+<span class="nc" id="L114">    String resizeModeStr = gui4jComponentContainer.getAttrValue(e, RESIZEMODE);</span>
+<span class="nc" id="L115">    int resizeMode = JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    if (resizeModeStr != null) {</span>
+<span class="nc" id="L117">      Integer val = (Integer) mResizeMode.get(resizeModeStr);</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">      if (val != null) {</span>
+<span class="nc" id="L119">        resizeMode = val.intValue();</span>
+      } else {
+<span class="nc" id="L121">        mLogger.warn(&quot;ResizeMode &quot; + resizeModeStr + &quot; is not defined&quot;);</span>
+      }
+    }
+
+<span class="nc" id="L125">    Gui4jMatrix gui4jMatrix =</span>
+        new Gui4jMatrix(
+            gui4jComponentContainer,
+            id,
+            visibleRows,
+            headerLines,
+            useCache,
+            useRowHeaders,
+            useColumnHeaders,
+            automaticRefresh,
+            resizeMode);
+
+<span class="nc" id="L137">    gui4jMatrix.setHeaderBackground(</span>
+<span class="nc" id="L138">        getGui4jAccessInstance(Color.class, gui4jMatrix, e, BACKGROUND_HEADER));</span>
+
+    {
+<span class="nc" id="L141">      String reorderingAllowed = gui4jComponentContainer.getAttrValue(e, REORDERINGALLOWED);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">      if (reorderingAllowed != null) {</span>
+<span class="nc" id="L143">        gui4jMatrix.setReorderingAllowed(reorderingAllowed.equalsIgnoreCase(&quot;true&quot;));</span>
+      }
+    }
+    {
+<span class="nc" id="L147">      String rowSelectionAllowed = gui4jComponentContainer.getAttrValue(e, ROWSELECTIONALLOWED);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">      if (rowSelectionAllowed != null) {</span>
+<span class="nc" id="L149">        gui4jMatrix.setRowSelectionAllowed(rowSelectionAllowed.equalsIgnoreCase(&quot;true&quot;));</span>
+      }
+    }
+    {
+<span class="nc" id="L153">      Map m = null;</span>
+<span class="nc" id="L154">      Gui4jCall refresh = getGui4jAccessInstance(null, m, gui4jMatrix, e, REFRESH);</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">      if (refresh != null) {</span>
+<span class="nc" id="L156">        Gui4jCall[] dependantProperties = refresh.getDependantProperties();</span>
+<span class="nc bnc" id="L157" title="All 4 branches missed.">        if (dependantProperties == null || dependantProperties.length == 0) {</span>
+<span class="nc" id="L158">          mLogger.warn(&quot;Set of dependant events is empty&quot;);</span>
+        }
+<span class="nc" id="L160">        gui4jMatrix.setRefresh(dependantProperties);</span>
+      }
+    }
+    {
+<span class="nc" id="L164">      Map m = null;</span>
+<span class="nc" id="L165">      gui4jMatrix.setOnSetValue(getGui4jAccessInstance(null, m, gui4jMatrix, e, ONSETVALUE));</span>
+    }
+    {
+<span class="nc" id="L168">      String listSelectionMode = gui4jComponentContainer.getAttrValue(e, ROWSELECTIONMODE);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">      if (listSelectionMode != null) {</span>
+<span class="nc" id="L170">        gui4jMatrix.setRowSelectionMode(Gui4jListFactory.getSelectionMode(listSelectionMode));</span>
+      }
+    }
+    {
+<span class="nc" id="L174">      String listSelectionMode = gui4jComponentContainer.getAttrValue(e, COLSELECTIONMODE);</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">      if (listSelectionMode != null) {</span>
+<span class="nc" id="L176">        gui4jMatrix.setColSelectionMode(Gui4jListFactory.getSelectionMode(listSelectionMode));</span>
+      }
+    }
+<span class="nc" id="L179">    gui4jMatrix.definePropertySetter(</span>
+<span class="nc" id="L180">        CELLSELECTIONPAIR, getGui4jAccessInstance(Pair.class, gui4jMatrix, e, CELLSELECTIONPAIR));</span>
+<span class="nc" id="L181">    gui4jMatrix.definePropertySetter(</span>
+<span class="nc" id="L182">        ROWS, getGui4jAccessInstance(Collection.class, gui4jMatrix, e, ROWS));</span>
+<span class="nc" id="L183">    gui4jMatrix.definePropertySetter(</span>
+<span class="nc" id="L184">        COLS, getGui4jAccessInstance(Collection.class, gui4jMatrix, e, COLS));</span>
+<span class="nc" id="L185">    gui4jMatrix.definePropertySetter(</span>
+<span class="nc" id="L186">        CONTENT, getGui4jAccessInstance(Pair.class, gui4jMatrix, e, CONTENT));</span>
+<span class="nc" id="L187">    List errorList = new ArrayList();</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">    for (Iterator it = e.elements().iterator(); it.hasNext(); ) {</span>
+      try {
+<span class="nc" id="L190">        LElement child = (LElement) it.next();</span>
+<span class="nc" id="L191">        gui4jComponentContainer.autoExtend(child);</span>
+<span class="nc" id="L192">        String elemName = child.getName();</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        if (elemName.equals(ELEMENT_COLUMN)) {</span>
+<span class="nc" id="L194">          String columnTypeAliasName = gui4jComponentContainer.getAttrValue(child, COLUMN_TYPE);</span>
+<span class="nc" id="L195">          Class columnTypeClazz = gui4jComponentContainer.getClassForAliasName(columnTypeAliasName);</span>
+
+<span class="nc bnc" id="L197" title="All 4 branches missed.">          if (columnTypeAliasName != null &amp;&amp; columnTypeClazz == null) {</span>
+<span class="nc" id="L198">            Object[] args = {columnTypeAliasName};</span>
+<span class="nc" id="L199">            throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L200">                gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L201">                Gui4jComponentContainerManager.getLineNumber(child.attribute(COLUMN_TYPE)),</span>
+                RESOURCE_ERROR_alias_undefined,
+                args);
+          }
+
+<span class="nc" id="L206">          Map nullMap = null;</span>
+<span class="nc" id="L207">          Gui4jCall characters =</span>
+<span class="nc" id="L208">              getGui4jAccessInstance(Integer.TYPE, nullMap, gui4jMatrix, child, CHARACTERS);</span>
+<span class="nc" id="L209">          Gui4jCall maxCharacters =</span>
+<span class="nc" id="L210">              getGui4jAccessInstance(Integer.TYPE, nullMap, gui4jMatrix, child, MAXCHARACTERS);</span>
+          Gui4jCall columnName;
+          Gui4jTextAttribute textAttribute;
+          {
+<span class="nc" id="L214">            Map m = new HashMap();</span>
+<span class="nc" id="L215">            m.put(Gui4jMatrix.PARAM_COL, Integer.TYPE);</span>
+<span class="nc" id="L216">            m.put(Gui4jMatrix.PARAM_COLVALUE, columnTypeClazz);</span>
+<span class="nc" id="L217">            columnName = getGui4jAccessInstance(String.class, m, gui4jMatrix, child, COLUMN_NAME);</span>
+<span class="nc" id="L218">            textAttribute = Gui4jTextAttribute.getInstance(this, gui4jMatrix, child, m);</span>
+          }
+
+<span class="nc" id="L221">          Gui4jMatrix.Gui4jCol gui4jCol =</span>
+<span class="nc" id="L222">              gui4jMatrix</span>
+              .new Gui4jCol(columnTypeClazz, columnName, textAttribute, characters, maxCharacters);
+<span class="nc" id="L224">          gui4jCol.setWeight(getDoubleValue(gui4jComponentContainer, child, WEIGHT, 1.0));</span>
+<span class="nc" id="L225">          gui4jMatrix.addGui4jCol(columnTypeClazz, gui4jCol);</span>
+        }
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        if (elemName.equals(ELEMENT_ROW)) {</span>
+<span class="nc" id="L228">          String rowTypeAliasName = gui4jComponentContainer.getAttrValue(child, ROW_TYPE);</span>
+<span class="nc" id="L229">          Class rowTypeClazz = gui4jComponentContainer.getClassForAliasName(rowTypeAliasName);</span>
+
+<span class="nc bnc" id="L231" title="All 4 branches missed.">          if (rowTypeAliasName != null &amp;&amp; rowTypeClazz == null) {</span>
+<span class="nc" id="L232">            Object[] args = {rowTypeAliasName};</span>
+<span class="nc" id="L233">            throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L234">                gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L235">                Gui4jComponentContainerManager.getLineNumber(child.attribute(ROW_TYPE)),</span>
+                RESOURCE_ERROR_alias_undefined,
+                args);
+          }
+
+          Gui4jCall rowName;
+          Gui4jTextAttribute textAttribute;
+          {
+<span class="nc" id="L243">            Map m = new HashMap();</span>
+<span class="nc" id="L244">            m.put(Gui4jMatrix.PARAM_ROW, Integer.TYPE);</span>
+<span class="nc" id="L245">            m.put(Gui4jMatrix.PARAM_ROWVALUE, rowTypeClazz);</span>
+<span class="nc" id="L246">            rowName = getGui4jAccessInstance(String.class, m, gui4jMatrix, child, ROW_NAME);</span>
+<span class="nc" id="L247">            textAttribute = Gui4jTextAttribute.getInstance(this, gui4jMatrix, child, m);</span>
+          }
+
+<span class="nc" id="L250">          Gui4jMatrix.Gui4jRow gui4jRow =</span>
+<span class="nc" id="L251">              gui4jMatrix.new Gui4jRow(rowTypeClazz, rowName, textAttribute);</span>
+<span class="nc" id="L252">          gui4jMatrix.addGui4jRow(rowTypeClazz, gui4jRow);</span>
+        }
+<span class="nc bnc" id="L254" title="All 2 branches missed.">        if (elemName.equals(ELEMENT_CELL)) {</span>
+<span class="nc" id="L255">          Gui4jCall list = null;</span>
+<span class="nc" id="L256">          Gui4jCall listItem = null;</span>
+<span class="nc" id="L257">          Gui4jCall listNullItem = null;</span>
+<span class="nc" id="L258">          Gui4jCall listEditable = null;</span>
+<span class="nc" id="L259">          Gui4jCall stringConvert = null;</span>
+
+<span class="nc" id="L261">          String rowTypeAliasName = gui4jComponentContainer.getAttrValue(child, ROW_TYPE);</span>
+<span class="nc" id="L262">          Class rowTypeClazz = gui4jComponentContainer.getClassForAliasName(rowTypeAliasName);</span>
+
+<span class="nc bnc" id="L264" title="All 4 branches missed.">          if (rowTypeAliasName != null &amp;&amp; rowTypeClazz == null) {</span>
+<span class="nc" id="L265">            Object[] args = {rowTypeAliasName};</span>
+<span class="nc" id="L266">            throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L267">                gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L268">                Gui4jComponentContainerManager.getLineNumber(child.attribute(ROW_TYPE)),</span>
+                RESOURCE_ERROR_alias_undefined,
+                args);
+          }
+
+<span class="nc" id="L273">          String columnTypeAliasName = gui4jComponentContainer.getAttrValue(child, COLUMN_TYPE);</span>
+<span class="nc" id="L274">          Class columnTypeClazz = gui4jComponentContainer.getClassForAliasName(columnTypeAliasName);</span>
+<span class="nc bnc" id="L275" title="All 4 branches missed.">          if (columnTypeAliasName != null &amp;&amp; columnTypeClazz == null) {</span>
+<span class="nc" id="L276">            Object[] args = {columnTypeAliasName};</span>
+<span class="nc" id="L277">            throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L278">                gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L279">                Gui4jComponentContainerManager.getLineNumber(child.attribute(COLUMN_TYPE)),</span>
+                RESOURCE_ERROR_alias_undefined,
+                args);
+          }
+
+<span class="nc" id="L284">          Map m = new HashMap();</span>
+<span class="nc" id="L285">          m.put(Gui4jMatrix.PARAM_COL, Integer.TYPE);</span>
+<span class="nc" id="L286">          m.put(Gui4jMatrix.PARAM_ROW, Integer.TYPE);</span>
+<span class="nc" id="L287">          m.put(Gui4jMatrix.PARAM_COLVALUE, columnTypeClazz);</span>
+<span class="nc" id="L288">          m.put(Gui4jMatrix.PARAM_ROWVALUE, rowTypeClazz);</span>
+
+<span class="nc" id="L290">          Gui4jCall onCellSelect =</span>
+<span class="nc" id="L291">              getGui4jAccessInstance(null, m, gui4jMatrix, child, ONCELLSELECT);</span>
+<span class="nc" id="L292">          Gui4jCall onCellClick = getGui4jAccessInstance(null, m, gui4jMatrix, child, ONCELLCLICK);</span>
+<span class="nc" id="L293">          Gui4jCall onCellDblClick =</span>
+<span class="nc" id="L294">              getGui4jAccessInstance(null, m, gui4jMatrix, child, ONCELLDBLCLICK);</span>
+
+<span class="nc" id="L296">          String listTypeAliasName = gui4jComponentContainer.getAttrValue(child, LISTTYPE);</span>
+<span class="nc" id="L297">          Class listTypeClazz = gui4jComponentContainer.getClassForAliasName(listTypeAliasName);</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">          if (listTypeClazz != null) {</span>
+<span class="nc" id="L299">            list = getGui4jAccessInstance(Collection.class, m, gui4jMatrix, child, LIST);</span>
+
+<span class="nc bnc" id="L301" title="All 2 branches missed.">            if (list != null) {</span>
+<span class="nc" id="L302">              m.put(Gui4jMatrix.PARAM_LIST, list.getResultClass());</span>
+<span class="nc" id="L303">              listItem = getGui4jAccessInstance(listTypeClazz, m, gui4jMatrix, child, LISTITEM);</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">              if (listItem == null) {</span>
+<span class="nc" id="L305">                Object[] args = {child.getName(), LISTITEM};</span>
+<span class="nc" id="L306">                throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L307">                    gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L308">                    Gui4jComponentContainerManager.getLineNumber(child.attribute(LISTTYPE)),</span>
+                    RESOURCE_ERROR_attribute_not_defined,
+                    args);
+              }
+<span class="nc" id="L312">              listNullItem = getGui4jAccessInstance(String.class, gui4jMatrix, child, LISTNULLITEM);</span>
+<span class="nc" id="L313">              Map nullMap = null;</span>
+<span class="nc" id="L314">              listEditable =</span>
+<span class="nc" id="L315">                  getGui4jAccessInstance(Boolean.TYPE, nullMap, gui4jMatrix, child, LISTEDITABLE);</span>
+<span class="nc" id="L316">              stringConvert =</span>
+<span class="nc" id="L317">                  getGui4jAccessInstance(</span>
+                      listTypeClazz, String.class, gui4jMatrix, child, STRINGCONVERT);
+<span class="nc bnc" id="L319" title="All 4 branches missed.">              if (listEditable != null</span>
+                  &amp;&amp; stringConvert == null
+<span class="nc bnc" id="L321" title="All 2 branches missed.">                  &amp;&amp; !String.class.isAssignableFrom(listTypeClazz)) {</span>
+<span class="nc" id="L322">                Object[] args = {};</span>
+<span class="nc" id="L323">                throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L324">                    gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L325">                    Gui4jComponentContainerManager.getLineNumber(child.attribute(LISTEDITABLE)),</span>
+                    RESOURCE_ERROR_attribute_listEditable_defined,
+                    args);
+              }
+<span class="nc" id="L329">            } else {</span>
+<span class="nc" id="L330">              Object[] args = {child.getName(), LIST};</span>
+<span class="nc" id="L331">              throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L332">                  gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L333">                  Gui4jComponentContainerManager.getLineNumber(child.attribute(LISTTYPE)),</span>
+                  RESOURCE_ERROR_attribute_not_defined,
+                  args);
+            }
+          }
+
+<span class="nc" id="L339">          Gui4jCall value = null;</span>
+<span class="nc" id="L340">          Gui4jCall tooltip = null;</span>
+<span class="nc" id="L341">          Gui4jCall popupContext = null;</span>
+<span class="nc" id="L342">          Gui4jCall setValue = null;</span>
+<span class="nc" id="L343">          Gui4jCall enabled = null;</span>
+
+<span class="nc bnc" id="L345" title="All 6 branches missed.">          if (listTypeClazz != null &amp;&amp; list != null &amp;&amp; listItem != null) {</span>
+<span class="nc" id="L346">            m.put(Gui4jMatrix.PARAM_LIST, list.getResultClass());</span>
+<span class="nc" id="L347">            m.put(Gui4jMatrix.PARAM_LIST_ITEM, listItem.getResultClass());</span>
+          }
+
+          // display value
+<span class="nc" id="L351">          value = getGui4jAccessInstance(Object.class, m, gui4jMatrix, child, VALUE);</span>
+<span class="nc" id="L352">          enabled = getGui4jAccessInstance(Boolean.TYPE, m, gui4jMatrix, child, ENABLED);</span>
+<span class="nc" id="L353">          tooltip = getGui4jAccessInstance(String.class, m, gui4jMatrix, child, TOOLTIP);</span>
+<span class="nc" id="L354">          popupContext = getGui4jAccessInstance(null, m, gui4jMatrix, child, POPUP_CONTEXT);</span>
+
+          // edit value
+<span class="nc bnc" id="L357" title="All 2 branches missed.">          if (value != null) {</span>
+<span class="nc bnc" id="L358" title="All 6 branches missed.">            if (listTypeClazz != null &amp;&amp; list != null &amp;&amp; listItem != null) {</span>
+<span class="nc" id="L359">              m.put(Gui4jMatrix.PARAM_VALUE, listTypeClazz);</span>
+            } else {
+<span class="nc" id="L361">              m.put(Gui4jMatrix.PARAM_VALUE, value.getResultClass());</span>
+            }
+          } else {
+<span class="nc" id="L364">            m.put(Gui4jMatrix.PARAM_VALUE, Object.class);</span>
+          }
+<span class="nc" id="L366">          m.remove(Gui4jMatrix.PARAM_LIST_ITEM);</span>
+<span class="nc" id="L367">          Gui4jTextAttribute textAttribute =</span>
+<span class="nc" id="L368">              Gui4jTextAttribute.getInstance(this, gui4jMatrix, child, m);</span>
+<span class="nc" id="L369">          setValue = getGui4jAccessInstance(null, m, gui4jMatrix, child, SETVALUE);</span>
+<span class="nc" id="L370">          m.put(Gui4jMatrix.PARAM_VALUE, String.class);</span>
+<span class="nc" id="L371">          Gui4jCall notifyTempValue =</span>
+<span class="nc" id="L372">              getGui4jAccessInstance(null, m, gui4jMatrix, child, NOTIFY_TEMP_VALUE);</span>
+
+<span class="nc" id="L374">          Gui4jMatrix.Gui4jCell gui4jCell =</span>
+<span class="nc" id="L375">              gui4jMatrix</span>
+              .new Gui4jCell(
+                  rowTypeClazz,
+                  columnTypeClazz,
+                  textAttribute,
+                  value,
+                  setValue,
+                  enabled,
+                  list,
+                  listItem,
+                  listNullItem,
+                  listEditable,
+                  stringConvert,
+                  onCellSelect,
+                  onCellClick,
+                  onCellDblClick,
+                  tooltip,
+                  notifyTempValue,
+                  popupContext);
+<span class="nc" id="L394">          gui4jMatrix.addGui4jCell(gui4jCell);</span>
+        }
+<span class="nc" id="L396">      } catch (Throwable t) {</span>
+<span class="nc" id="L397">        errorList.add(t);</span>
+<span class="nc" id="L398">      }</span>
+    }
+<span class="nc" id="L400">    checkErrorList(errorList);</span>
+<span class="nc" id="L401">    return gui4jMatrix;</span>
+  }
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc" id="L405">    super.addToplevelAttributes(attrList, filter);</span>
+<span class="nc bnc" id="L406" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jMatrixFactory.class)) {</span>
+<span class="nc" id="L407">      attrList.add(</span>
+          new Attribute(COLS, new AttributeTypeMethodCall(Collection.class), IMPLIED, false));
+<span class="nc" id="L409">      attrList.add(</span>
+          new Attribute(ROWS, new AttributeTypeMethodCall(Collection.class), IMPLIED, false));
+<span class="nc" id="L411">      attrList.add(new Attribute(CONTENT, new AttributeTypeMethodCall(Pair.class), IMPLIED, false));</span>
+<span class="nc" id="L412">      attrList.add(</span>
+          new Attribute(
+              CELLSELECTIONPAIR, new AttributeTypeMethodCall(Pair.class, true), IMPLIED, false));
+<span class="nc" id="L415">      attrList.add(</span>
+          new Attribute(
+              BACKGROUND_HEADER, new AttributeTypeMethodCall(Color.class), IMPLIED, false));
+<span class="nc" id="L418">      attrList.add(new Attribute(VISIBLEROWS, new AttributeTypeInteger(), IMPLIED, false));</span>
+<span class="nc" id="L419">      attrList.add(new Attribute(HEADERLINES, new AttributeTypeInteger(), IMPLIED, false));</span>
+<span class="nc" id="L420">      attrList.add(new Attribute(REFRESH, new AttributeTypeMethodCall(null), IMPLIED, false));</span>
+<span class="nc" id="L421">      attrList.add(new Attribute(ONSETVALUE, new AttributeTypeMethodCall(null), IMPLIED, false));</span>
+<span class="nc" id="L422">      attrList.add(</span>
+          new Attribute(
+<span class="nc" id="L424">              REORDERINGALLOWED, AttributeTypeEnumeration.getBooleanInstance(), false, false));</span>
+<span class="nc" id="L425">      attrList.add(</span>
+          new Attribute(
+              ROWSELECTIONMODE,
+<span class="nc" id="L428">              new AttributeTypeEnumeration(Gui4jListFactory.listSelectionModeTypeParams()),</span>
+              IMPLIED,
+              false));
+<span class="nc" id="L431">      attrList.add(</span>
+          new Attribute(
+              COLSELECTIONMODE,
+<span class="nc" id="L434">              new AttributeTypeEnumeration(Gui4jListFactory.listSelectionModeTypeParams()),</span>
+              IMPLIED,
+              false));
+<span class="nc" id="L437">      attrList.add(</span>
+          new Attribute(
+<span class="nc" id="L439">              ROWSELECTIONALLOWED, AttributeTypeEnumeration.getBooleanInstance(), IMPLIED, false));</span>
+<span class="nc" id="L440">      attrList.add(</span>
+          new Attribute(
+<span class="nc" id="L442">              USECACHE, AttributeTypeEnumeration.getBooleanInstance(false), IMPLIED, false));</span>
+<span class="nc" id="L443">      attrList.add(</span>
+<span class="nc" id="L444">          new Attribute(ROWHEADERS, AttributeTypeEnumeration.getBooleanInstance(), IMPLIED, false));</span>
+<span class="nc" id="L445">      attrList.add(</span>
+          new Attribute(
+<span class="nc" id="L447">              COLUMNHEADERS, AttributeTypeEnumeration.getBooleanInstance(), IMPLIED, false));</span>
+<span class="nc" id="L448">      attrList.add(</span>
+          new Attribute(
+              RESIZEMODE,
+              new AttributeTypeEnumeration(mResizeMode, &quot;subsequentColumns&quot;),
+              IMPLIED,
+              false));
+<span class="nc" id="L454">      attrList.add(</span>
+          new Attribute(
+              AUTOMATIC_REFRESH,
+<span class="nc" id="L457">              AttributeTypeEnumeration.getBooleanInstance(false),</span>
+              IMPLIED,
+              false));
+    }
+<span class="nc" id="L461">  }</span>
+
+  public void addInnerAttributes(String elementName, List list) {
+<span class="nc" id="L464">    Set s = new HashSet();</span>
+<span class="nc" id="L465">    s.add(new Param(&quot;right&quot;));</span>
+<span class="nc" id="L466">    s.add(new Param(&quot;left&quot;));</span>
+<span class="nc" id="L467">    s.add(new Param(&quot;center&quot;));</span>
+<span class="nc bnc" id="L468" title="All 2 branches missed.">    if (elementName.equals(ELEMENT_CELL)) {</span>
+<span class="nc" id="L469">      List paramListBasic = new ArrayList();</span>
+<span class="nc" id="L470">      paramListBasic.add(new Param(Gui4jMatrix.PARAM_COL, int.class));</span>
+<span class="nc" id="L471">      paramListBasic.add(new Param(Gui4jMatrix.PARAM_ROW, int.class));</span>
+<span class="nc" id="L472">      paramListBasic.add(new Param(Gui4jMatrix.PARAM_COLVALUE, COLUMN_TYPE));</span>
+<span class="nc" id="L473">      paramListBasic.add(new Param(Gui4jMatrix.PARAM_ROWVALUE, ROW_TYPE));</span>
+<span class="nc" id="L474">      List paramListWithValue = new ArrayList(paramListBasic);</span>
+<span class="nc" id="L475">      paramListWithValue.add(new Param(Gui4jMatrix.PARAM_VALUE, Object.class));</span>
+
+<span class="nc" id="L477">      Attribute[] attrs = {</span>
+        new Attribute(ROW_TYPE, new AttributeTypeAlias(), REQUIRED, false),
+        new Attribute(COLUMN_TYPE, new AttributeTypeAlias(), REQUIRED, false),
+        new Attribute(
+            VALUE, new AttributeTypeMethodCall(Object.class, paramListBasic), REQUIRED, false),
+        new Attribute(
+            TOOLTIP, new AttributeTypeMethodCall(String.class, paramListBasic), IMPLIED, false),
+        new Attribute(
+            ENABLED, new AttributeTypeMethodCall(Boolean.TYPE, paramListBasic), IMPLIED, false),
+        new Attribute(
+            SETVALUE, new AttributeTypeMethodCall(null, paramListWithValue), IMPLIED, false),
+        new Attribute(
+            NOTIFY_TEMP_VALUE, new AttributeTypeMethodCall(null, paramListBasic), IMPLIED, false),
+        new Attribute(LIST, new AttributeTypeMethodCall(Collection.class), IMPLIED, false),
+        new Attribute(LISTTYPE, new AttributeTypeAlias(), IMPLIED, false),
+        new Attribute(LISTITEM, new AttributeTypeMethodCall(Object.class), IMPLIED, false),
+        new Attribute(LISTNULLITEM, new AttributeTypeMethodCall(String.class), IMPLIED, false),
+        new Attribute(LISTEDITABLE, new AttributeTypeMethodCall(Boolean.TYPE), IMPLIED, false),
+        new Attribute(STRINGCONVERT, new AttributeTypeMethodCall(Object.class), IMPLIED, false),
+        new Attribute(
+            ONCELLCLICK, new AttributeTypeMethodCall(null, paramListBasic), IMPLIED, false),
+        new Attribute(
+            ONCELLDBLCLICK, new AttributeTypeMethodCall(null, paramListBasic), IMPLIED, false),
+        new Attribute(
+            ONCELLSELECT, new AttributeTypeMethodCall(null, paramListBasic), IMPLIED, false),
+        new Attribute(
+            FOREGROUND, new AttributeTypeMethodCall(Color.class, paramListBasic), IMPLIED, false),
+        new Attribute(
+            BACKGROUND, new AttributeTypeMethodCall(Color.class, paramListBasic), IMPLIED, false),
+        new Attribute(EVEN_BACKGROUND, new AttributeTypeMethodCall(Color.class), IMPLIED, false),
+        new Attribute(
+            POPUP_CONTEXT,
+            new AttributeTypeMethodCall(Object.class, paramListBasic),
+            IMPLIED,
+            false),
+        new Attribute(FONT, new AttributeTypeMethodCall(Font.class), IMPLIED, false),
+        new Attribute(ALIGNMENT, new AttributeTypeEnumeration(s), IMPLIED, true)
+      };
+<span class="nc" id="L515">      Attribute[] aa = attrs;</span>
+<span class="nc" id="L516">      list.addAll(Arrays.asList(aa));</span>
+<span class="nc" id="L517">      return;</span>
+    }
+<span class="nc bnc" id="L519" title="All 2 branches missed.">    if (elementName.equals(ELEMENT_COLUMN)) {</span>
+<span class="nc" id="L520">      List paramList = new ArrayList();</span>
+<span class="nc" id="L521">      paramList.add(new Param(Gui4jMatrix.PARAM_COL, int.class));</span>
+<span class="nc" id="L522">      paramList.add(new Param(Gui4jMatrix.PARAM_COLVALUE, COLUMN_TYPE));</span>
+
+<span class="nc" id="L524">      Attribute[] attrs = {</span>
+        new Attribute(COLUMN_TYPE, new AttributeTypeAlias(), REQUIRED, false),
+        new Attribute(COLUMN_NAME, new AttributeTypeMethodCall(String.class), REQUIRED, false),
+        new Attribute(WEIGHT, new AttributeTypeFloatingPoint(), IMPLIED, false),
+        new Attribute(CHARACTERS, new AttributeTypeInteger(), IMPLIED, false),
+        new Attribute(MAXCHARACTERS, new AttributeTypeInteger(), IMPLIED, false),
+        new Attribute(
+            FOREGROUND, new AttributeTypeMethodCall(Color.class, paramList), IMPLIED, false),
+        new Attribute(
+            BACKGROUND, new AttributeTypeMethodCall(Color.class, paramList), IMPLIED, false),
+        new Attribute(EVEN_BACKGROUND, new AttributeTypeMethodCall(Color.class), IMPLIED, false),
+        new Attribute(FONT, new AttributeTypeMethodCall(Font.class), IMPLIED, false),
+        new Attribute(ALIGNMENT, new AttributeTypeEnumeration(s), IMPLIED, true)
+      };
+<span class="nc" id="L538">      Attribute[] aa = attrs;</span>
+<span class="nc" id="L539">      list.addAll(Arrays.asList(aa));</span>
+<span class="nc" id="L540">      return;</span>
+    }
+<span class="nc bnc" id="L542" title="All 2 branches missed.">    if (elementName.equals(ELEMENT_ROW)) {</span>
+<span class="nc" id="L543">      List paramList = new ArrayList();</span>
+<span class="nc" id="L544">      paramList.add(new Param(Gui4jMatrix.PARAM_ROW, int.class));</span>
+<span class="nc" id="L545">      paramList.add(new Param(Gui4jMatrix.PARAM_ROWVALUE, ROW_TYPE));</span>
+
+<span class="nc" id="L547">      Attribute[] attrs = {</span>
+        new Attribute(ROW_TYPE, new AttributeTypeAlias(), REQUIRED, false),
+        new Attribute(ROW_NAME, new AttributeTypeMethodCall(String.class), IMPLIED, false),
+        new Attribute(
+            FOREGROUND, new AttributeTypeMethodCall(Color.class, paramList), IMPLIED, false),
+        new Attribute(
+            BACKGROUND, new AttributeTypeMethodCall(Color.class, paramList), IMPLIED, false),
+        new Attribute(EVEN_BACKGROUND, new AttributeTypeMethodCall(Color.class), IMPLIED, false),
+        new Attribute(FONT, new AttributeTypeMethodCall(Font.class), IMPLIED, false),
+        new Attribute(ALIGNMENT, new AttributeTypeEnumeration(s), IMPLIED, true)
+      };
+<span class="nc" id="L558">      Attribute[] aa = attrs;</span>
+<span class="nc" id="L559">      list.addAll(Arrays.asList(aa));</span>
+<span class="nc" id="L560">      return;</span>
+    }
+<span class="nc" id="L562">  }</span>
+
+  public SubElement getSubElement(String elementName) {
+<span class="nc bnc" id="L565" title="All 2 branches missed.">    if (ELEMENT_CELL.equals(elementName)</span>
+<span class="nc bnc" id="L566" title="All 2 branches missed.">        || ELEMENT_COLUMN.equals(elementName)</span>
+<span class="nc bnc" id="L567" title="All 2 branches missed.">        || ELEMENT_ROW.equals(elementName)) {</span>
+<span class="nc" id="L568">      return SubElement.empty();</span>
+    }
+<span class="nc bnc" id="L570" title="All 2 branches missed.">    if (NAME.equals(elementName)) {</span>
+<span class="nc" id="L571">      SubElement cell = SubElement.getInstance(ELEMENT_CELL);</span>
+<span class="nc" id="L572">      SubElement column = SubElement.getInstance(ELEMENT_COLUMN);</span>
+<span class="nc" id="L573">      SubElement row = SubElement.getInstance(ELEMENT_ROW);</span>
+<span class="nc" id="L574">      SubElement[] columnOrRow = {column, row};</span>
+<span class="nc" id="L575">      SubElement[] elems = {SubElement.star(SubElement.or(columnOrRow)), SubElement.star(cell)};</span>
+<span class="nc" id="L576">      return SubElement.seq(elems);</span>
+    }
+<span class="nc" id="L578">    return null;</span>
+  }
+
+  public String[] getInnerElements() {
+<span class="nc" id="L582">    String[] elems = {ELEMENT_CELL, ELEMENT_COLUMN, ELEMENT_ROW};</span>
+<span class="nc" id="L583">    return elems;</span>
+  }
+
+  /**
+   * @see org.gui4j.core.Gui4jComponentFactory#getName()
+   */
+  public String getName() {
+<span class="nc" id="L590">    return NAME;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

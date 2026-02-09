@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultTranslator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.util</a> &gt; <span class="el_source">DefaultTranslator.java</span></div><h1>DefaultTranslator.java</h1><pre class="source lang-java linenums">package org.gui4j.util;
+
+import java.text.MessageFormat;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ * Default implementation for the interface &lt;code&gt;Translator&lt;/code&gt;. The translation is taken from a
+ * property file. Optional it is possible to delegate the translation process to another &lt;code&gt;
+ * Translator&lt;/code&gt; if no entry was found in the property file.
+ *
+ * @author Joachim Schmid
+ */
+public class DefaultTranslator implements Translator {
+
+<span class="fc" id="L19">  private static final Log logger = LogFactory.getLog(DefaultTranslator.class);</span>
+
+  private final ResourceBundle resourceBundle;
+  private final Translator delegateTo;
+  private final String bundleName;
+
+<span class="fc" id="L25">  private static Translator idTranslator = new IdTranslator();</span>
+
+  /**
+   * @param locale translation locale
+   * @param clazz the classloader of this class will be used to locate the property file
+   * @param bundleName the name of the property file
+   */
+  public DefaultTranslator(Locale locale, Class clazz, String bundleName) {
+<span class="fc" id="L33">    this(locale, clazz, bundleName, null);</span>
+<span class="fc" id="L34">  }</span>
+
+  /**
+   * @param locale translation locale
+   * @param clazz the classloader of this class will be used to locate the property file
+   * @param bundleName the name of the property file
+   * @param delegateTo the translator where the translation is delegated to if a tag cannot be found
+   *     in then given bundle
+   */
+<span class="fc" id="L43">  public DefaultTranslator(Locale locale, Class clazz, String bundleName, Translator delegateTo) {</span>
+<span class="fc" id="L44">    this.bundleName = bundleName;</span>
+<span class="fc" id="L45">    this.delegateTo = delegateTo;</span>
+<span class="fc" id="L46">    this.resourceBundle =</span>
+<span class="fc" id="L47">        ResourceBundle.getBundle(</span>
+<span class="fc" id="L48">            clazz.getPackage().getName() + &quot;/&quot; + bundleName, locale, clazz.getClassLoader());</span>
+<span class="fc" id="L49">  }</span>
+
+  /**
+   * @return a translator which builds a simple string based on the tag and arguments
+   */
+  public static Translator getIdTranslator() {
+<span class="nc" id="L55">    return idTranslator;</span>
+  }
+
+  /**
+   * Implementation of the interface method to translate a tag
+   *
+   * @param errorTag
+   * @param args
+   * @return String
+   */
+  public String translate(String errorTag, Object[] args) {
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">    assert errorTag != null;</span>
+
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">    if (errorTag == &quot;&quot;) {</span>
+<span class="nc" id="L69">      return &quot;&quot;;</span>
+    }
+
+<span class="fc" id="L72">    String text = null;</span>
+    try {
+<span class="fc" id="L74">      text = resourceBundle.getString(errorTag);</span>
+<span class="pc bpc" id="L75" title="1 of 2 branches missed.">      if (text != null) {</span>
+<span class="fc" id="L76">        text = text.replaceAll(&quot;\\n&quot;, &quot;\n&quot;);</span>
+      }
+<span class="nc" id="L78">    } catch (MissingResourceException e) {</span>
+      // do nothing
+<span class="fc" id="L80">    }</span>
+
+<span class="pc bpc" id="L82" title="3 of 4 branches missed.">    if (text == null &amp;&amp; delegateTo != null) {</span>
+<span class="nc" id="L83">      text = delegateTo.translate(errorTag, args);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">      if (text != null) {</span>
+<span class="nc" id="L85">        return text;</span>
+      }
+    }
+
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">    if (text == null) {</span>
+<span class="nc" id="L90">      logger.warn(&quot;Tag &quot; + errorTag + &quot; is not defined in bundle &quot; + bundleName);</span>
+<span class="nc" id="L91">      return getIdTranslator().translate(errorTag, args);</span>
+    } else {
+<span class="fc" id="L93">      MessageFormat msgFormat = new MessageFormat(text);</span>
+<span class="fc" id="L94">      return msgFormat.format(args);</span>
+    }
+  }
+
+  /**
+   * @see org.gui4j.util.Translator#isDefined(java.lang.String)
+   */
+  public boolean isDefined(String errorTag) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    assert errorTag != null;</span>
+
+<span class="nc bnc" id="L104" title="All 2 branches missed.">    if (errorTag == &quot;&quot;) {</span>
+<span class="nc" id="L105">      return true;</span>
+    }
+
+    try {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">      if (resourceBundle.getString(errorTag) != null) {</span>
+<span class="nc" id="L110">        return true;</span>
+      }
+<span class="nc" id="L112">    } catch (MissingResourceException e) {</span>
+      // do nothing
+<span class="nc" id="L114">    }</span>
+
+<span class="nc bnc" id="L116" title="All 2 branches missed.">    if (delegateTo != null) {</span>
+<span class="nc" id="L117">      return delegateTo.isDefined(errorTag);</span>
+    }
+
+<span class="nc" id="L120">    return false;</span>
+  }
+
+  private static class IdTranslator implements Translator {
+    public String translate(String tag, Object[] args) {
+<span class="nc bnc" id="L125" title="All 2 branches missed.">      if (args != null) {</span>
+<span class="nc" id="L126">        StringBuffer buffer = new StringBuffer(tag);</span>
+<span class="nc" id="L127">        buffer.append(&quot;: &quot;);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        for (int i = 0; i &lt; args.length; i++) {</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">          if (i &gt; 0) {</span>
+<span class="nc" id="L130">            buffer.append(&quot;, &quot;);</span>
+          }
+<span class="nc" id="L132">          buffer.append(args[i]);</span>
+        }
+<span class="nc" id="L134">        return buffer.toString();</span>
+      } else {
+<span class="nc" id="L136">        return tag;</span>
+      }
+    }
+
+    /**
+     * @see org.gui4j.util.Translator#isDefined(java.lang.String)
+     */
+    public boolean isDefined(String tag) {
+<span class="nc" id="L144">      return true;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

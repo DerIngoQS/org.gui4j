@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jTabbedPane.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jTabbedPane.java</span></div><h1>Gui4jTabbedPane.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import java.awt.Color;
+import java.awt.Component;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.swing.JTabbedPane;
+import javax.swing.JViewport;
+import javax.swing.SwingUtilities;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.Gui4jSwingContainer;
+import org.gui4j.core.Gui4jThreadManager;
+import org.gui4j.core.listener.Gui4jTabChangeListener;
+import org.gui4j.core.util.EntrySelection;
+import org.gui4j.event.Gui4jEventListener;
+
+public final class Gui4jTabbedPane extends Gui4jJComponent {
+<span class="nc" id="L27">  protected static final Log mLogger = LogFactory.getLog(Gui4jTabbedPane.class);</span>
+  private final List mEntryList;
+  private final int mTabPolicy;
+  private final int mTabPlacement;
+  private final boolean mEmbedded;
+  private Gui4jCall mOnChange;
+  private Gui4jCall[] mTabSelection;
+
+  /**
+   * Constructor for Gui4jTabbedPane.
+   *
+   * @param gui4jComponentContainer
+   * @param id
+   * @param tabPolicy
+   * @param tabPlacement
+   */
+  public Gui4jTabbedPane(
+      Gui4jComponentContainer gui4jComponentContainer,
+      String id,
+      int tabPolicy,
+      int tabPlacement,
+      boolean embedded) {
+<span class="nc" id="L49">    super(gui4jComponentContainer, JTabbedPane.class, id);</span>
+<span class="nc" id="L50">    mEntryList = new ArrayList();</span>
+<span class="nc" id="L51">    mTabPolicy = tabPolicy;</span>
+<span class="nc" id="L52">    mTabPlacement = tabPlacement;</span>
+<span class="nc" id="L53">    mEmbedded = embedded;</span>
+<span class="nc" id="L54">  }</span>
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.gui4j.core.Gui4jAbstractComponent#createComponentInstance(org.gui4j.core.Gui4jSwingContainer,
+   *      org.gui4j.Gui4jCallBase, org.gui4j.core.Gui4jQualifiedComponent)
+   */
+  protected Gui4jComponentInstance createComponentInstance(
+      Gui4jSwingContainer gui4jSwingContainer,
+      Gui4jCallBase gui4jCallBase,
+      Gui4jQualifiedComponent gui4jComponentInPath) {
+<span class="nc" id="L66">    JTabbedPane tabbedPane = new JTabbedPane();</span>
+
+<span class="nc" id="L68">    tabbedPane.setTabLayoutPolicy(mTabPolicy);</span>
+<span class="nc" id="L69">    tabbedPane.setTabPlacement(mTabPlacement);</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">    if (mEmbedded) {</span>
+<span class="nc" id="L72">      tabbedPane.putClientProperty(&quot;jgoodies.embeddedTabs&quot;, Boolean.TRUE);</span>
+    }
+
+<span class="nc" id="L75">    Gui4jComponentInstance gui4jComponentInstance =</span>
+        new Gui4jComponentInstance(gui4jSwingContainer, tabbedPane, gui4jComponentInPath);
+<span class="nc" id="L77">    int numberOfHiddenTabs = 0;</span>
+<span class="nc" id="L78">    List visibleEntryList = new ArrayList();</span>
+<span class="nc" id="L79">    List entrySelections = new ArrayList();</span>
+<span class="nc" id="L80">    boolean firstVisible = true;</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">    for (Iterator it = mEntryList.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L82">      Entry entry = (Entry) it.next();</span>
+
+      // Check if tab should be displayed
+<span class="nc bnc" id="L85" title="All 2 branches missed.">      if (entry.getVisible() != null) {</span>
+<span class="nc" id="L86">        Gui4jCall visible = entry.getVisible();</span>
+<span class="nc" id="L87">        Boolean displayTab =</span>
+            (Boolean)
+<span class="nc" id="L89">                visible.getValueNoParams(gui4jComponentInstance.getGui4jCallBase(), Boolean.TRUE);</span>
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (Boolean.FALSE.equals(displayTab)) {</span>
+<span class="nc" id="L92">          numberOfHiddenTabs++;</span>
+<span class="nc" id="L93">          continue;</span>
+        }
+      }
+<span class="nc" id="L96">      visibleEntryList.add(entry);</span>
+<span class="nc" id="L97">      Gui4jComponentInstance subInstance =</span>
+<span class="nc" id="L98">          gui4jSwingContainer.getGui4jComponentInstance(</span>
+<span class="nc" id="L99">              gui4jComponentInPath.getGui4jComponentPath(), entry.getGui4jComponentInPath());</span>
+
+<span class="nc" id="L101">      tabbedPane.addTab(</span>
+<span class="nc" id="L102">          (String) entry.getTitle().getValueNoParams(gui4jCallBase, &quot;&quot;),</span>
+<span class="nc" id="L103">          subInstance.getComponent());</span>
+      {
+<span class="nc" id="L105">        Gui4jCall foreground = entry.getForeground();</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (foreground != null) {</span>
+<span class="nc" id="L107">          tabbedPane.setForegroundAt(</span>
+              entry.mTabNumber - numberOfHiddenTabs,
+<span class="nc" id="L109">              (Color) foreground.getValueNoParams(gui4jCallBase, Color.BLACK));</span>
+        }
+      }
+      {
+<span class="nc" id="L113">        Gui4jCall background = entry.getBackground();</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (background != null) {</span>
+<span class="nc" id="L115">          tabbedPane.setBackgroundAt(</span>
+              entry.mTabNumber - numberOfHiddenTabs,
+<span class="nc" id="L117">              (Color) background.getValueNoParams(gui4jCallBase, Color.GRAY));</span>
+        }
+      }
+      {
+<span class="nc" id="L121">        Gui4jCall tooltip = entry.getTooltip();</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (tooltip != null) {</span>
+          /*
+           * mLogger.debug( &quot;Setting tooltip at &quot; +
+           * String.valueOf(entry.mTabNumber - numberOfHiddenTabs) + &quot;
+           * to &quot; + (String) tooltip.getValueNoParams(gui4jController,
+           * null));
+           */
+<span class="nc" id="L129">          tabbedPane.setToolTipTextAt(</span>
+              entry.mTabNumber - numberOfHiddenTabs,
+<span class="nc" id="L131">              (String) tooltip.getValueNoParams(gui4jCallBase, null));</span>
+        }
+      }
+      {
+<span class="nc" id="L135">        Gui4jCall enabled = entry.getEnabled();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (enabled != null) {</span>
+<span class="nc" id="L137">          tabbedPane.setEnabledAt(</span>
+              entry.mTabNumber - numberOfHiddenTabs,
+              ((Boolean)
+<span class="nc" id="L140">                      enabled.getValueNoParams(</span>
+<span class="nc" id="L141">                          gui4jComponentInstance.getGui4jCallBase(), Boolean.TRUE))</span>
+<span class="nc" id="L142">                  .booleanValue());</span>
+        }
+      }
+<span class="nc" id="L145">      entry.registerProperties(gui4jComponentInstance, numberOfHiddenTabs);</span>
+      {
+<span class="nc" id="L147">        EntrySelectionImpl entrySelection = entry.createEntrySelection(gui4jComponentInstance);</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (entrySelection != null) {</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">          if (firstVisible) {</span>
+<span class="nc" id="L150">            firstVisible = false;</span>
+<span class="nc" id="L151">            entrySelection.call();</span>
+          }
+<span class="nc" id="L153">          entrySelections.add(entrySelection);</span>
+        }
+      }
+<span class="nc" id="L156">    }</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">    if (getGui4j().traceMode()) {</span>
+      // mLogger.debug(&quot;Setting preferred size of &quot;+getId()+&quot; to &quot;+d);
+<span class="nc" id="L159">      mLogger.debug(&quot;Preferred size of &quot; + getId() + &quot; is &quot; + tabbedPane.getPreferredSize());</span>
+    }
+<span class="nc bnc" id="L161" title="All 4 branches missed.">    if (mOnChange != null || !entrySelections.isEmpty()) {</span>
+<span class="nc" id="L162">      Gui4jTabChangeListener changeListener =</span>
+          new Gui4jTabChangeListener(gui4jComponentInstance, entrySelections);
+<span class="nc" id="L164">      gui4jComponentInstance.getGui4jSwingContainer().addDispose(changeListener);</span>
+<span class="nc" id="L165">      changeListener.setActionPerformed(mOnChange);</span>
+<span class="nc" id="L166">      tabbedPane.addChangeListener(changeListener);</span>
+    }
+<span class="nc bnc" id="L168" title="All 2 branches missed.">    if (mTabSelection != null) {</span>
+<span class="nc" id="L169">      TabbedPaneListener listener =</span>
+          new TabbedPaneListener(gui4jComponentInstance, visibleEntryList);
+<span class="nc" id="L171">      registerEvents(gui4jSwingContainer, gui4jCallBase, mTabSelection, listener);</span>
+<span class="nc" id="L172">      listener.eventOccured();</span>
+    }
+<span class="nc" id="L174">    return gui4jComponentInstance;</span>
+  }
+
+  protected void addEntry(Entry entry) {
+<span class="nc" id="L178">    entry.mTabNumber = mEntryList.size();</span>
+<span class="nc" id="L179">    mEntryList.add(entry);</span>
+<span class="nc" id="L180">  }</span>
+
+  public void setOnChange(Gui4jCall onChange) {
+<span class="nc" id="L183">    mOnChange = onChange;</span>
+<span class="nc" id="L184">  }</span>
+
+  public void setTabSelection(Gui4jCall[] tabSelection) {
+<span class="nc" id="L187">    mTabSelection = tabSelection;</span>
+<span class="nc" id="L188">  }</span>
+
+  // **********************************************************
+
+  public class Entry implements Serializable {
+    private final Gui4jCall mTitle;
+    private Gui4jCall mForeground;
+    private Gui4jCall mBackground;
+    private Gui4jCall mTooltip;
+    private Gui4jCall mEnabled;
+    private Gui4jCall mVisible;
+    private Gui4jCall mCondition;
+    protected Gui4jCall mOnSelect;
+    private final Gui4jQualifiedComponent mGui4jComponentInPath;
+    protected int mTabNumber;
+
+<span class="nc" id="L204">    public Entry(Gui4jCall title, Gui4jQualifiedComponent gui4jComponentInPath) {</span>
+<span class="nc" id="L205">      mTitle = title;</span>
+<span class="nc" id="L206">      mGui4jComponentInPath = gui4jComponentInPath;</span>
+<span class="nc" id="L207">      addEntry(this);</span>
+<span class="nc" id="L208">    }</span>
+
+    EntrySelectionImpl createEntrySelection(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc bnc" id="L211" title="All 2 branches missed.">      if (mOnSelect != null) {</span>
+<span class="nc" id="L212">        return new EntrySelectionImpl(this, gui4jComponentInstance);</span>
+      }
+<span class="nc" id="L214">      return null;</span>
+    }
+
+    Gui4jCall getTitle() {
+<span class="nc" id="L218">      return mTitle;</span>
+    }
+
+    Gui4jQualifiedComponent getGui4jComponentInPath() {
+<span class="nc" id="L222">      return mGui4jComponentInPath;</span>
+    }
+
+    public void registerProperties(
+        Gui4jComponentInstance gui4jComponentInstance, final int numberOfHiddenTabs) {
+<span class="nc" id="L227">      final JTabbedPane tabbedPane = (JTabbedPane) gui4jComponentInstance.getSwingComponent();</span>
+<span class="nc" id="L228">      Gui4jSwingContainer gui4jSwingContainer = gui4jComponentInstance.getGui4jSwingContainer();</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">      if (mTitle.getDependantProperties() != null) {</span>
+<span class="nc" id="L230">        EntryInstance listener =</span>
+<span class="nc" id="L231">            new EntryInstance(this, gui4jComponentInstance, mTitle) {</span>
+              void applyValue(Object value) {
+<span class="nc" id="L233">                tabbedPane.setTitleAt(mTabNumber - numberOfHiddenTabs, (String) value);</span>
+<span class="nc" id="L234">              }</span>
+            };
+<span class="nc" id="L236">        registerEvents(</span>
+            gui4jSwingContainer,
+<span class="nc" id="L238">            gui4jComponentInstance.getGui4jCallBase(),</span>
+<span class="nc" id="L239">            mTitle.getDependantProperties(),</span>
+            listener);
+      }
+<span class="nc bnc" id="L242" title="All 4 branches missed.">      if (mForeground != null &amp;&amp; mForeground.getDependantProperties() != null) {</span>
+<span class="nc" id="L243">        EntryInstance listener =</span>
+<span class="nc" id="L244">            new EntryInstance(this, gui4jComponentInstance, mForeground) {</span>
+              void applyValue(Object value) {
+<span class="nc" id="L246">                int idx = mTabNumber - numberOfHiddenTabs;</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">                if (idx &lt; tabbedPane.getTabCount()) {</span>
+<span class="nc" id="L248">                  tabbedPane.setForegroundAt(mTabNumber - numberOfHiddenTabs, (Color) value);</span>
+                }
+<span class="nc" id="L250">              }</span>
+            };
+<span class="nc" id="L252">        registerEvents(</span>
+            gui4jSwingContainer,
+<span class="nc" id="L254">            gui4jComponentInstance.getGui4jCallBase(),</span>
+<span class="nc" id="L255">            mForeground.getDependantProperties(),</span>
+            listener);
+      }
+<span class="nc bnc" id="L258" title="All 4 branches missed.">      if (mBackground != null &amp;&amp; mBackground.getDependantProperties() != null) {</span>
+<span class="nc" id="L259">        EntryInstance listener =</span>
+<span class="nc" id="L260">            new EntryInstance(this, gui4jComponentInstance, mBackground) {</span>
+              void applyValue(Object value) {
+<span class="nc" id="L262">                tabbedPane.setBackgroundAt(mTabNumber - numberOfHiddenTabs, (Color) value);</span>
+<span class="nc" id="L263">              }</span>
+            };
+<span class="nc" id="L265">        registerEvents(</span>
+            gui4jSwingContainer,
+<span class="nc" id="L267">            gui4jComponentInstance.getGui4jCallBase(),</span>
+<span class="nc" id="L268">            mBackground.getDependantProperties(),</span>
+            listener);
+      }
+<span class="nc bnc" id="L271" title="All 4 branches missed.">      if (mTooltip != null &amp;&amp; mTooltip.getDependantProperties() != null) {</span>
+<span class="nc" id="L272">        EntryInstance listener =</span>
+<span class="nc" id="L273">            new EntryInstance(this, gui4jComponentInstance, mTooltip) {</span>
+              void applyValue(Object value) {
+                /*
+                 * mLogger.warn( &quot;Setting tooltip &quot; + value + &quot; of tab &quot; +
+                 * String.valueOf(mTabNumber - numberOfHiddenTabs));
+                 */
+<span class="nc" id="L279">                tabbedPane.setToolTipTextAt(mTabNumber - numberOfHiddenTabs, (String) value);</span>
+<span class="nc" id="L280">              }</span>
+            };
+<span class="nc" id="L282">        registerEvents(</span>
+            gui4jSwingContainer,
+<span class="nc" id="L284">            gui4jComponentInstance.getGui4jCallBase(),</span>
+<span class="nc" id="L285">            mTooltip.getDependantProperties(),</span>
+            listener);
+      }
+<span class="nc bnc" id="L288" title="All 4 branches missed.">      if (mEnabled != null &amp;&amp; mEnabled.getDependantProperties() != null) {</span>
+<span class="nc" id="L289">        EntryInstance listener =</span>
+<span class="nc" id="L290">            new EntryInstance(this, gui4jComponentInstance, mEnabled) {</span>
+              void applyValue(Object value) {
+<span class="nc bnc" id="L292" title="All 4 branches missed.">                if (tabbedPane != null &amp;&amp; value != null) {</span>
+<span class="nc" id="L293">                  boolean enabled = ((Boolean) value).booleanValue();</span>
+<span class="nc" id="L294">                  tabbedPane.setEnabledAt(mTabNumber - numberOfHiddenTabs, enabled);</span>
+                }
+<span class="nc" id="L296">              }</span>
+            };
+<span class="nc" id="L298">        registerEvents(</span>
+            gui4jSwingContainer,
+<span class="nc" id="L300">            gui4jComponentInstance.getGui4jCallBase(),</span>
+<span class="nc" id="L301">            mEnabled.getDependantProperties(),</span>
+            listener);
+      }
+<span class="nc" id="L304">    }</span>
+
+    /**
+     * Sets the background.
+     *
+     * @param background The background to set
+     */
+    public void setBackground(Gui4jCall background) {
+<span class="nc" id="L312">      mBackground = background;</span>
+<span class="nc" id="L313">    }</span>
+
+    /**
+     * Sets the foreground.
+     *
+     * @param foreground The foreground to set
+     */
+    public void setForeground(Gui4jCall foreground) {
+<span class="nc" id="L321">      mForeground = foreground;</span>
+<span class="nc" id="L322">    }</span>
+
+    public void setCondition(Gui4jCall condition) {
+<span class="nc" id="L325">      mCondition = condition;</span>
+<span class="nc" id="L326">    }</span>
+
+    public Gui4jCall getCondition() {
+<span class="nc" id="L329">      return mCondition;</span>
+    }
+
+    public void setOnSelect(Gui4jCall onSelect) {
+<span class="nc" id="L333">      mOnSelect = onSelect;</span>
+<span class="nc" id="L334">    }</span>
+
+    /**
+     * Returns the background.
+     *
+     * @return Gui4jCall
+     */
+    public Gui4jCall getBackground() {
+<span class="nc" id="L342">      return mBackground;</span>
+    }
+
+    /**
+     * Returns the foreground.
+     *
+     * @return Gui4jCall
+     */
+    public Gui4jCall getForeground() {
+<span class="nc" id="L351">      return mForeground;</span>
+    }
+
+    /**
+     * Returns the enabled.
+     *
+     * @return Gui4jCall
+     */
+    public Gui4jCall getEnabled() {
+<span class="nc" id="L360">      return mEnabled;</span>
+    }
+
+    /**
+     * Returns the visible.
+     *
+     * @return Gui4jCall
+     */
+    public Gui4jCall getVisible() {
+<span class="nc" id="L369">      return mVisible;</span>
+    }
+
+    /**
+     * Returns the tooltip.
+     *
+     * @return Gui4jCall
+     */
+    public Gui4jCall getTooltip() {
+<span class="nc" id="L378">      return mTooltip;</span>
+    }
+
+    /**
+     * Sets the enabled.
+     *
+     * @param enabled The enabled to set
+     */
+    public void setEnabled(Gui4jCall enabled) {
+<span class="nc" id="L387">      mEnabled = enabled;</span>
+<span class="nc" id="L388">    }</span>
+
+    /**
+     * Sets the visible.
+     *
+     * @param visible The visible to set
+     */
+    public void setVisible(Gui4jCall visible) {
+<span class="nc" id="L396">      mVisible = visible;</span>
+<span class="nc" id="L397">    }</span>
+
+    /**
+     * Sets the tooltip.
+     *
+     * @param tooltip The tooltip to set
+     */
+    public void setTooltip(Gui4jCall tooltip) {
+<span class="nc" id="L405">      mTooltip = tooltip;</span>
+<span class="nc" id="L406">    }</span>
+  }
+
+  abstract class EntryInstance implements Gui4jEventListener, Runnable {
+    // private final Entry mEntry;
+    // private final JTabbedPane mTabbedPane;
+    private final Gui4jCallBase mGui4jCallBase;
+    private final Gui4jCall mGui4jAccess;
+    private Object mValue;
+
+<span class="nc" id="L416">    EntryInstance(Entry e, Gui4jComponentInstance gui4jComponentInstance, Gui4jCall gui4jAccess) {</span>
+      // mEntry = e;
+      // mTabbedPane = (JTabbedPane)
+      // gui4jComponentInstance.getSwingComponent();
+<span class="nc" id="L420">      mGui4jAccess = gui4jAccess;</span>
+<span class="nc" id="L421">      mGui4jCallBase = gui4jComponentInstance.getGui4jCallBase();</span>
+<span class="nc" id="L422">    }</span>
+
+    public void eventOccured() {
+<span class="nc" id="L425">      Map nullMap = null;</span>
+<span class="nc" id="L426">      mValue = mGui4jAccess.getValue(mGui4jCallBase, nullMap, null);</span>
+      if (true || mValue != null) // execute always
+      {
+<span class="nc bnc" id="L429" title="All 2 branches missed.">        if (SwingUtilities.isEventDispatchThread()) {</span>
+<span class="nc" id="L430">          mLogger.warn(&quot;Strange, we are in the GUI Event Dispatch Thread&quot;);</span>
+<span class="nc" id="L431">          run();</span>
+        } else {
+<span class="nc" id="L433">          Gui4jThreadManager.executeInSwingThreadAndWait(this);</span>
+        }
+      }
+<span class="nc" id="L436">    }</span>
+
+    public void run() {
+      if (true || mValue != null) // execute always
+      {
+<span class="nc" id="L441">        applyValue(mValue);</span>
+<span class="nc" id="L442">        mValue = null;</span>
+      }
+<span class="nc" id="L444">    }</span>
+
+    abstract void applyValue(Object value);
+  }
+
+  class TabbedPaneListener implements Gui4jEventListener {
+    private final Gui4jComponentInstance mGui4jComponentInstance;
+    private final Gui4jCallBase mGui4jCallBase;
+    // private final Gui4jSwingContainer mGui4jSwingContainer;
+    private final List mVisibleEntryList;
+
+    public TabbedPaneListener(
+<span class="nc" id="L456">        Gui4jComponentInstance gui4jComponentInstance, List visibleEntryList) {</span>
+<span class="nc" id="L457">      this.mGui4jComponentInstance = gui4jComponentInstance;</span>
+<span class="nc" id="L458">      this.mGui4jCallBase = gui4jComponentInstance.getGui4jCallBase();</span>
+      // this.mGui4jSwingContainer =
+      // gui4jComponentInstance.getGui4jSwingContainer();
+<span class="nc" id="L461">      this.mVisibleEntryList = visibleEntryList;</span>
+<span class="nc" id="L462">    }</span>
+
+    public void eventOccured() {
+      // evaluate conditions in given order and display first
+      // element where the condition is valid
+<span class="nc" id="L467">      boolean found = false;</span>
+<span class="nc" id="L468">      int idx = 0;</span>
+<span class="nc bnc" id="L469" title="All 4 branches missed.">      for (Iterator itEntry = mVisibleEntryList.iterator(); !found &amp;&amp; itEntry.hasNext(); idx++) {</span>
+<span class="nc" id="L470">        Entry entry = (Entry) itEntry.next();</span>
+<span class="nc" id="L471">        Gui4jCall condition = entry.getCondition();</span>
+<span class="nc bnc" id="L472" title="All 2 branches missed.">        if (condition != null) {</span>
+<span class="nc" id="L473">          Boolean result = (Boolean) condition.getValueNoParams(mGui4jCallBase, Boolean.FALSE);</span>
+<span class="nc bnc" id="L474" title="All 2 branches missed.">          if (Boolean.TRUE.equals(result)) {</span>
+<span class="nc" id="L475">            useGui4jComponent(idx);</span>
+<span class="nc" id="L476">            found = true;</span>
+          }
+        }
+      }
+<span class="nc bnc" id="L480" title="All 2 branches missed.">      if (!found) {</span>
+<span class="nc" id="L481">        useGui4jComponent(0);</span>
+      }
+<span class="nc" id="L483">    }</span>
+
+    private void useGui4jComponent(final int idx) {
+<span class="nc" id="L486">      mLogger.debug(&quot;Selecting tab index &quot; + idx + &quot; for tabbedPane with id &quot; + getId());</span>
+<span class="nc" id="L487">      final JTabbedPane tabbedPane = (JTabbedPane) mGui4jComponentInstance.getComponent();</span>
+<span class="nc" id="L488">      Gui4jThreadManager.executeInSwingThreadAndWait(</span>
+<span class="nc" id="L489">          new Runnable() {</span>
+            public void run() {
+<span class="nc" id="L491">              tabbedPane.setSelectedIndex(idx);</span>
+<span class="nc" id="L492">            }</span>
+          });
+<span class="nc" id="L494">    }</span>
+  }
+
+  /**
+   * @see org.gui4j.core.Gui4jAbstractComponent#setBackground(java.awt.Component, java.awt.Color)
+   */
+  public void setBackground(Component component, Color background) {
+<span class="nc" id="L501">    super.setBackground(component, background);</span>
+<span class="nc bnc" id="L502" title="All 2 branches missed.">    if (mTabPolicy == JTabbedPane.SCROLL_TAB_LAYOUT) {</span>
+<span class="nc" id="L503">      Component c = ((JTabbedPane) component).getComponents()[0];</span>
+<span class="nc bnc" id="L504" title="All 2 branches missed.">      if (c instanceof JViewport) {</span>
+<span class="nc" id="L505">        ((JViewport) c).getView().setBackground(background);</span>
+      }
+    }
+<span class="nc" id="L508">  }</span>
+
+  public static class EntrySelectionImpl implements EntrySelection {
+    private final Entry mEntry;
+    private final Gui4jComponentInstance mGui4jComponentInstance;
+
+<span class="nc" id="L514">    EntrySelectionImpl(Entry e, Gui4jComponentInstance gui4jComponentInstance) {</span>
+<span class="nc" id="L515">      this.mEntry = e;</span>
+<span class="nc" id="L516">      this.mGui4jComponentInstance = gui4jComponentInstance;</span>
+<span class="nc" id="L517">    }</span>
+
+    public int getTabIndex() {
+<span class="nc" id="L520">      return mEntry.mTabNumber;</span>
+    }
+
+    public Gui4jCall getOnSelect() {
+<span class="nc" id="L524">      return mEntry.mOnSelect;</span>
+    }
+
+    public void call() {
+<span class="nc" id="L528">      mGui4jComponentInstance</span>
+<span class="nc" id="L529">          .getGui4j()</span>
+<span class="nc" id="L530">          .getGui4jThreadManager()</span>
+<span class="nc" id="L531">          .performWork(mGui4jComponentInstance.getGui4jCallBase(), mEntry.mOnSelect, null);</span>
+<span class="nc" id="L532">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core.impl</a> &gt; <span class="el_source">Gui4jImpl.java</span></div><h1>Gui4jImpl.java</h1><pre class="source lang-java linenums">package org.gui4j.core.impl;
+
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.Gui4jCallBase;
+import org.gui4j.Gui4jController;
+import org.gui4j.Gui4jDialog;
+import org.gui4j.Gui4jResourceProvider;
+import org.gui4j.Gui4jValidator;
+import org.gui4j.Gui4jView;
+import org.gui4j.Gui4jWindow;
+import org.gui4j.core.Gui4jCallFactory;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentContainerManager;
+import org.gui4j.core.Gui4jComponentManager;
+import org.gui4j.core.Gui4jInternal;
+import org.gui4j.core.Gui4jReflectionManager;
+import org.gui4j.core.Gui4jThreadManager;
+import org.gui4j.core.call.Gui4jCallParser;
+import org.gui4j.core.interfaces.Gui4jWindowInternal;
+import org.gui4j.core.util.MethodCall;
+import org.gui4j.event.SimpleEvent;
+import org.gui4j.exception.Gui4jDefaultErrorHandler;
+import org.gui4j.exception.Gui4jErrorHandler;
+import org.gui4j.exception.Gui4jException;
+import org.gui4j.exception.Gui4jExceptionHandler;
+
+/**
+ * This is the base initialization class of Gui4j. An instance of Gui4j holds all other necessary
+ * instances to deal with graphical user interfaces with gui4j. Note that it is possible to use
+ * different instances of Gui4j, but each instance has its own workspace and they are completely
+ * independant; and each instance maintains its own cache for reflection calls and worker threads.
+ */
+<span class="nc" id="L46">final class Gui4jImpl implements Serializable, Gui4jInternal {</span>
+<span class="nc" id="L47">  private Log mLogger = LogFactory.getLog(getClass());</span>
+  private final Gui4jComponentManager mGui4jComponentManager;
+  private final Gui4jComponentContainerManager mGui4jComponentContainerManager;
+  private final Gui4jReflectionManager mGui4jReflectionManager;
+  private final Gui4jThreadManager mGui4jThreadManager;
+<span class="nc" id="L52">  private final SimpleEvent eViewCollection = new SimpleEvent();</span>
+  private boolean mValidateXML;
+  private boolean mLogInvoke;
+<span class="nc" id="L55">  private boolean mTraceWorkerInvocation = false;</span>
+  private Gui4jErrorHandler mErrorHandler;
+  private Gui4jResourceProvider mResourceProvider;
+
+<span class="nc" id="L59">  private Set windowCollector = new HashSet();</span>
+
+  public Gui4jImpl(
+<span class="nc" id="L62">      boolean validateXML, boolean logInvoke, int numberOfWorkerThreads, URL configURL) {</span>
+<span class="nc" id="L63">    mValidateXML = validateXML;</span>
+<span class="nc" id="L64">    mLogInvoke = logInvoke;</span>
+<span class="nc" id="L65">    mGui4jComponentManager = Gui4jComponentManager.getNewInstance(this);</span>
+<span class="nc" id="L66">    mGui4jComponentContainerManager = Gui4jComponentContainerManager.getNewInstance(this);</span>
+<span class="nc" id="L67">    mGui4jReflectionManager = Gui4jReflectionManager.getNewInstance();</span>
+<span class="nc" id="L68">    mGui4jThreadManager = Gui4jThreadManager.getNewInstance(this, numberOfWorkerThreads);</span>
+<span class="nc" id="L69">    mResourceProvider = new Gui4jResourceProviderImpl();</span>
+<span class="nc" id="L70">    configure(configURL);</span>
+<span class="nc" id="L71">  }</span>
+
+  /**
+   * @return the contained &lt;code&gt;Gui4jComponentManager&lt;/code&gt;
+   */
+  public Gui4jComponentManager getGui4jComponentManager() {
+<span class="nc" id="L77">    return mGui4jComponentManager;</span>
+  }
+
+  /**
+   * @return the contained &lt;code&gt;Gui4jComponentContainerManager&lt;/code&gt;
+   */
+  public Gui4jComponentContainerManager getGui4jComponentContainerManager() {
+<span class="nc" id="L84">    return mGui4jComponentContainerManager;</span>
+  }
+
+  /**
+   * @return the contained &lt;code&gt;Gui4jReflectionManager&lt;/code&gt;
+   */
+  public Gui4jReflectionManager getGui4jReflectionManager() {
+<span class="nc" id="L91">    return mGui4jReflectionManager;</span>
+  }
+
+  /**
+   * @return the used &lt;code&gt;Gui4jThreadManager&lt;/code&gt;
+   */
+  public Gui4jThreadManager getGui4jThreadManager() {
+<span class="nc" id="L98">    return mGui4jThreadManager;</span>
+  }
+
+  /**
+   * @param configurationSource the URL of the XML configuration file for the &lt;code&gt;Gui4jComponents
+   *     &lt;/code&gt; to be installed
+   */
+  private void configure(URL configurationSource) {
+<span class="nc bnc" id="L106" title="All 2 branches missed.">    assert configurationSource != null;</span>
+<span class="nc" id="L107">    mGui4jComponentManager.configure(configurationSource);</span>
+<span class="nc" id="L108">  }</span>
+
+  /**
+   * Is called after the setter of an edit field returns without raising an exception. If the given
+   * Controller (Gui4jCallBase) implements a suitable method, that method is called, otherwise,
+   * nothing happens.
+   *
+   * @param gui4jCallBase
+   * @param context
+   */
+  public void handleSuccess(Gui4jCallBase gui4jCallBase, Object context) {
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    if (context == null) {</span>
+<span class="nc" id="L120">      return;</span>
+    }
+
+    try {
+      Gui4jExceptionHandler exceptionHandler =
+<span class="nc bnc" id="L125" title="All 2 branches missed.">          gui4jCallBase != null ? gui4jCallBase.getExceptionHandler() : null;</span>
+<span class="nc" id="L126">      Gui4jExceptionHandler oldHandler = null;</span>
+<span class="nc bnc" id="L127" title="All 4 branches missed.">      while (exceptionHandler != null &amp;&amp; exceptionHandler != oldHandler) {</span>
+<span class="nc" id="L128">        oldHandler = exceptionHandler;</span>
+<span class="nc" id="L129">        MethodCall call =</span>
+<span class="nc" id="L130">            getGui4jReflectionManager()</span>
+<span class="nc" id="L131">                .getMethod(</span>
+                    &quot;errorHandling&quot;,
+<span class="nc" id="L133">                    exceptionHandler.getClass(),</span>
+                    &quot;handleSuccess&quot;,
+<span class="nc" id="L135">                    new Class[] {context.getClass()},</span>
+                    false);
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (call != null) {</span>
+<span class="nc" id="L138">          call.invoke(exceptionHandler, new Object[] {context});</span>
+<span class="nc" id="L139">          break;</span>
+        }
+<span class="nc" id="L141">        exceptionHandler = exceptionHandler.getDelegationExceptionHandler();</span>
+<span class="nc" id="L142">      }</span>
+<span class="nc" id="L143">    } catch (Throwable tHandler) {</span>
+<span class="nc" id="L144">      internalError(tHandler);</span>
+<span class="nc" id="L145">    }</span>
+<span class="nc" id="L146">  }</span>
+
+  private Throwable unpack(Throwable t) {
+<span class="nc bnc" id="L149" title="All 2 branches missed.">    while (t != null) {</span>
+<span class="nc bnc" id="L150" title="All 4 branches missed.">      if (t.getCause() != null &amp;&amp; t instanceof UndeclaredThrowableException) {</span>
+<span class="nc" id="L151">        t = t.getCause();</span>
+<span class="nc" id="L152">        continue;</span>
+      }
+<span class="nc bnc" id="L154" title="All 2 branches missed.">      if (t instanceof InvocationTargetException) {</span>
+<span class="nc" id="L155">        t = ((InvocationTargetException) t).getTargetException();</span>
+<span class="nc" id="L156">        continue;</span>
+      }
+      break;
+    }
+<span class="nc" id="L160">    return t;</span>
+  }
+
+  /**
+   * Is called for all exceptions occuring during execution of methods. If the given Controller
+   * (Gui4jCallBase) defines a suitable error handler, that error handler is called. Otherwise an
+   * internal error is raisen.
+   *
+   * @param gui4jCallBase
+   * @param t
+   * @param context
+   */
+  public void handleException(Gui4jCallBase gui4jCallBase, Throwable t, Object context) {
+<span class="nc bnc" id="L173" title="All 2 branches missed.">    assert t != null;</span>
+<span class="nc" id="L174">    t = unpack(t);</span>
+<span class="nc" id="L175">    boolean handled = false;</span>
+    Gui4jExceptionHandler topExceptionHandler =
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        gui4jCallBase != null ? gui4jCallBase.getExceptionHandler() : null;</span>
+    try {
+<span class="nc" id="L179">      Gui4jExceptionHandler exceptionHandler = topExceptionHandler;</span>
+<span class="nc" id="L180">      Gui4jExceptionHandler oldHandler = null;</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">      if (context != null) {</span>
+<span class="nc bnc" id="L182" title="All 6 branches missed.">        while (!handled &amp;&amp; exceptionHandler != null &amp;&amp; oldHandler != exceptionHandler) {</span>
+<span class="nc" id="L183">          oldHandler = exceptionHandler;</span>
+<span class="nc" id="L184">          MethodCall call =</span>
+<span class="nc" id="L185">              getGui4jReflectionManager()</span>
+<span class="nc" id="L186">                  .getMethod(</span>
+                      &quot;errorHandling&quot;,
+<span class="nc" id="L188">                      exceptionHandler.getClass(),</span>
+                      &quot;handleException&quot;,
+<span class="nc" id="L190">                      new Class[] {context.getClass(), t.getClass()},</span>
+                      false);
+<span class="nc bnc" id="L192" title="All 2 branches missed.">          if (call != null) {</span>
+<span class="nc" id="L193">            handled = true;</span>
+<span class="nc" id="L194">            call.invoke(exceptionHandler, new Object[] {context, t});</span>
+          }
+<span class="nc" id="L196">          exceptionHandler = exceptionHandler.getDelegationExceptionHandler();</span>
+<span class="nc" id="L197">        }</span>
+      }
+<span class="nc" id="L199">      exceptionHandler = topExceptionHandler;</span>
+<span class="nc" id="L200">      oldHandler = null;</span>
+<span class="nc bnc" id="L201" title="All 6 branches missed.">      while (!handled &amp;&amp; exceptionHandler != null &amp;&amp; oldHandler != exceptionHandler) {</span>
+<span class="nc" id="L202">        oldHandler = exceptionHandler;</span>
+<span class="nc" id="L203">        MethodCall call =</span>
+<span class="nc" id="L204">            getGui4jReflectionManager()</span>
+<span class="nc" id="L205">                .getMethod(</span>
+                    &quot;errorHandling&quot;,
+<span class="nc" id="L207">                    exceptionHandler.getClass(),</span>
+                    &quot;handleException&quot;,
+<span class="nc" id="L209">                    new Class[] {t.getClass()},</span>
+                    false);
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        if (call != null) {</span>
+<span class="nc" id="L212">          handled = true;</span>
+<span class="nc" id="L213">          call.invoke(exceptionHandler, new Object[] {t});</span>
+        }
+<span class="nc" id="L215">      }</span>
+<span class="nc" id="L216">    } catch (Throwable tExceptionHandler) {</span>
+<span class="nc" id="L217">      handled = true;</span>
+<span class="nc" id="L218">      internalError(tExceptionHandler);</span>
+<span class="nc" id="L219">    }</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">    if (!handled) {</span>
+<span class="nc" id="L221">      internalError(t);</span>
+    }
+<span class="nc" id="L223">  }</span>
+
+  private void internalError(Throwable t) {
+<span class="nc" id="L226">    mLogger.error(&quot;Internal error&quot;, t);</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">    if (Thread.currentThread() instanceof Gui4jThreadManager.WorkerThread) {</span>
+<span class="nc" id="L228">      Gui4jThreadManager.WorkerThread wt = (Gui4jThreadManager.WorkerThread) Thread.currentThread();</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">      if (wt.getCallStack() != null) {</span>
+<span class="nc" id="L230">        mLogger.error(&quot;Invoker of thread [&quot; + wt.getName() + &quot;] was:&quot;, wt.getCallStack());</span>
+      }
+    }
+    try {
+<span class="nc bnc" id="L234" title="All 2 branches missed.">      if (mErrorHandler != null) {</span>
+<span class="nc" id="L235">        mErrorHandler.internalError(t);</span>
+      } else {
+<span class="nc" id="L237">        Gui4jDefaultErrorHandler.getInstance().internalError(t);</span>
+      }
+<span class="nc" id="L239">    } catch (Throwable tError) {</span>
+<span class="nc" id="L240">      mLogger.error(&quot;Error occured while handling internal error&quot;, tError);</span>
+<span class="nc" id="L241">    }</span>
+<span class="nc" id="L242">  }</span>
+
+  /**
+   * Loads the specified resource file in the cache. The method can be used to ensure that some XML
+   * resource files are loaded before serializing the current state.
+   *
+   * @param controllerClass the controller for the given resource file
+   * @param resourceName the name of the xml resource to load
+   */
+  public void readResourceFile(Class controllerClass, String resourceName) {
+<span class="nc" id="L252">    String fullyQuantifiedName =</span>
+<span class="nc" id="L253">        Gui4jComponentContainerManager.getResourceNameFullyQuantified(</span>
+<span class="nc" id="L254">            Gui4jComponentContainerManager.getBaseName(controllerClass), resourceName);</span>
+
+<span class="nc" id="L256">    Gui4jComponentContainer gui4jComponentContainer =</span>
+<span class="nc" id="L257">        mGui4jComponentContainerManager.getGui4jComponentContainer(</span>
+            controllerClass, fullyQuantifiedName);
+
+<span class="nc bnc" id="L260" title="All 2 branches missed.">    if (gui4jComponentContainer.isDefined(&quot;TOP&quot;)) {</span>
+<span class="nc" id="L261">      gui4jComponentContainer.getGui4jQualifiedComponent(&quot;TOP&quot;);</span>
+    }
+<span class="nc bnc" id="L263" title="All 2 branches missed.">    if (gui4jComponentContainer.isDefined(&quot;MENU&quot;)) {</span>
+<span class="nc" id="L264">      gui4jComponentContainer.getGui4jQualifiedComponent(&quot;MENU&quot;);</span>
+    }
+<span class="nc" id="L266">  }</span>
+
+  private void writeObject(ObjectOutputStream out) throws IOException {
+<span class="nc" id="L269">    mLogger = null;</span>
+<span class="nc" id="L270">    out.defaultWriteObject();</span>
+<span class="nc" id="L271">  }</span>
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+<span class="nc" id="L274">    in.defaultReadObject();</span>
+<span class="nc" id="L275">    mLogger = LogFactory.getLog(getClass());</span>
+<span class="nc" id="L276">  }</span>
+
+  /**
+   * @return true if XML files should be validated
+   */
+  public boolean validateXML() {
+<span class="nc" id="L282">    return mValidateXML;</span>
+  }
+
+  /**
+   * @return true if invocation calls should be logged
+   */
+  public boolean logInvoke() {
+<span class="nc" id="L289">    return mLogInvoke;</span>
+  }
+
+  /**
+   * @return true if the call stack of invokers of a WorkerThread should be saved and then printed
+   *     in case of an internal error.
+   */
+  public boolean traceWorkerInvocation() {
+<span class="nc" id="L297">    return mTraceWorkerInvocation;</span>
+  }
+
+  /**
+   * Defines if the call stack of invokers of WorkerThreads should always be saved so that it can be
+   * printed together with the thread's own stack trace in case of an internal error.&lt;br&gt;
+   * This feature is recommended only for debugging purposes since the negative performance impact
+   * of creating a call stack (i.e. instance of Throwable) for each invocation of a WorkerThread has
+   * not been measured.
+   *
+   * @param b true, to turn the feature on, false to turn it off
+   */
+  public void setTraceWorkerInvocation(boolean b) {
+<span class="nc" id="L310">    mTraceWorkerInvocation = b;</span>
+<span class="nc" id="L311">  }</span>
+
+  /**
+   * @return true if special debug messages should be written. This method should be removed at some
+   *     stage.
+   */
+  public boolean traceMode() {
+<span class="nc" id="L318">    return false;</span>
+  }
+
+  /**
+   * Sets the errorHandler.
+   *
+   * @param errorHandler The errorHandler to set
+   */
+  public void setErrorHandler(Gui4jErrorHandler errorHandler) {
+<span class="nc" id="L327">    mErrorHandler = errorHandler;</span>
+<span class="nc" id="L328">  }</span>
+
+  /**
+   * Returns the viewCollector.
+   *
+   * @return Set
+   */
+  public Set getViewCollector() {
+<span class="nc" id="L336">    return windowCollector;</span>
+  }
+
+  public void addToWindowCollector(Gui4jWindowInternal window) {
+<span class="nc" id="L340">    mLogger.debug(</span>
+<span class="nc" id="L341">        &quot;Adding window to list. Current length (before adding is): &quot; + windowCollector.size());</span>
+<span class="nc" id="L342">    windowCollector.add(window);</span>
+<span class="nc" id="L343">    eViewCollection.fireEvent();</span>
+<span class="nc" id="L344">  }</span>
+
+  public void removeFromWindowCollector(Gui4jWindowInternal window) {
+<span class="nc" id="L347">    windowCollector.remove(window);</span>
+<span class="nc" id="L348">    mLogger.debug(</span>
+<span class="nc" id="L349">        &quot;Removing window from list. Current length (after removing is): &quot; + windowCollector.size());</span>
+<span class="nc" id="L350">    eViewCollection.fireEvent();</span>
+<span class="nc" id="L351">  }</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.Gui4j#createView(java.lang.String, org.gui4j.Gui4jController, java.lang.String, boolean)
+   */
+  public Gui4jView createView(
+      String viewResourceName,
+      Gui4jController gui4jController,
+      String title,
+      boolean readOnlyMode) {
+<span class="nc" id="L361">    return new Gui4jViewImpl(this, viewResourceName, gui4jController, title, readOnlyMode);</span>
+  }
+
+  /* (non-Javadoc)
+   * @see org.gui4j.Gui4j#createDialog(org.gui4j.Gui4jWindow, java.lang.String, org.gui4j.Gui4jController, java.lang.String, boolean)
+   */
+  public Gui4jDialog createDialog(
+      Gui4jWindow owner,
+      String viewResourceName,
+      Gui4jController gui4jController,
+      String title,
+      boolean readOnlyMode) {
+<span class="nc" id="L373">    return new Gui4jDialogImpl(this, owner, viewResourceName, gui4jController, title, readOnlyMode);</span>
+  }
+
+  /* (non-Javadoc)
+   * @see org.gui4j.Gui4j#createDialog(java.awt.Dialog, java.lang.String, org.gui4j.Gui4jController, java.lang.String, boolean)
+   */
+  public Gui4jDialog createDialog(
+      Dialog owner,
+      String viewResourceName,
+      Gui4jController gui4jController,
+      String title,
+      boolean readOnlyMode) {
+<span class="nc" id="L385">    return new Gui4jDialogImpl(this, owner, viewResourceName, gui4jController, title, readOnlyMode);</span>
+  }
+
+  /* (non-Javadoc)
+   * @see org.gui4j.Gui4j#createDialog(java.awt.Frame, java.lang.String, org.gui4j.Gui4jController, java.lang.String, boolean)
+   */
+  public Gui4jDialog createDialog(
+      Frame owner,
+      String viewResourceName,
+      Gui4jController gui4jController,
+      String title,
+      boolean readOnlyMode) {
+<span class="nc" id="L397">    return new Gui4jDialogImpl(this, owner, viewResourceName, gui4jController, title, readOnlyMode);</span>
+  }
+
+  public Gui4jCallFactory createCallFactory() {
+<span class="nc" id="L401">    return new Gui4jCallParser();</span>
+  }
+
+  /* (non-Javadoc)
+   * @see org.gui4j.Gui4j#writeDTD(java.io.File)
+   */
+  public void writeDTD(File outputFile) throws Gui4jException {
+<span class="nc" id="L408">    getGui4jComponentManager().writeDTD(outputFile);</span>
+<span class="nc" id="L409">  }</span>
+
+  public void shutdown() {
+<span class="nc" id="L412">    getGui4jThreadManager().shutdown();</span>
+<span class="nc" id="L413">    getGui4jComponentContainerManager().clearResources();</span>
+<span class="nc" id="L414">    getGui4jComponentManager().dispose();</span>
+<span class="nc" id="L415">    getGui4jReflectionManager().dispose();</span>
+<span class="nc" id="L416">  }</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.Gui4j#createValidator()
+   */
+  public Gui4jValidator createValidator() {
+<span class="nc" id="L422">    return new Gui4jValidatorImpl(this);</span>
+  }
+
+  /* (non-Javadoc)
+   * @see org.gui4j.Gui4j#setResourceProvider(org.gui4j.Gui4jResourceProvider)
+   */
+  public void setResourceProvider(Gui4jResourceProvider resourceProvider) {
+<span class="nc" id="L429">    mResourceProvider = resourceProvider;</span>
+<span class="nc" id="L430">  }</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.core.Gui4jInternal#getResourceProvider()
+   */
+  public Gui4jResourceProvider getResourceProvider() {
+<span class="nc" id="L436">    return mResourceProvider;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jGridLayoutFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component.factory</a> &gt; <span class="el_source">Gui4jGridLayoutFactory.java</span></div><h1>Gui4jGridLayoutFactory.java</h1><pre class="source lang-java linenums">package org.gui4j.component.factory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import org.dom4j.LElement;
+import org.gui4j.component.Gui4jGridLayout;
+import org.gui4j.component.Gui4jJComponent;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentContainerManager;
+import org.gui4j.core.Gui4jComponentFactory;
+import org.gui4j.core.Gui4jQualifiedComponent;
+import org.gui4j.core.definition.Attribute;
+import org.gui4j.core.definition.AttributeTypeID;
+import org.gui4j.core.definition.AttributeTypeInteger;
+import org.gui4j.exception.Gui4jUncheckedException;
+import org.gui4j.util.Filter;
+
+<span class="nc" id="L20">public final class Gui4jGridLayoutFactory extends Gui4jJComponentFactory {</span>
+  private static final String NAME = &quot;gridLayout&quot;;
+  private static final String PLACEMENT = &quot;placeGl&quot;;
+  private static final String ROWS = &quot;rows&quot;;
+  private static final String COLS = &quot;cols&quot;;
+  private static final String HSPACING = &quot;hSpacing&quot;;
+  private static final String VSPACING = &quot;vSpacing&quot;;
+  private static final String ROW = &quot;row&quot;;
+  private static final String COL = &quot;col&quot;;
+  private static final String ID = &quot;id&quot;;
+
+  /* (non-Javadoc)
+   * @see org.gui4j.component.factory.Gui4jJComponentFactory#defineGui4jJComponentBy(org.gui4j.core.Gui4jComponentContainer, java.lang.String, org.dom4j.LElement)
+   */
+  protected Gui4jJComponent defineGui4jJComponentBy(
+      Gui4jComponentContainer gui4jComponentContainer, String id, LElement e) {
+<span class="nc" id="L36">    int rows = getIntValue(gui4jComponentContainer, e, ROWS);</span>
+<span class="nc" id="L37">    int cols = getIntValue(gui4jComponentContainer, e, COLS);</span>
+<span class="nc" id="L38">    Gui4jGridLayout gui4jGridLayout = new Gui4jGridLayout(gui4jComponentContainer, id, rows, cols);</span>
+<span class="nc" id="L39">    gui4jGridLayout.definePropertySetter(</span>
+<span class="nc" id="L40">        HSPACING, getGui4jAccessInstance(Integer.TYPE, gui4jGridLayout, e, HSPACING));</span>
+<span class="nc" id="L41">    gui4jGridLayout.definePropertySetter(</span>
+<span class="nc" id="L42">        VSPACING, getGui4jAccessInstance(Integer.TYPE, gui4jGridLayout, e, VSPACING));</span>
+
+<span class="nc" id="L44">    List children = e.elements();</span>
+<span class="nc" id="L45">    List errorList = new ArrayList();</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">    for (Iterator it = children.iterator(); it.hasNext(); ) {</span>
+      try {
+<span class="nc" id="L48">        LElement child = (LElement) it.next();</span>
+<span class="nc" id="L49">        gui4jComponentContainer.autoExtend(child);</span>
+<span class="nc" id="L50">        int row = getIntValue(gui4jComponentContainer, child, ROW);</span>
+
+<span class="nc bnc" id="L52" title="All 4 branches missed.">        if (row &lt; 0 || row &gt;= rows) {</span>
+<span class="nc" id="L53">          Object[] args = {new Integer(row), new Integer(rows)};</span>
+<span class="nc" id="L54">          throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L55">              gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L56">              Gui4jComponentContainerManager.getLineNumber(child),</span>
+              RESOURCE_ERROR_invalid_row,
+              args);
+        }
+
+<span class="nc" id="L61">        int col = getIntValue(gui4jComponentContainer, child, COL);</span>
+
+<span class="nc bnc" id="L63" title="All 4 branches missed.">        if (col &lt; 0 || col &gt;= cols) {</span>
+<span class="nc" id="L64">          Object[] args = {new Integer(col), new Integer(cols)};</span>
+<span class="nc" id="L65">          throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L66">              gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L67">              Gui4jComponentContainerManager.getLineNumber(child),</span>
+              RESOURCE_ERROR_invalid_column,
+              args);
+        }
+
+<span class="nc" id="L72">        String gui4jId = child.attributeValue(ID);</span>
+        Gui4jQualifiedComponent gui4jComponentInPath;
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (gui4jId == null) {</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">          if (child.elements().isEmpty()) {</span>
+<span class="nc" id="L76">            Object[] args = {PLACEMENT};</span>
+<span class="nc" id="L77">            throw new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L78">                gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L79">                Gui4jComponentContainerManager.getLineNumber(child),</span>
+                RESOURCE_ERROR_element_must_contain_gui4jComponent,
+                args);
+          }
+<span class="nc" id="L83">          LElement gui4jElement = (LElement) child.elements().iterator().next();</span>
+<span class="nc" id="L84">          gui4jComponentInPath = gui4jComponentContainer.extractGui4jComponent(gui4jElement);</span>
+<span class="nc" id="L85">        } else {</span>
+<span class="nc" id="L86">          gui4jComponentInPath = gui4jComponentContainer.getGui4jQualifiedComponent(gui4jId);</span>
+        }
+
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (gui4jGridLayout.isDefined(row, col)) {</span>
+<span class="nc" id="L90">          Object[] args = {new Integer(row), new Integer(col)};</span>
+<span class="nc" id="L91">          new Gui4jUncheckedException.ResourceError(</span>
+<span class="nc" id="L92">              gui4jComponentContainer.getConfigurationName(),</span>
+<span class="nc" id="L93">              Gui4jComponentContainerManager.getLineNumber(child),</span>
+              RESOURCE_ERROR_element_at_row_col_already_defined,
+              args);
+<span class="nc" id="L96">        } else {</span>
+<span class="nc" id="L97">          gui4jGridLayout.addPlacement(row, col, gui4jComponentInPath);</span>
+        }
+<span class="nc" id="L99">      } catch (Throwable t) {</span>
+<span class="nc" id="L100">        errorList.add(t);</span>
+<span class="nc" id="L101">      }</span>
+    }
+<span class="nc" id="L103">    checkErrorList(errorList);</span>
+<span class="nc" id="L104">    return gui4jGridLayout;</span>
+  }
+
+  public void addInnerAttributes(String elementName, List list) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">    if (PLACEMENT.equals(elementName)) {</span>
+<span class="nc" id="L109">      Attribute[] attributesSubElement = {</span>
+        new Attribute(ROW, new AttributeTypeInteger(), REQUIRED, false),
+        new Attribute(COL, new AttributeTypeInteger(), REQUIRED, false),
+        new Attribute(ID, new AttributeTypeID(), IMPLIED, false)
+      };
+<span class="nc" id="L114">      list.addAll(Arrays.asList(attributesSubElement));</span>
+    }
+<span class="nc" id="L116">  }</span>
+
+  public Gui4jComponentFactory.SubElement getSubElement(String elementName) {
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    if (NAME.equals(elementName)) {</span>
+<span class="nc" id="L120">      SubElement place = SubElement.getInstance(PLACEMENT);</span>
+<span class="nc" id="L121">      return SubElement.star(place);</span>
+    }
+<span class="nc bnc" id="L123" title="All 2 branches missed.">    if (PLACEMENT.equals(elementName)) {</span>
+<span class="nc" id="L124">      return SubElement.optional(SubElement.gui4jComponent());</span>
+    }
+<span class="nc" id="L126">    return null;</span>
+  }
+
+  public void addToplevelAttributes(List attrList, Filter filter) {
+<span class="nc" id="L130">    super.addToplevelAttributes(attrList, filter);</span>
+<span class="nc bnc" id="L131" title="All 4 branches missed.">    if (filter == null || filter.takeIt(Gui4jGridLayoutFactory.class)) {</span>
+<span class="nc" id="L132">      attrList.add(new Attribute(ROWS, new AttributeTypeInteger(), REQUIRED, false));</span>
+<span class="nc" id="L133">      attrList.add(new Attribute(COLS, new AttributeTypeInteger(), REQUIRED, false));</span>
+<span class="nc" id="L134">      attrList.add(new Attribute(HSPACING, new AttributeTypeInteger(), IMPLIED, false));</span>
+<span class="nc" id="L135">      attrList.add(new Attribute(VSPACING, new AttributeTypeInteger(), IMPLIED, false));</span>
+    }
+<span class="nc" id="L137">  }</span>
+
+  public String[] getInnerElements() {
+<span class="nc" id="L140">    String[] elems = {PLACEMENT};</span>
+<span class="nc" id="L141">    return elems;</span>
+  }
+
+  /**
+   * @see org.gui4j.core.Gui4jComponentFactory#getName()
+   */
+  public String getName() {
+<span class="nc" id="L148">    return NAME;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

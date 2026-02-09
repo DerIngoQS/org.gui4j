@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jAbstractButton.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.component</a> &gt; <span class="el_source">Gui4jAbstractButton.java</span></div><h1>Gui4jAbstractButton.java</h1><pre class="source lang-java linenums">package org.gui4j.component;
+
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.SwingConstants;
+import org.gui4j.core.Gui4jCall;
+import org.gui4j.core.Gui4jComponentContainer;
+import org.gui4j.core.Gui4jComponentInstance;
+import org.gui4j.core.Gui4jSwingContainer;
+import org.gui4j.core.listener.Gui4jActionListener;
+import org.gui4j.core.listener.Gui4jActionListenerButton;
+
+public abstract class Gui4jAbstractButton extends Gui4jJComponent {
+  private Gui4jCall mActionCommand;
+<span class="nc" id="L16">  private int mVTextPosition = SwingConstants.CENTER;</span>
+<span class="nc" id="L17">  private int mHTextPosition = SwingConstants.TRAILING;</span>
+
+  /**
+   * @param gui4jComponentContainer
+   * @param buttonClass
+   * @param id
+   */
+  public Gui4jAbstractButton(
+      Gui4jComponentContainer gui4jComponentContainer, Class buttonClass, String id) {
+<span class="nc" id="L26">    super(gui4jComponentContainer, buttonClass, id);</span>
+<span class="nc" id="L27">  }</span>
+
+  protected void setProperties(Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L30">    super.setProperties(gui4jComponentInstance);</span>
+<span class="nc" id="L31">    AbstractButton button = (AbstractButton) gui4jComponentInstance.getComponent();</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">    if (mActionCommand != null) {</span>
+<span class="nc" id="L33">      Gui4jActionListener gui4jActionListener = createActionListener(gui4jComponentInstance);</span>
+<span class="nc" id="L34">      gui4jComponentInstance.getGui4jSwingContainer().addDispose(gui4jActionListener);</span>
+<span class="nc" id="L35">      gui4jActionListener.setActionPerformed(mActionCommand);</span>
+<span class="nc" id="L36">      button.addActionListener(gui4jActionListener);</span>
+    }
+<span class="nc bnc" id="L38" title="All 4 branches missed.">    if (handleReadOnly() &amp;&amp; gui4jComponentInstance.getGui4jSwingContainer().inReadOnlyMode()) {</span>
+<span class="nc" id="L39">      button.setEnabled(false);</span>
+    }
+
+<span class="nc" id="L42">    button.setHorizontalTextPosition(mHTextPosition);</span>
+<span class="nc" id="L43">    button.setVerticalTextPosition(mVTextPosition);</span>
+<span class="nc" id="L44">  }</span>
+
+  protected Gui4jActionListener createActionListener(
+      Gui4jComponentInstance gui4jComponentInstance) {
+<span class="nc" id="L48">    return new Gui4jActionListenerButton(gui4jComponentInstance);</span>
+  }
+
+  /**
+   * @param button
+   * @param text
+   */
+  public void setText(AbstractButton button, String text) {
+<span class="nc" id="L56">    button.setText(text);</span>
+<span class="nc" id="L57">  }</span>
+
+  /**
+   * @param button
+   * @param icon
+   */
+  public void setIcon(AbstractButton button, Icon icon) {
+<span class="nc" id="L64">    button.setIcon(icon);</span>
+<span class="nc" id="L65">  }</span>
+
+  /**
+   * @param button
+   * @param gap
+   */
+  public void setIconTextGap(AbstractButton button, int gap) {
+<span class="nc" id="L72">    button.setIconTextGap(gap);</span>
+<span class="nc" id="L73">  }</span>
+
+  /**
+   * @param gui4jComponentInstance
+   * @param groupName
+   */
+  public void setGroup(Gui4jComponentInstance gui4jComponentInstance, String groupName) {
+<span class="nc" id="L80">    Gui4jSwingContainer gui4jSwingContainer = gui4jComponentInstance.getGui4jSwingContainer();</span>
+<span class="nc" id="L81">    ButtonGroup buttonGroup =</span>
+<span class="nc" id="L82">        (ButtonGroup) gui4jSwingContainer.getStorage(Gui4jAbstractButton.class, groupName);</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">    if (buttonGroup == null) {</span>
+<span class="nc" id="L84">      buttonGroup = new ButtonGroup();</span>
+<span class="nc" id="L85">      gui4jSwingContainer.putStorage(Gui4jAbstractButton.class, groupName, buttonGroup);</span>
+    }
+<span class="nc" id="L87">    buttonGroup.add((AbstractButton) gui4jComponentInstance.getComponent());</span>
+<span class="nc" id="L88">  }</span>
+
+  /**
+   * @param button
+   * @param mnemonic
+   */
+  public void setMnemonic(AbstractButton button, char mnemonic) {
+<span class="nc" id="L95">    button.setMnemonic(mnemonic);</span>
+<span class="nc" id="L96">  }</span>
+
+  /**
+   * @param button
+   * @param isSelected
+   */
+  public void setSelected(AbstractButton button, boolean isSelected) {
+<span class="nc" id="L103">    button.setSelected(isSelected);</span>
+<span class="nc" id="L104">  }</span>
+
+  /**
+   * @param horizontalTextPosition
+   */
+  public void setHTextPosition(int horizontalTextPosition) {
+<span class="nc" id="L110">    mHTextPosition = horizontalTextPosition;</span>
+<span class="nc" id="L111">  }</span>
+
+  /**
+   * @param verticalTextPosition
+   */
+  public void setVTextPosition(int verticalTextPosition) {
+<span class="nc" id="L117">    mVTextPosition = verticalTextPosition;</span>
+<span class="nc" id="L118">  }</span>
+
+  /**
+   * @param actionCommand
+   */
+  public void setActionCommand(Gui4jCall actionCommand) {
+<span class="nc" id="L124">    mActionCommand = actionCommand;</span>
+<span class="nc" id="L125">  }</span>
+
+  /* (non-Javadoc)
+   * @see org.gui4j.core.Gui4jAbstractComponent#setEnabled(org.gui4j.core.Gui4jComponentInstance, boolean)
+   */
+  public void setEnabled(Gui4jComponentInstance gui4jComponentInstance, boolean enabled) {
+<span class="nc bnc" id="L131" title="All 4 branches missed.">    if (handleReadOnly() &amp;&amp; gui4jComponentInstance.getGui4jSwingContainer().inReadOnlyMode()) {</span>
+<span class="nc" id="L132">      super.setEnabled(gui4jComponentInstance, false);</span>
+    } else {
+<span class="nc" id="L134">      super.setEnabled(gui4jComponentInstance, enabled);</span>
+    }
+<span class="nc" id="L136">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

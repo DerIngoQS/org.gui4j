@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jReflectionManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core</a> &gt; <span class="el_source">Gui4jReflectionManager.java</span></div><h1>Gui4jReflectionManager.java</h1><pre class="source lang-java linenums">package org.gui4j.core;
+
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.gui4j.core.util.MethodCall;
+import org.gui4j.core.util.MethodCallReflection;
+import org.gui4j.exception.ErrorTags;
+import org.gui4j.exception.Gui4jUncheckedException;
+
+/**
+ * Supports methods to method declarations by most specific argument types There is always one
+ * instance of this manager in order to cache method declarations.
+ *
+ * @author Joachim Schmid
+ */
+public final class Gui4jReflectionManager implements ErrorTags, Serializable {
+<span class="fc" id="L24">  private static final Log mLogger = LogFactory.getLog(Gui4jReflectionManager.class);</span>
+  private final Map mMethodsClass;
+  private final Map mMethodsName;
+
+<span class="fc" id="L28">  private Gui4jReflectionManager() {</span>
+<span class="fc" id="L29">    mMethodsClass = new HashMap();</span>
+<span class="fc" id="L30">    mMethodsName = new HashMap();</span>
+<span class="fc" id="L31">  }</span>
+
+  public void dispose() {
+<span class="nc" id="L34">    mMethodsClass.clear();</span>
+<span class="nc" id="L35">    mMethodsName.clear();</span>
+<span class="nc" id="L36">  }</span>
+
+  /**
+   * Returns always the same instance
+   *
+   * @return Gui4jReflectionManager
+   */
+  public static Gui4jReflectionManager getNewInstance() {
+<span class="fc" id="L44">    return new Gui4jReflectionManager();</span>
+  }
+
+  public MethodCall getMethod(
+      String context,
+      Class c,
+      String methodName,
+      Class[] argumentsInit,
+      boolean throwExceptionIfNotFound) {
+<span class="fc" id="L53">    Method[] methods = getMethods(c, methodName);</span>
+<span class="fc" id="L54">    Class[] arguments = new Class[argumentsInit.length];</span>
+<span class="fc" id="L55">    String[] argumentsStr = new String[argumentsInit.length];</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">    for (int i = 0; i &lt; argumentsInit.length; i++) {</span>
+<span class="fc" id="L57">      arguments[i] = argumentsInit[i];</span>
+<span class="fc" id="L58">      argumentsStr[i] = argumentsInit[i].getName();</span>
+      /*
+      if (arguments[i].equals(Integer.TYPE))
+      {
+          arguments[i] = Integer.class;
+      }
+      */
+    }
+
+<span class="fc" id="L67">    Method lastMethod = null;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">    for (int i = 0; i &lt; methods.length; i++) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">      if (matching(methods[i], arguments)) {</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">        if (lastMethod == null) {</span>
+<span class="fc" id="L71">          lastMethod = methods[i];</span>
+        } else {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">          if (moreSpecific(methods[i], lastMethod)) {</span>
+<span class="nc" id="L74">            lastMethod = methods[i];</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">          } else if (moreSpecific(lastMethod, methods[i])) {</span>
+            // do nothing
+          } else {
+<span class="nc" id="L78">            String signature = arr2List(argumentsStr).toString();</span>
+<span class="nc" id="L79">            signature = signature.replace('[', '(');</span>
+<span class="nc" id="L80">            signature = signature.replace(']', ')');</span>
+<span class="nc" id="L81">            Object[] args = {c, methodName, signature};</span>
+<span class="nc" id="L82">            mLogger.warn(&quot;Method ambiguous; context &quot; + context);</span>
+<span class="nc" id="L83">            mLogger.info(&quot;Method 1 = &quot; + lastMethod);</span>
+<span class="nc" id="L84">            mLogger.info(&quot;Method 2 = &quot; + methods[i]);</span>
+<span class="nc" id="L85">            throw new Gui4jUncheckedException.ProgrammingError(</span>
+                PROGRAMMING_ERROR_method_ambiguous, args);
+          }
+        }
+      }
+    }
+<span class="pc bpc" id="L91" title="3 of 4 branches missed.">    if (lastMethod == null &amp;&amp; throwExceptionIfNotFound) {</span>
+<span class="nc" id="L92">      String signature = arr2List(argumentsStr).toString();</span>
+<span class="nc" id="L93">      signature = signature.replace('[', '(');</span>
+<span class="nc" id="L94">      signature = signature.replace(']', ')');</span>
+<span class="nc" id="L95">      Object[] args = {c.getName(), methodName, signature, context};</span>
+<span class="nc" id="L96">      mLogger.warn(&quot;Method not defined; context &quot; + context);</span>
+<span class="nc" id="L97">      throw new Gui4jUncheckedException.ProgrammingError(PROGRAMMING_ERROR_method_not_found, args);</span>
+    }
+
+    /*
+    if (methodName.indexOf(&quot;getValue&quot;)!=-1 &amp;&amp; c.getName().indexOf(&quot;Ansprache&quot;)!=-1)
+    {
+        String signature = arr2List(argumentsStr).toString();
+        signature = signature.replace('[', '(');
+        signature = signature.replace(']', ')');
+
+        mLogger.debug(&quot;Resolve of &quot;+c.getName()+&quot;.&quot;+methodName+signature+&quot; = &quot; +lastMethod);
+    }
+    */
+<span class="fc" id="L110">    return MethodCallReflection.getInstance(lastMethod);</span>
+  }
+
+  /**
+   * Searches for the given class the most specific method. If no method is found, or if the result
+   * is ambiguous, an exception is raised
+   *
+   * @param context
+   * @param c
+   * @param methodName
+   * @param argumentsInit
+   * @return MethodCall
+   */
+  public MethodCall getMethod(String context, Class c, String methodName, Class[] argumentsInit) {
+<span class="fc" id="L124">    return getMethod(context, c, methodName, argumentsInit, true);</span>
+  }
+
+  private List arr2List(Object[] arr) {
+<span class="nc" id="L128">    List l = new ArrayList();</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    for (int i = 0; i &lt; arr.length; i++) {</span>
+<span class="nc" id="L130">      l.add(arr[i]);</span>
+    }
+<span class="nc" id="L132">    return l;</span>
+  }
+
+  private boolean moreSpecific(Method m1, Method m2) {
+<span class="nc" id="L136">    Class[] parameterTypes1 = m1.getParameterTypes();</span>
+<span class="nc" id="L137">    Class[] parameterTypes2 = m2.getParameterTypes();</span>
+<span class="nc" id="L138">    int n = parameterTypes1.length;</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">    for (int i = 0; i &lt; n; i++) {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">      if (!parameterTypes2[i].isAssignableFrom(parameterTypes1[i])) {</span>
+<span class="nc" id="L141">        return false;</span>
+      }
+    }
+<span class="nc" id="L144">    return true;</span>
+  }
+
+  private boolean matching(Method m, Class[] arguments) {
+<span class="fc" id="L148">    Class[] parameterTypes = m.getParameterTypes();</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">    if (parameterTypes.length != arguments.length) {</span>
+<span class="fc" id="L150">      return false;</span>
+    }
+<span class="fc bfc" id="L152" title="All 2 branches covered.">    for (int i = 0; i &lt; parameterTypes.length; i++) {</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">      if (!parameterTypes[i].isAssignableFrom(arguments[i]))</span>
+      //				!arguments[i].isAssignableFrom(parameterTypes[i]))
+      {
+<span class="nc" id="L156">        return false;</span>
+      }
+    }
+<span class="fc" id="L159">    return true;</span>
+  }
+
+  private synchronized Method[] getMethods(Class c, String methodName) {
+<span class="fc" id="L163">    Method[] m = (Method[]) mMethodsName.get(c + &quot;/&quot; + methodName);</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">    if (m == null) {</span>
+<span class="fc" id="L165">      Method[] methods = getMethods(c);</span>
+<span class="fc" id="L166">      List methodList = new ArrayList();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">      for (int i = 0; i &lt; methods.length; i++) {</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        if (methods[i].getName().equals(methodName)) {</span>
+<span class="fc" id="L169">          methodList.add(methods[i]);</span>
+        }
+      }
+<span class="fc" id="L172">      m = new Method[methodList.size()];</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">      for (int i = 0; i &lt; m.length; i++) {</span>
+<span class="fc" id="L174">        m[i] = (Method) methodList.get(i);</span>
+      }
+<span class="fc" id="L176">      mMethodsName.put(c + &quot;/&quot; + methodName, m);</span>
+    }
+<span class="fc" id="L178">    return m;</span>
+  }
+
+  private synchronized Method[] getMethods(Class c) {
+<span class="fc" id="L182">    Method[] methods = (Method[]) mMethodsClass.get(c);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">    if (methods == null) {</span>
+<span class="fc" id="L184">      methods = c.getMethods();</span>
+      /*
+      for (int i = 0; i &lt; methods.length; i++)
+      {
+          Method m = methods[i];
+          try
+          {
+              methods[i] = c.getMethod(m.getName(),m.getParameterTypes());
+              System.out.println(&quot;Class: &quot;+c.getName()+&quot;: &quot;+methods[i]);
+          }
+          catch (NoSuchMethodException e)
+          {
+              String[] args = { c.getName(), m.getName(), m.toString() };
+              throw new Gui4jUncheckedException.ProgrammingError(PROGRAMMING_ERROR_method_not_found,args);
+          }
+      }
+      */
+<span class="fc" id="L201">      mMethodsClass.put(c, methods);</span>
+    }
+<span class="fc" id="L203">    return methods;</span>
+  }
+
+  /** Clear the cache in order to use new method declarations */
+  public synchronized void reload() {
+<span class="nc" id="L208">    mMethodsClass.clear();</span>
+<span class="nc" id="L209">    mMethodsName.clear();</span>
+<span class="nc" id="L210">  }</span>
+
+  public static void handleInvocationTargetException(InvocationTargetException e) {
+<span class="nc" id="L213">    Throwable t = e.getTargetException();</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">    if (t != null) {</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">      if (t instanceof RuntimeException) {</span>
+<span class="nc" id="L216">        throw (RuntimeException) t;</span>
+      }
+<span class="nc bnc" id="L218" title="All 2 branches missed.">      if (t instanceof Error) {</span>
+<span class="nc" id="L219">        throw (Error) t;</span>
+      }
+    }
+<span class="nc" id="L222">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
