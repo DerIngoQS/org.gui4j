@@ -5,6 +5,7 @@ import java.util.Map;
 import org.gui4j.core.util.Extract;
 
 public final class Gui4jComponentContainerInclude implements Serializable {
+  private static final long serialVersionUID = 1L;
   private final Gui4jComponentContainer mGui4jComponentContainer;
   private final String mAliasName;
   private final Gui4jComponentContainer mGui4jComponentContainerParent;
@@ -16,47 +17,47 @@ public final class Gui4jComponentContainerInclude implements Serializable {
       Gui4jComponentContainer gui4jComponentContainerParent,
       Gui4jComponentContainer gui4jComponentContainer,
       Map paramMap,
-<span class="nc" id="L19">      String name) {</span>
-<span class="nc" id="L20">    this.mGui4jComponentContainerParent = gui4jComponentContainerParent;</span>
-<span class="nc" id="L21">    this.mGui4jComponentContainer = gui4jComponentContainer;</span>
-<span class="nc" id="L22">    this.mParamMap = paramMap;</span>
-<span class="nc" id="L23">    this.mAliasName = name;</span>
-<span class="nc" id="L24">  }</span>
+<span class="nc" id="L20">      String name) {</span>
+<span class="nc" id="L21">    this.mGui4jComponentContainerParent = gui4jComponentContainerParent;</span>
+<span class="nc" id="L22">    this.mGui4jComponentContainer = gui4jComponentContainer;</span>
+<span class="nc" id="L23">    this.mParamMap = paramMap;</span>
+<span class="nc" id="L24">    this.mAliasName = name;</span>
+<span class="nc" id="L25">  }</span>
 
   public Map getParamMap() {
-<span class="nc" id="L27">    return mParamMap;</span>
+<span class="nc" id="L28">    return mParamMap;</span>
   }
 
   public void setGui4jBaseController(Gui4jCall gui4jCall) {
-<span class="nc" id="L31">    mGui4jBaseController = gui4jCall;</span>
-<span class="nc" id="L32">  }</span>
+<span class="nc" id="L32">    mGui4jBaseController = gui4jCall;</span>
+<span class="nc" id="L33">  }</span>
 
   public Gui4jCall getGui4jBaseController() {
-<span class="nc" id="L35">    return mGui4jBaseController;</span>
+<span class="nc" id="L36">    return mGui4jBaseController;</span>
   }
 
   public Gui4jComponentContainer getGui4jComponentContainer() {
-<span class="nc" id="L39">    return mGui4jComponentContainer;</span>
+<span class="nc" id="L40">    return mGui4jComponentContainer;</span>
   }
 
   public Gui4jComponentContainer getGui4jComponentContainerParent() {
-<span class="nc" id="L43">    return mGui4jComponentContainerParent;</span>
+<span class="nc" id="L44">    return mGui4jComponentContainerParent;</span>
   }
 
   public String getAliasName() {
-<span class="nc" id="L47">    return mAliasName;</span>
+<span class="nc" id="L48">    return mAliasName;</span>
   }
 
   /**
    * @see java.lang.Object#equals(Object)
    */
   public boolean equals(Object obj) {
-<span class="nc bnc" id="L54" title="All 2 branches missed.">    if (obj instanceof Gui4jComponentContainerInclude) {</span>
-<span class="nc" id="L55">      Gui4jComponentContainerInclude gui4jComponentContainerInclude =</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">    if (obj instanceof Gui4jComponentContainerInclude) {</span>
+<span class="nc" id="L56">      Gui4jComponentContainerInclude gui4jComponentContainerInclude =</span>
           (Gui4jComponentContainerInclude) obj;
-<span class="nc" id="L57">      return mAliasName.equals(gui4jComponentContainerInclude.getAliasName());</span>
+<span class="nc" id="L58">      return mAliasName.equals(gui4jComponentContainerInclude.getAliasName());</span>
     } else {
-<span class="nc" id="L59">      return false;</span>
+<span class="nc" id="L60">      return false;</span>
     }
   }
 
@@ -64,7 +65,7 @@ public final class Gui4jComponentContainerInclude implements Serializable {
    * @see java.lang.Object#hashCode()
    */
   public int hashCode() {
-<span class="nc" id="L67">    return mAliasName.hashCode();</span>
+<span class="nc" id="L68">    return mAliasName.hashCode();</span>
   }
 
   /**
@@ -73,7 +74,7 @@ public final class Gui4jComponentContainerInclude implements Serializable {
    * @return Gui4jCall[]
    */
   public Gui4jCall[] getRefresh() {
-<span class="nc" id="L76">    return mRefresh;</span>
+<span class="nc" id="L77">    return mRefresh;</span>
   }
 
   /**
@@ -82,14 +83,14 @@ public final class Gui4jComponentContainerInclude implements Serializable {
    * @param refresh The refresh to set
    */
   public void setRefresh(Gui4jCall[] refresh) {
-<span class="nc" id="L85">    this.mRefresh = refresh;</span>
-<span class="nc" id="L86">  }</span>
+<span class="nc" id="L86">    this.mRefresh = refresh;</span>
+<span class="nc" id="L87">  }</span>
 
   /**
    * @see java.lang.Object#toString()
    */
   public String toString() {
-<span class="nc" id="L92">    return Extract.getClassname(getClass())</span>
+<span class="nc" id="L93">    return Extract.getClassname(getClass())</span>
         + &quot;[&quot;
         + mAliasName
         + &quot;=&quot;

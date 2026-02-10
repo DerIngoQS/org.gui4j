@@ -190,6 +190,7 @@ public final class Gui4jTabbedPane extends Gui4jJComponent {
   // **********************************************************
 
   public class Entry implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jCall mTitle;
     private Gui4jCall mForeground;
     private Gui4jCall mBackground;

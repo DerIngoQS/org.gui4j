@@ -36,6 +36,7 @@ import org.xml.sax.SAXException;
  * created instance for the same arguments.
  */
 public final class Gui4jComponentContainerManager implements Serializable, ErrorTags {
+  private static final long serialVersionUID = 1L;
   private final Map mGui4jComponentContainerClassMap;
   private final Map mResourceMap;
   private final Gui4jInternal mGui4j;
@@ -147,6 +148,7 @@ public final class Gui4jComponentContainerManager implements Serializable, Error
   }
 
   static class Resource implements Serializable, ErrorTags {
+    private static final long serialVersionUID = 1L;
     private static final Log mResourceLogger = LogFactory.getLog(Resource.class);
 
     private final Gui4jInternal mGui4j;
@@ -468,6 +470,7 @@ public final class Gui4jComponentContainerManager implements Serializable, Error
   }
 
   static class Gui4jComponentContainerImpl implements Serializable, Gui4jComponentContainer {
+    private static final long serialVersionUID = 1L;
     private final Class mGui4jControllerClass;
     private final Map mElements; // String -> Element
     private final Map mGui4jComponentsInPath; // Id ->

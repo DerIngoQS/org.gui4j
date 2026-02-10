@@ -6,14 +6,15 @@ import java.util.Iterator;
 import java.util.Map;
 
 public final class Gui4jTypeManager implements Serializable {
-  private final Map typeMap;
+  private static final long serialVersionUID = 1L;
+  private final Map<Class<?>, Object> typeMap;
 
   public Gui4jTypeManager() {
-    typeMap = new HashMap();
+    typeMap = new HashMap<Class<?>, Object>();
   }
 
-  public Gui4jTypeManager(Map m) {
-    typeMap = new HashMap();
+  public Gui4jTypeManager(Map<? extends Class<?>, ?> m) {
+    typeMap = new HashMap<Class<?>, Object>();
     add(m);
   }
 
@@ -21,31 +22,32 @@ public final class Gui4jTypeManager implements Serializable {
     return typeMap.size();
   }
 
-  public void add(Map map) {
-    for (Iterator it = map.entrySet().iterator(); it.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) it.next();
-      Class c = (Class) entry.getKey();
+  public void add(Map<? extends Class<?>, ?> map) {
+    for (Iterator<? extends Map.Entry<? extends Class<?>, ?>> it = map.entrySet().iterator();
+        it.hasNext(); ) {
+      Map.Entry<? extends Class<?>, ?> entry = it.next();
+      Class<?> c = entry.getKey();
       Object instance = entry.getValue();
       add(c, instance);
     }
   }
 
-  public void add(Class type, Object instance) {
+  public void add(Class<?> type, Object instance) {
     assert !typeMap.containsKey(type);
     // XXX: JS->Kay ;-) ---  Ordentliche Fehlermeldung erzeugen
     typeMap.put(type, instance);
   }
 
-  public Object getExact(Class classType) {
+  public Object getExact(Class<?> classType) {
     return typeMap.get(classType);
   }
 
-  public Object get(Class classType) {
-    Class lastClass = null;
+  public Object get(Class<?> classType) {
+    Class<?> lastClass = null;
     Object lastObject = null;
-    for (Iterator it = typeMap.entrySet().iterator(); it.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) it.next();
-      Class c = (Class) entry.getKey();
+    for (Iterator<Map.Entry<Class<?>, Object>> it = typeMap.entrySet().iterator(); it.hasNext(); ) {
+      Map.Entry<Class<?>, Object> entry = it.next();
+      Class<?> c = entry.getKey();
       Object object = entry.getValue();
       if (c.isAssignableFrom(classType)) {
         if (lastClass == null || lastClass.isAssignableFrom(c)) {

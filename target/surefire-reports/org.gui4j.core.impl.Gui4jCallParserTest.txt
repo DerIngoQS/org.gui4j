@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: org.gui4j.core.impl.Gui4jCallParserTest
 -------------------------------------------------------------------------------
-Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.213 s -- in org.gui4j.core.impl.Gui4jCallParserTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.101 s -- in org.gui4j.core.impl.Gui4jCallParserTest

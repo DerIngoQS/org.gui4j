@@ -1,10 +1,20 @@
 package org.gui4j.core;
 
 import java.awt.EventQueue;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.SwingUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,22 +29,24 @@ import org.gui4j.exception.Gui4jUncheckedException;
  * thread back into the pool.
  */
 public final class Gui4jThreadManager implements ErrorTags, Serializable {
+  private static final long serialVersionUID = 1L;
   protected static Log mLogger = LogFactory.getLog(Gui4jThreadManager.class);
 
-  private LinkedList mWorkPackagesNormal = new LinkedList();
-  private LinkedList mWorkPackagesHighPriority = new LinkedList();
-  private Object mSyncObjectCount = new Object();
-  private Object mSyncObjectWorkerWait = new Object();
+  private transient ConcurrentLinkedQueue<WorkPackage> mWorkPackagesNormal;
+  private transient ConcurrentLinkedQueue<WorkPackage> mWorkPackagesHighPriority;
+  private transient ReentrantLock mDispatchLock;
+  private transient ExecutorService mWorkerExecutor;
+  private transient AtomicInteger mCreatedWorkerCount;
+
   protected final Gui4jInternal mGui4j;
-  private int mWorkPackageCountWaitingNormal;
-  private int mWorkPackageCountWaitingHighPriority;
-  private int mWorkPackageCountRunningNormal;
-  private int mWorkPackageCountRunningHighPriority;
-  private int mWorkerCount;
+  private final AtomicInteger mWorkPackageCountWaitingNormal = new AtomicInteger();
+  private final AtomicInteger mWorkPackageCountWaitingHighPriority = new AtomicInteger();
+  private final AtomicInteger mWorkPackageCountRunningNormal = new AtomicInteger();
+  private final AtomicInteger mWorkPackageCountRunningHighPriority = new AtomicInteger();
   private int mMaxWorkerId;
   private int mMaxNumberOfWorkerThreads;
   private boolean mUseWorkerThreads;
-  private boolean mShutdownThreads;
+  private volatile boolean mShutdownThreads;
 
   /**
    * Constructor for Gui4jThreadManager.
@@ -45,6 +57,7 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
   private Gui4jThreadManager(Gui4jInternal gui4j, int numberOfWorkerThreads) {
     super();
     mGui4j = gui4j;
+    initializeTransientState();
     setNumberOfWorkerThreads(numberOfWorkerThreads);
   }
 
@@ -69,10 +82,13 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    */
   public void setNumberOfWorkerThreads(int numberOfWorkerThreads) {
     // it is not allowd to dynamically change the number of worker threads
-    assert mWorkerCount == 0;
+    assert mCreatedWorkerCount.get() == 0;
 
     mMaxNumberOfWorkerThreads = numberOfWorkerThreads;
     mUseWorkerThreads = mMaxNumberOfWorkerThreads != 0;
+    if (mUseWorkerThreads) {
+      mWorkerExecutor = createWorkerExecutor();
+    }
   }
 
   /**
@@ -266,7 +282,8 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       final boolean specialSuccessHandling) {
     if (mUseWorkerThreads
         && SwingUtilities.isEventDispatchThread()
-        && !forceExecutionInCurrentThread) {
+        && !forceExecutionInCurrentThread
+        && !mShutdownThreads) {
       final InvokerCallStack callStack =
           mGui4j.traceWorkerInvocation()
               ? new InvokerCallStack(Thread.currentThread().getName())
@@ -280,26 +297,17 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
               callStack,
               isHighPriorityThread,
               specialSuccessHandling);
-      // put work on working list
       Runnable run =
           new Runnable() {
-
             public void run() {
               if (isHighPriorityThread) {
-                synchronized (mSyncObjectCount) {
-                  mWorkPackagesHighPriority.add(workPackage);
-                  mWorkPackageCountWaitingHighPriority++;
-                  checkWorkerThreadCount();
-                }
+                mWorkPackagesHighPriority.add(workPackage);
+                mWorkPackageCountWaitingHighPriority.incrementAndGet();
               } else {
-                synchronized (mSyncObjectCount) {
-                  mWorkPackagesNormal.add(workPackage);
-                  mWorkPackageCountWaitingNormal++;
-                  checkWorkerThreadCount();
-                }
+                mWorkPackagesNormal.add(workPackage);
+                mWorkPackageCountWaitingNormal.incrementAndGet();
               }
-              // Any worker should do the work
-              wakeupWorker();
+              dispatchPendingWork();
             }
           };
       SwingUtilities.invokeLater(run);
@@ -314,54 +322,146 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
 
   public void shutdown() {
     mShutdownThreads = true;
-    wakeupWorkers();
-  }
-
-  private void wakeupWorkers() {
-    synchronized (mSyncObjectWorkerWait) {
-      mSyncObjectWorkerWait.notifyAll();
+    ExecutorService executor = mWorkerExecutor;
+    if (executor != null) {
+      executor.shutdownNow();
     }
   }
 
-  private void wakeupWorker() {
-    synchronized (mSyncObjectWorkerWait) {
-      mSyncObjectWorkerWait.notify();
+  private void dispatchPendingWork() {
+    if (!mUseWorkerThreads || mShutdownThreads || mWorkerExecutor == null) {
+      return;
     }
-  }
-
-  protected void checkWorkerThreadCount() {
-    boolean createNewWorker = false;
-    int workPackageCountTotal;
-    synchronized (mSyncObjectCount) {
-      workPackageCountTotal =
-          mWorkPackageCountWaitingHighPriority
-              + mWorkPackageCountWaitingNormal
-              + mWorkPackageCountRunningHighPriority
-              + mWorkPackageCountRunningNormal;
-      if (workPackageCountTotal > mWorkerCount) {
-        // There is more work to do than we have worker threads
-        if (mWorkerCount < mMaxNumberOfWorkerThreads || mMaxNumberOfWorkerThreads == -1) {
-          createNewWorker = true;
-          mWorkerCount++;
+    if (!mDispatchLock.tryLock()) {
+      return;
+    }
+    try {
+      while (!mShutdownThreads) {
+        WorkPackage workPackage = pollNextWorkPackage();
+        if (workPackage == null) {
+          return;
         }
+        submitWorkPackage(workPackage);
       }
+    } finally {
+      mDispatchLock.unlock();
     }
-    if (createNewWorker) {
-      WorkerThread workerThread = new WorkerThread(mMaxWorkerId++);
-      if (mLogger.isDebugEnabled()) {
-        mLogger.debug(
-            "Created "
-                + workerThread
-                + ". Current work queue: RunningHighPriority: "
-                + mWorkPackageCountRunningHighPriority
-                + ", WaitingHighPriority: "
-                + mWorkPackageCountWaitingHighPriority
-                + ", RunningNormal: "
-                + mWorkPackageCountRunningNormal
-                + ", WaitingNormal: "
-                + mWorkPackageCountWaitingNormal);
+  }
+
+  private WorkPackage pollNextWorkPackage() {
+    if (mWorkPackageCountRunningHighPriority.get() > 0) {
+      WorkPackage high = mWorkPackagesHighPriority.poll();
+      if (high != null) {
+        mWorkPackageCountWaitingHighPriority.decrementAndGet();
+        mWorkPackageCountRunningHighPriority.incrementAndGet();
       }
-      workerThread.start();
+      return high;
+    }
+
+    WorkPackage high = mWorkPackagesHighPriority.poll();
+    if (high != null) {
+      mWorkPackageCountWaitingHighPriority.decrementAndGet();
+      mWorkPackageCountRunningHighPriority.incrementAndGet();
+      return high;
+    }
+
+    WorkPackage normal = mWorkPackagesNormal.poll();
+    if (normal != null) {
+      mWorkPackageCountWaitingNormal.decrementAndGet();
+      mWorkPackageCountRunningNormal.incrementAndGet();
+    }
+    return normal;
+  }
+
+  private void submitWorkPackage(final WorkPackage workPackage) {
+    if (mLogger.isDebugEnabled()) {
+      mLogger.debug(
+          "Submitting work package "
+              + (workPackage.mIsHighPriority ? "(high prio)" : "")
+              + ". Current work queue: RunningHighPriority: "
+              + mWorkPackageCountRunningHighPriority.get()
+              + ", WaitingHighPriority: "
+              + mWorkPackageCountWaitingHighPriority.get()
+              + ", RunningNormal: "
+              + mWorkPackageCountRunningNormal.get()
+              + ", WaitingNormal: "
+              + mWorkPackageCountWaitingNormal.get());
+    }
+
+    mWorkerExecutor.execute(
+        new Runnable() {
+          public void run() {
+            WorkerThread workerThread = null;
+            Thread t = Thread.currentThread();
+            if (t instanceof WorkerThread) {
+              workerThread = (WorkerThread) t;
+              workerThread.setWorkPackage(workPackage);
+            }
+            try {
+              for (int i = 0; i < workPackage.mWork.length; i++) {
+                doWork(workPackage.mWork[i], workPackage, i);
+              }
+              if (mLogger.isDebugEnabled()) {
+                mLogger.debug(Thread.currentThread().getName() + ": work finished.");
+              }
+            } finally {
+              if (workPackage.mIsHighPriority) {
+                mWorkPackageCountRunningHighPriority.decrementAndGet();
+              } else {
+                mWorkPackageCountRunningNormal.decrementAndGet();
+              }
+              if (workerThread != null) {
+                workerThread.setWorkPackage(null);
+              }
+              dispatchPendingWork();
+            }
+          }
+        });
+  }
+
+  private void doWork(Gui4jGetValue work, WorkPackage workPackage, int i) {
+    if (work == null) {
+      return;
+    }
+    if (mLogger.isDebugEnabled()) {
+      mLogger.trace(
+          Thread.currentThread().getName()
+              + ": performing work "
+              + (workPackage.mIsHighPriority ? "(high prio)" : "")
+              + ": "
+              + work);
+    }
+    try {
+      work.getValueNoErrorChecking(
+          workPackage.mGui4jController, workPackage.mParamMap, workPackage.mComponentInstance);
+      // Falls verlangt, rufen wir
+      // (nur nach dem ersten Aufruf) die
+      // <code>handleSuccess</code>
+      // Methode auf.
+      // Beim Edit-Feld wird damit im Ok-Fall der
+      // Inhalt nochmals
+      // angezeigt. Außerdem kann damit Validierung
+      // gemacht werden.
+      if (i == 0 && workPackage.mSpecialSuccessHandling && workPackage.mComponentInstance != null) {
+        workPackage.mComponentInstance.handleSuccess();
+      }
+    } catch (Throwable t) {
+      // Analog zum Ok-Fall, rufen wir im Fehlerfall
+      // nach dem ersten
+      // Aufruf die <code>handleException</code>
+      // Methode auf. Damit
+      // kann beispielsweise Validierung gemacht
+      // werden.
+      if (i == 0 && workPackage.mSpecialSuccessHandling && workPackage.mComponentInstance != null) {
+        workPackage.mComponentInstance.handleException(t);
+      } else {
+        // Falls kein ActionHandler definiert wurde,
+        // oder
+        // es sich nicht um den ersten Aufruf
+        // handelt,
+        // erfolgt die normale Fehlerbehandlung.
+        mGui4j.handleException(workPackage.mGui4jController, t, null);
+      }
     }
   }
 
@@ -393,11 +493,12 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
   }
 
   public class WorkerThread extends Thread {
-    private WorkPackage mWorkPackage;
+    private volatile WorkPackage mWorkPackage;
     private final int mId;
 
-    public WorkerThread(int n) {
-      mId = n;
+    public WorkerThread(int id, Runnable target) {
+      super(target);
+      mId = id;
 
       // This thread will be created by the AWT thread and we have to make
       // sure we don't use the AWT thread's privileged priority.
@@ -411,131 +512,12 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       return mWorkPackage != null ? mWorkPackage.mCallStack : null;
     }
 
+    private void setWorkPackage(WorkPackage workPackage) {
+      mWorkPackage = workPackage;
+    }
+
     public String toString() {
       return getName();
-    }
-
-    public void run() {
-      try {
-        boolean decHighPriority = false;
-        boolean decNormal = false;
-        while (!mShutdownThreads) {
-          mWorkPackage = null;
-          boolean wakeUpOtherWorkers = false;
-          synchronized (mSyncObjectCount) {
-            if (decHighPriority) {
-              mWorkPackageCountRunningHighPriority--;
-              decHighPriority = false;
-              if (mWorkPackageCountWaitingHighPriority + mWorkPackageCountRunningHighPriority == 0
-                  && mWorkPackageCountWaitingNormal > 1) {
-                // nun kann die restliche Arbeit von anderen
-                // Worken eventuell übernommen werden
-                wakeUpOtherWorkers = true;
-              }
-            }
-            if (decNormal) {
-              mWorkPackageCountRunningNormal--;
-              decNormal = false;
-            }
-
-            // Check for new work
-            if (mWorkPackageCountRunningHighPriority > 0) {
-              // We have to wait until high priority has finished
-            } else {
-              if (mWorkPackageCountWaitingHighPriority > 0) {
-                mWorkPackage = (WorkPackage) mWorkPackagesHighPriority.removeFirst();
-                mWorkPackageCountWaitingHighPriority--;
-                mWorkPackageCountRunningHighPriority++;
-              } else if (mWorkPackageCountWaitingNormal > 0) {
-                mWorkPackage = (WorkPackage) mWorkPackagesNormal.removeFirst();
-                mWorkPackageCountWaitingNormal--;
-                mWorkPackageCountRunningNormal++;
-              } else {
-                // no work available
-                // Terminate Thread
-              }
-            }
-          }
-          if (wakeUpOtherWorkers) {
-            wakeupWorkers();
-          }
-          if (mWorkPackage == null) {
-            synchronized (mSyncObjectWorkerWait) {
-              try {
-                mSyncObjectWorkerWait.wait();
-              } catch (InterruptedException e) {
-                return;
-              }
-            }
-          } else {
-            for (int i = 0; i < mWorkPackage.mWork.length; i++) {
-              doWork(mWorkPackage.mWork[i], mWorkPackage, i);
-            }
-            if (mLogger.isDebugEnabled()) {
-              mLogger.debug(this + ": work finished.");
-            }
-            if (mWorkPackage.mIsHighPriority) {
-              decHighPriority = true;
-            } else {
-              decNormal = true;
-            }
-          }
-        }
-      } finally {
-        synchronized (mSyncObjectCount) {
-          mWorkerCount--;
-        }
-      }
-    }
-
-    private void doWork(Gui4jGetValue work, WorkPackage workPackage, int i) {
-      if (work == null) {
-        return;
-      }
-      if (mLogger.isDebugEnabled()) {
-        mLogger.trace(
-            this
-                + ": performing work "
-                + (workPackage.mIsHighPriority ? "(high prio)" : "")
-                + ": "
-                + work);
-      }
-      try {
-        work.getValueNoErrorChecking(
-            workPackage.mGui4jController, workPackage.mParamMap, workPackage.mComponentInstance);
-        // Falls verlangt, rufen wir
-        // (nur nach dem ersten Aufruf) die
-        // <code>handleSuccess</code>
-        // Methode auf.
-        // Beim Edit-Feld wird damit im Ok-Fall der
-        // Inhalt nochmals
-        // angezeigt. Außerdem kann damit Validierung
-        // gemacht werden.
-        if (i == 0
-            && workPackage.mSpecialSuccessHandling
-            && workPackage.mComponentInstance != null) {
-          workPackage.mComponentInstance.handleSuccess();
-        }
-      } catch (Throwable t) {
-        // Analog zum Ok-Fall, rufen wir im Fehlerfall
-        // nach dem ersten
-        // Aufruf die <code>handleException</code>
-        // Methode auf. Damit
-        // kann beispielsweise Validierung gemacht
-        // werden.
-        if (i == 0
-            && workPackage.mSpecialSuccessHandling
-            && workPackage.mComponentInstance != null) {
-          workPackage.mComponentInstance.handleException(t);
-        } else {
-          // Falls kein ActionHandler definiert wurde,
-          // oder
-          // es sich nicht um den ersten Aufruf
-          // handelt,
-          // erfolgt die normale Fehlerbehandlung.
-          mGui4j.handleException(workPackage.mGui4jController, t, null);
-        }
-      }
     }
   }
 
@@ -590,6 +572,50 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       run.run();
     } else {
       EventQueue.invokeLater(run);
+    }
+  }
+
+  private ExecutorService createWorkerExecutor() {
+    ThreadFactory workerFactory =
+        new ThreadFactory() {
+          public Thread newThread(Runnable runnable) {
+            mCreatedWorkerCount.incrementAndGet();
+            return new WorkerThread(mMaxWorkerId++, runnable);
+          }
+        };
+
+    if (mMaxNumberOfWorkerThreads == -1) {
+      return new ThreadPoolExecutor(
+          0,
+          Integer.MAX_VALUE,
+          60L,
+          TimeUnit.SECONDS,
+          new SynchronousQueue<Runnable>(),
+          workerFactory);
+    }
+
+    return new ThreadPoolExecutor(
+        mMaxNumberOfWorkerThreads,
+        mMaxNumberOfWorkerThreads,
+        0L,
+        TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue<Runnable>(),
+        workerFactory);
+  }
+
+  private void initializeTransientState() {
+    mWorkPackagesNormal = new ConcurrentLinkedQueue<WorkPackage>();
+    mWorkPackagesHighPriority = new ConcurrentLinkedQueue<WorkPackage>();
+    mDispatchLock = new ReentrantLock();
+    mCreatedWorkerCount = new AtomicInteger();
+    mShutdownThreads = false;
+  }
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+    in.defaultReadObject();
+    initializeTransientState();
+    if (mUseWorkerThreads) {
+      mWorkerExecutor = createWorkerExecutor();
     }
   }
 }

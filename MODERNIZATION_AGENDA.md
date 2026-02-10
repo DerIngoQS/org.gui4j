@@ -36,18 +36,23 @@
 * **XML-Pipeline**: Erhalt der spezialisierten `org.dom4j.LElement` und `LNSAXReader` Logik, um Quelltext-Zeilennummern für die Fehlerdiagnose beizubehalten.
 * **Typsicherheit**: Progressive Einführung von Generics in Core- und Parser-Pfaden.
 * **Concurrency**: Refactoring des `Gui4jThreadManager` von manuellen `wait/notify` Zyklen auf `java.util.concurrent`.
+* **Ergebnis (abgeschlossen)**:
+    * Raw Types in Kernkomponenten (`org.gui4j`, `org.gui4j.core`, `org.gui4j.core.impl`) durch Generics ersetzt.
+    * dom4j-2.x-Typsicherheit für XML-Listen (`List<Element>`, `List<Attribute>`) in zentralen Parsing-/Style-Pfaden umgesetzt.
+    * `Gui4jThreadManager` auf `ExecutorService`/`ThreadPoolExecutor` umgestellt, inklusive unveränderter EDT-Grenzen und High-Priority-Semantik.
+    * Legacy-Reflection modernisiert (`Class.newInstance()` entfernt, Wrapper-Konstruktoren ersetzt), Serialisierung über `serialVersionUID` stabilisiert.
 
 ### Phase 3: API & Ecosystem
 * **Abwärtskompatibilität**: Erhalt der legacy API (z.B. `show()`, `hide()`) via Fassaden.
 * **V2 API**: Optionale Einführung eines modernisierten API-Layers mit klaren Typen.
 
 ## 3. Management-KPIs
-| Kennzahl | Tooling | Status Quo (Phase 0) | Phase 1 | Ziel |
-| :--- | :--- | :--- | :--- | :--- |
-| **Sicherheitsrisiko** | OWASP Dependency-Check | Critical: 1, High: 1 (`dom4j:1.6.1`: CVE-2020-10683, CVE-2018-1000632) | Critical: 0, High: 0 (`mvn clean verify`, Report vom 10.02.2026) | 0 kritische Lücken (CVEs) |
-| **Code-Qualität** | SonarQube | n/a | n/a | Reduzierung der technischen Schuld (Debt) |
-| **Testabdeckung** | JaCoCo | Parser-Regressionstest für Reflection-Kernpfad aktiv (`Gui4jCallParserTest`) | `Gui4jCallParserTest` grün mit `dom4j:2.1.4` (4/4) | > 40% für Core-Komponenten |
-| **Build-Stabilität** | GitHub Actions / CI | `mvn clean verify` lokal erfolgreich (inkl. Tests + OWASP-Report) | `mvn clean verify` lokal erfolgreich (10.02.2026) | Automatisierter Build auf Java 17/21 |
+| Kennzahl | Tooling | Status Quo (Phase 0) | Phase 1 | Phase 2 | Ziel |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Sicherheitsrisiko** | OWASP Dependency-Check | Critical: 1, High: 1 (`dom4j:1.6.1`: CVE-2020-10683, CVE-2018-1000632) | Critical: 0, High: 0 (`mvn clean verify`, Report vom 10.02.2026) | weiterhin Critical: 0, High: 0 (keine Regression nach Refactoring) | 0 kritische Lücken (CVEs) |
+| **Code-Qualität** | SonarQube | n/a | n/a | Technische Schuld reduziert (Raw Types/Legacy-Reflection/Wrapper-Konstruktoren bereinigt, Typsicherheit erhöht) | Reduzierung der technischen Schuld (Debt) |
+| **Testabdeckung** | JaCoCo | Parser-Regressionstest für Reflection-Kernpfad aktiv (`Gui4jCallParserTest`) | `Gui4jCallParserTest` grün mit `dom4j:2.1.4` (4/4) | `Gui4jCallParserTest` weiterhin grün nach Threading-/Syntax-Refactoring | > 40% für Core-Komponenten |
+| **Build-Stabilität** | GitHub Actions / CI | `mvn clean verify` lokal erfolgreich (inkl. Tests + OWASP-Report) | `mvn clean verify` lokal erfolgreich (10.02.2026) | `mvn clean verify` lokal erfolgreich nach Phase-2-Refactorings | Automatisierter Build auf Java 17/21 |
 
 ## 4. Kritische Erfolgsfaktoren (Input benötigt)
 * Bereitstellung von Kunden-Konfigurationen (`gui4jComponent.properties`).

@@ -13,15 +13,16 @@ import org.gui4j.exception.ErrorTags;
 import org.gui4j.exception.Gui4jUncheckedException;
 
 public final class Gui4jStyleContainer implements Serializable, ErrorTags {
-  private final Map mStyleMap;
-  private final Map mStyleMapResourceName;
+  private static final long serialVersionUID = 1L;
+  private final Map<String, Map<String, Map<String, String>>> mStyleMap;
+  private final Map<String, String> mStyleMapResourceName;
   private final String mConfigurationName;
   private final String NOTHING = "Nothing";
   private final String DEFAULT = "Default";
 
   public Gui4jStyleContainer(String configurationName) {
-    mStyleMap = new HashMap();
-    mStyleMapResourceName = new HashMap();
+    mStyleMap = new HashMap<String, Map<String, Map<String, String>>>();
+    mStyleMapResourceName = new HashMap<String, String>();
     mConfigurationName = configurationName;
   }
 
@@ -31,30 +32,31 @@ public final class Gui4jStyleContainer implements Serializable, ErrorTags {
    * @param styleExtends name of style to be extended
    */
   public void createStyle(String resourceName, String styleName, String styleExtends) {
-    Map style = getStyle(styleName, false);
+    Map<String, Map<String, String>> style = getStyle(styleName, false);
     if (style != null && !resourceName.equals(mStyleMapResourceName.get(styleName))) {
       Object[] args = {styleName};
       throw new Gui4jUncheckedException.ResourceError(
           mConfigurationName, -1, RESOURCE_ERROR_style_defined_twice, args);
     }
 
-    style = new HashMap();
+    style = new HashMap<String, Map<String, String>>();
     mStyleMap.put(styleName, style);
     mStyleMapResourceName.put(styleName, resourceName);
 
     if (styleExtends != null) {
-      Map styleE = getStyle(styleExtends, true);
-      for (Iterator it = styleE.entrySet().iterator(); it.hasNext(); ) {
-        Map.Entry entry = (Map.Entry) it.next();
-        String elementName = (String) entry.getKey();
-        Map attributes = (Map) entry.getValue();
+      Map<String, Map<String, String>> styleE = getStyle(styleExtends, true);
+      for (Iterator<Map.Entry<String, Map<String, String>>> it = styleE.entrySet().iterator();
+          it.hasNext(); ) {
+        Map.Entry<String, Map<String, String>> entry = it.next();
+        String elementName = entry.getKey();
+        Map<String, String> attributes = entry.getValue();
         style.put(elementName, attributes);
       }
     }
   }
 
-  private Map getStyle(String styleName, boolean checkExistent) {
-    Map style = (Map) mStyleMap.get(styleName);
+  private Map<String, Map<String, String>> getStyle(String styleName, boolean checkExistent) {
+    Map<String, Map<String, String>> style = mStyleMap.get(styleName);
     if (checkExistent && style == null) {
       Object[] args = {styleName};
       throw new Gui4jUncheckedException.ResourceError(
@@ -63,26 +65,27 @@ public final class Gui4jStyleContainer implements Serializable, ErrorTags {
     return style;
   }
 
-  public void addAttributes(String elementName, String styleName, List attributes) {
-    Map style = getStyle(styleName, true);
-    Map attrs = (Map) style.get(elementName);
+  public void addAttributes(String elementName, String styleName, List<Attribute> attributes) {
+    Map<String, Map<String, String>> style = getStyle(styleName, true);
+    Map<String, String> attrs = style.get(elementName);
     if (attrs != null) {
-      Map oldAttrs = attrs;
-      attrs = new HashMap();
+      Map<String, String> oldAttrs = attrs;
+      attrs = new HashMap<String, String>();
       style.put(elementName, attrs);
-      for (Iterator it = oldAttrs.entrySet().iterator(); it.hasNext(); ) {
-        Map.Entry entry = (Map.Entry) it.next();
-        String name = (String) entry.getKey();
-        String value = (String) entry.getValue();
+      for (Iterator<Map.Entry<String, String>> it = oldAttrs.entrySet().iterator();
+          it.hasNext(); ) {
+        Map.Entry<String, String> entry = it.next();
+        String name = entry.getKey();
+        String value = entry.getValue();
         attrs.put(name, value);
       }
     } else {
-      attrs = new HashMap();
+      attrs = new HashMap<String, String>();
       style.put(elementName, attrs);
     }
 
-    for (Iterator it = attributes.iterator(); it.hasNext(); ) {
-      Attribute attr = (Attribute) it.next();
+    for (Iterator<Attribute> it = attributes.iterator(); it.hasNext(); ) {
+      Attribute attr = it.next();
       attrs.put(attr.getName(), attr.getValue());
     }
   }
@@ -94,12 +97,14 @@ public final class Gui4jStyleContainer implements Serializable, ErrorTags {
    * @param gui4jStyleContainer
    */
   public void extendBy(Gui4jStyleContainer gui4jStyleContainer) {
-    for (Iterator it = gui4jStyleContainer.mStyleMap.entrySet().iterator(); it.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) it.next();
-      String styleName = (String) entry.getKey();
-      Map style = (Map) entry.getValue();
+    for (Iterator<Map.Entry<String, Map<String, Map<String, String>>>> it =
+            gui4jStyleContainer.mStyleMap.entrySet().iterator();
+        it.hasNext(); ) {
+      Map.Entry<String, Map<String, Map<String, String>>> entry = it.next();
+      String styleName = entry.getKey();
+      Map<String, Map<String, String>> style = entry.getValue();
 
-      Map thisStyle = getStyle(styleName, false);
+      Map<String, Map<String, String>> thisStyle = getStyle(styleName, false);
 
       if (thisStyle != null
           && !mStyleMapResourceName
@@ -128,10 +133,10 @@ public final class Gui4jStyleContainer implements Serializable, ErrorTags {
       return;
     }
     String name = e.getName();
-    Map attrs = null;
+    Map<String, String> attrs = null;
     if (styleName != null) {
-      Map style = getStyle(styleName, true);
-      attrs = (Map) style.get(name);
+      Map<String, Map<String, String>> style = getStyle(styleName, true);
+      attrs = style.get(name);
       if (attrs == null) {
         // maybe we should not throw an exception
         // there is no problem if there are no attributes for this element
@@ -147,24 +152,24 @@ public final class Gui4jStyleContainer implements Serializable, ErrorTags {
         */
       }
     } else {
-      Map style = getStyle(DEFAULT, false);
+      Map<String, Map<String, String>> style = getStyle(DEFAULT, false);
       if (style != null) {
-        attrs = (Map) style.get(name);
+        attrs = style.get(name);
       }
     }
     if (attrs != null) {
-      Set names = new HashSet();
-      List attrList = e.attributes();
-      for (Iterator it = attrList.iterator(); it.hasNext(); ) {
-        Attribute attr = (Attribute) it.next();
+      Set<String> names = new HashSet<String>();
+      List<Attribute> attrList = e.attributes();
+      for (Iterator<Attribute> it = attrList.iterator(); it.hasNext(); ) {
+        Attribute attr = it.next();
         names.add(attr.getName());
       }
 
       boolean modified = false;
-      for (Iterator it = attrs.entrySet().iterator(); it.hasNext(); ) {
-        Map.Entry entry = (Map.Entry) it.next();
+      for (Iterator<Map.Entry<String, String>> it = attrs.entrySet().iterator(); it.hasNext(); ) {
+        Map.Entry<String, String> entry = it.next();
         if (!names.contains(entry.getKey())) {
-          e.addAttribute((String) entry.getKey(), (String) entry.getValue());
+          e.addAttribute(entry.getKey(), entry.getValue());
           /*
           attrList.add(
           	new Attribute(

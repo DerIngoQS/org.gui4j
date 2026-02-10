@@ -22,17 +22,18 @@ public class Gui4jFactory {
       throw new NullPointerException("URL must not be null");
     }
     try {
-      Class clazz = Class.forName("org.gui4j.core.impl.Gui4jImpl");
-      Constructor c =
-          clazz.getConstructor(new Class[] {Boolean.TYPE, Boolean.TYPE, Integer.TYPE, URL.class});
+      Class<?> clazz = Class.forName("org.gui4j.core.impl.Gui4jImpl");
+      Constructor<?> c =
+          clazz.getDeclaredConstructor(Boolean.TYPE, Boolean.TYPE, Integer.TYPE, URL.class);
+      // Gui4jImpl is package-private in org.gui4j.core.impl, so reflective access is required.
       c.setAccessible(true);
       Gui4j gui4j =
           (Gui4j)
               c.newInstance(
                   new Object[] {
-                    new Boolean(validateXML),
-                    new Boolean(logInvoke),
-                    new Integer(numberOfWorkerThreads),
+                    Boolean.valueOf(validateXML),
+                    Boolean.valueOf(logInvoke),
+                    Integer.valueOf(numberOfWorkerThreads),
                     url
                   });
       LogFactory.getLog(Gui4jFactory.class)

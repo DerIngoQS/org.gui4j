@@ -48,20 +48,20 @@ public final class Gui4jGridBagLayoutFactory extends Gui4jJComponentFactory {
   static {
     mAnchor = new HashMap();
     mFill = new HashMap();
-    mAnchor.put("center", new Integer(GridBagConstraints.CENTER));
-    mAnchor.put("east", new Integer(GridBagConstraints.EAST));
-    mAnchor.put("north", new Integer(GridBagConstraints.NORTH));
-    mAnchor.put("northEast", new Integer(GridBagConstraints.NORTHEAST));
-    mAnchor.put("northWest", new Integer(GridBagConstraints.NORTHWEST));
-    mAnchor.put("south", new Integer(GridBagConstraints.SOUTH));
-    mAnchor.put("southEast", new Integer(GridBagConstraints.SOUTHEAST));
-    mAnchor.put("southWest", new Integer(GridBagConstraints.SOUTHWEST));
-    mAnchor.put("west", new Integer(GridBagConstraints.WEST));
+    mAnchor.put("center", Integer.valueOf(GridBagConstraints.CENTER));
+    mAnchor.put("east", Integer.valueOf(GridBagConstraints.EAST));
+    mAnchor.put("north", Integer.valueOf(GridBagConstraints.NORTH));
+    mAnchor.put("northEast", Integer.valueOf(GridBagConstraints.NORTHEAST));
+    mAnchor.put("northWest", Integer.valueOf(GridBagConstraints.NORTHWEST));
+    mAnchor.put("south", Integer.valueOf(GridBagConstraints.SOUTH));
+    mAnchor.put("southEast", Integer.valueOf(GridBagConstraints.SOUTHEAST));
+    mAnchor.put("southWest", Integer.valueOf(GridBagConstraints.SOUTHWEST));
+    mAnchor.put("west", Integer.valueOf(GridBagConstraints.WEST));
 
-    mFill.put("none", new Integer(GridBagConstraints.NONE));
-    mFill.put("both", new Integer(GridBagConstraints.BOTH));
-    mFill.put("horizontal", new Integer(GridBagConstraints.HORIZONTAL));
-    mFill.put("vertical", new Integer(GridBagConstraints.VERTICAL));
+    mFill.put("none", Integer.valueOf(GridBagConstraints.NONE));
+    mFill.put("both", Integer.valueOf(GridBagConstraints.BOTH));
+    mFill.put("horizontal", Integer.valueOf(GridBagConstraints.HORIZONTAL));
+    mFill.put("vertical", Integer.valueOf(GridBagConstraints.VERTICAL));
   }
 
   /* (non-Javadoc)

@@ -11,7 +11,7 @@ final class Gui4jAccessConstant extends Gui4jAccessImpl {
     startIndex++; // accessPath.charAt(startIndex)='\''
     int endIndex = accessPath.indexOf('\'', startIndex);
     if (endIndex == -1) {
-      Object[] args = {accessPath, new Integer(startIndex)};
+      Object[] args = {accessPath, Integer.valueOf(startIndex)};
       throw new Gui4jUncheckedException.ResourceError(
           parseCtx.getConfigurationName(),
           parseCtx.getLineNumber(),

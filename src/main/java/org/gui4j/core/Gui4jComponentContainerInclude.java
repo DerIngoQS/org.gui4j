@@ -5,6 +5,7 @@ import java.util.Map;
 import org.gui4j.core.util.Extract;
 
 public final class Gui4jComponentContainerInclude implements Serializable {
+  private static final long serialVersionUID = 1L;
   private final Gui4jComponentContainer mGui4jComponentContainer;
   private final String mAliasName;
   private final Gui4jComponentContainer mGui4jComponentContainerParent;

@@ -10,7 +10,7 @@ final class Gui4jAccessBoolean extends Gui4jAccessImpl {
     int startIndex = parseCtx.i;
     startIndex++; // accessPath.charAt(startIndex)='~'
     if (startIndex >= accessPath.length()) {
-      Object[] args = {accessPath, new Integer(startIndex)};
+      Object[] args = {accessPath, Integer.valueOf(startIndex)};
       throw new Gui4jUncheckedException.ResourceError(
           parseCtx.getConfigurationName(),
           parseCtx.getLineNumber(),
@@ -29,7 +29,7 @@ final class Gui4jAccessBoolean extends Gui4jAccessImpl {
         break;
       default:
         {
-          Object[] args = {accessPath, new Integer(startIndex)};
+          Object[] args = {accessPath, Integer.valueOf(startIndex)};
           throw new Gui4jUncheckedException.ResourceError(
               parseCtx.getConfigurationName(),
               parseCtx.getLineNumber(),

@@ -45,9 +45,9 @@ public class Gui4jKeyMapFactory extends Gui4jComponentFactory {
 
   static {
     mFocusCondition = new HashMap();
-    mFocusCondition.put("focused", new Integer(COND_FOCUSED));
-    mFocusCondition.put("ancestor", new Integer(COND_ANCESTOR));
-    mFocusCondition.put("window", new Integer(COND_WINDOW));
+    mFocusCondition.put("focused", Integer.valueOf(COND_FOCUSED));
+    mFocusCondition.put("ancestor", Integer.valueOf(COND_ANCESTOR));
+    mFocusCondition.put("window", Integer.valueOf(COND_WINDOW));
   }
 
   /* (non-Javadoc)

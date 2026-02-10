@@ -105,6 +105,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
   }
 
   private static class Layout implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jQualifiedComponent mGui4jComponentInPath;
     private final int mGridX;
     private final int mGridY;
@@ -129,17 +130,17 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
         int top,
         int left,
         int bottom,
-<span class="nc" id="L132">        int right) {</span>
-<span class="nc" id="L133">      mGui4jComponentInPath = gui4jComponentInPath;</span>
-<span class="nc" id="L134">      mGridX = gridX;</span>
-<span class="nc" id="L135">      mGridY = gridY;</span>
-<span class="nc" id="L136">      mGridWidth = gridWidth;</span>
-<span class="nc" id="L137">      mGridHeight = gridHeight;</span>
-<span class="nc" id="L138">      mFill = GridBagConstraints.BOTH;</span>
-<span class="nc" id="L139">      mIPadX = ipadx;</span>
-<span class="nc" id="L140">      mIPadY = ipady;</span>
-<span class="nc" id="L141">      mInsets = new Insets(top, left, bottom, right);</span>
-<span class="nc" id="L142">    }</span>
+<span class="nc" id="L133">        int right) {</span>
+<span class="nc" id="L134">      mGui4jComponentInPath = gui4jComponentInPath;</span>
+<span class="nc" id="L135">      mGridX = gridX;</span>
+<span class="nc" id="L136">      mGridY = gridY;</span>
+<span class="nc" id="L137">      mGridWidth = gridWidth;</span>
+<span class="nc" id="L138">      mGridHeight = gridHeight;</span>
+<span class="nc" id="L139">      mFill = GridBagConstraints.BOTH;</span>
+<span class="nc" id="L140">      mIPadX = ipadx;</span>
+<span class="nc" id="L141">      mIPadY = ipady;</span>
+<span class="nc" id="L142">      mInsets = new Insets(top, left, bottom, right);</span>
+<span class="nc" id="L143">    }</span>
 
     /**
      * Returns the gridWidth.
@@ -147,11 +148,11 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public int getGridWidth() {
-<span class="nc" id="L150">      return mGridWidth;</span>
+<span class="nc" id="L151">      return mGridWidth;</span>
     }
 
     public Insets getInsets() {
-<span class="nc" id="L154">      return mInsets;</span>
+<span class="nc" id="L155">      return mInsets;</span>
     }
 
     /**
@@ -160,7 +161,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public int getGridHeight() {
-<span class="nc" id="L163">      return mGridHeight;</span>
+<span class="nc" id="L164">      return mGridHeight;</span>
     }
 
     /**
@@ -169,7 +170,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public int getGridX() {
-<span class="nc" id="L172">      return mGridX;</span>
+<span class="nc" id="L173">      return mGridX;</span>
     }
 
     /**
@@ -178,7 +179,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public int getGridY() {
-<span class="nc" id="L181">      return mGridY;</span>
+<span class="nc" id="L182">      return mGridY;</span>
     }
 
     /**
@@ -187,7 +188,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public int getIPadX() {
-<span class="nc" id="L190">      return mIPadX;</span>
+<span class="nc" id="L191">      return mIPadX;</span>
     }
 
     /**
@@ -196,7 +197,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public int getIPadY() {
-<span class="nc" id="L199">      return mIPadY;</span>
+<span class="nc" id="L200">      return mIPadY;</span>
     }
 
     /**
@@ -205,7 +206,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return Gui4jComponent
      */
     public Gui4jQualifiedComponent getGui4jComponentInPath() {
-<span class="nc" id="L208">      return mGui4jComponentInPath;</span>
+<span class="nc" id="L209">      return mGui4jComponentInPath;</span>
     }
 
     /**
@@ -214,7 +215,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public int getFill() {
-<span class="nc" id="L217">      return mFill;</span>
+<span class="nc" id="L218">      return mFill;</span>
     }
 
     /**
@@ -223,8 +224,8 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @param fill The fill to set
      */
     public void setFill(int fill) {
-<span class="nc" id="L226">      mFill = fill;</span>
-<span class="nc" id="L227">    }</span>
+<span class="nc" id="L227">      mFill = fill;</span>
+<span class="nc" id="L228">    }</span>
 
     /**
      * Returns the weightX.
@@ -232,7 +233,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public double getWeightX() {
-<span class="nc" id="L235">      return mWeightX;</span>
+<span class="nc" id="L236">      return mWeightX;</span>
     }
 
     /**
@@ -241,7 +242,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public double getWeightY() {
-<span class="nc" id="L244">      return mWeightY;</span>
+<span class="nc" id="L245">      return mWeightY;</span>
     }
 
     /**
@@ -250,7 +251,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @return int
      */
     public int getAnchor() {
-<span class="nc" id="L253">      return mAnchor;</span>
+<span class="nc" id="L254">      return mAnchor;</span>
     }
 
     /**
@@ -259,8 +260,8 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @param weightX The weightX to set
      */
     public void setWeightX(double weightX) {
-<span class="nc" id="L262">      mWeightX = weightX;</span>
-<span class="nc" id="L263">    }</span>
+<span class="nc" id="L263">      mWeightX = weightX;</span>
+<span class="nc" id="L264">    }</span>
 
     /**
      * Sets the weightY.
@@ -268,8 +269,8 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @param weightY The weightY to set
      */
     public void setWeightY(double weightY) {
-<span class="nc" id="L271">      mWeightY = weightY;</span>
-<span class="nc" id="L272">    }</span>
+<span class="nc" id="L272">      mWeightY = weightY;</span>
+<span class="nc" id="L273">    }</span>
 
     /**
      * Sets the anchor.
@@ -277,8 +278,8 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
      * @param anchor The anchor to set
      */
     public void setAnchor(int anchor) {
-<span class="nc" id="L280">      mAnchor = anchor;</span>
-<span class="nc" id="L281">    }</span>
+<span class="nc" id="L281">      mAnchor = anchor;</span>
+<span class="nc" id="L282">    }</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

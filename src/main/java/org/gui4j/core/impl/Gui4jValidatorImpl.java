@@ -31,7 +31,7 @@ final class Gui4jValidatorImpl implements Gui4jValidator {
    * @param resourceName the name of the resource containing the Gui4j definitions
    * @return true if everything is ok
    */
-  public boolean validateResourceFile(Class controllerClass, String resourceName) {
+  public boolean validateResourceFile(Class<?> controllerClass, String resourceName) {
     String fullyQualifiedName =
         Gui4jComponentContainerManager.getResourceNameFullyQuantified(
             Gui4jComponentContainerManager.getBaseName(controllerClass), resourceName);
@@ -45,7 +45,7 @@ final class Gui4jValidatorImpl implements Gui4jValidator {
         gui4jComponentContainer.getToplevelAttrValue(
             Gui4jComponentManager.FIELD_Gui4jViewTopComponent);
     top = top == null ? "TOP" : top;
-    List errorList = new ArrayList();
+    List<Throwable> errorList = new ArrayList<Throwable>();
     if (!gui4jComponentContainer.isDefined(top)) {
       Object[] args = new Object[] {top};
       errorList.add(
@@ -83,7 +83,7 @@ final class Gui4jValidatorImpl implements Gui4jValidator {
       }
     }
 
-    for (Iterator it = gui4jComponentContainer.getMappedIds().iterator(); it.hasNext(); ) {
+    for (Iterator<?> it = gui4jComponentContainer.getMappedIds().iterator(); it.hasNext(); ) {
       String id = (String) it.next();
       try {
         gui4jComponentContainer.getGui4jQualifiedComponent(id);
@@ -109,7 +109,8 @@ final class Gui4jValidatorImpl implements Gui4jValidator {
    * @param ids
    * @return -1 if all ids are defined, otherwise the position in the given list of ids.
    */
-  public int validateExistenceOfGuiIDs(Class controllerClass, String resourceName, List ids) {
+  public int validateExistenceOfGuiIDs(
+      Class<?> controllerClass, String resourceName, List<String> ids) {
     String fullyQuantifiedName =
         Gui4jComponentContainerManager.getResourceNameFullyQuantified(
             Gui4jComponentContainerManager.getBaseName(controllerClass), resourceName);
@@ -125,8 +126,8 @@ final class Gui4jValidatorImpl implements Gui4jValidator {
         gui4jComponentContainer.getGui4jQualifiedComponent("MENU");
       }
     }
-    for (Iterator it = ids.iterator(); it.hasNext(); pos++) {
-      String id = (String) it.next();
+    for (Iterator<String> it = ids.iterator(); it.hasNext(); pos++) {
+      String id = it.next();
       if (!gui4jComponentContainer.isDefined(id)) {
         return pos;
       }

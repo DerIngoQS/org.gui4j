@@ -8,6 +8,7 @@ import org.gui4j.util.Translator;
 
 /** Default Implementierung für das Nameable Interface. */
 <span class="nc" id="L10">public class DefaultNameable implements Nameable, Serializable {</span>
+  private static final long serialVersionUID = 1L;
   protected final String nameTag;
   private final String shortTag;
 
@@ -18,14 +19,14 @@ import org.gui4j.util.Translator;
    * @return Comparator
    */
   public static Comparator getTextComparator(final Translator translator) {
-<span class="nc" id="L21">    return new Comparator() {</span>
+<span class="nc" id="L22">    return new Comparator() {</span>
       public int compare(Object o1, Object o2) {
-<span class="nc bnc" id="L23" title="All 4 branches missed.">        assert o1 != null &amp;&amp; o2 != null;</span>
-<span class="nc" id="L24">        Nameable n1 = (Nameable) o1;</span>
-<span class="nc" id="L25">        Nameable n2 = (Nameable) o2;</span>
-<span class="nc" id="L26">        return translator</span>
-<span class="nc" id="L27">            .translate(n1.getNameTag(), null)</span>
-<span class="nc" id="L28">            .compareTo(translator.translate(n2.getNameTag(), null));</span>
+<span class="nc bnc" id="L24" title="All 4 branches missed.">        assert o1 != null &amp;&amp; o2 != null;</span>
+<span class="nc" id="L25">        Nameable n1 = (Nameable) o1;</span>
+<span class="nc" id="L26">        Nameable n2 = (Nameable) o2;</span>
+<span class="nc" id="L27">        return translator</span>
+<span class="nc" id="L28">            .translate(n1.getNameTag(), null)</span>
+<span class="nc" id="L29">            .compareTo(translator.translate(n2.getNameTag(), null));</span>
       }
     };
   }
@@ -35,29 +36,29 @@ import org.gui4j.util.Translator;
    *
    * @param shortTag
    */
-<span class="nc" id="L38">  public DefaultNameable(String shortTag) {</span>
-<span class="nc bnc" id="L39" title="All 2 branches missed.">    assert shortTag != null;</span>
-<span class="nc" id="L40">    Class c = getTagClass();</span>
-<span class="nc" id="L41">    nameTag = createTag(shortTag, c);</span>
-<span class="nc" id="L42">    this.shortTag = shortTag;</span>
-<span class="nc" id="L43">  }</span>
+<span class="nc" id="L39">  public DefaultNameable(String shortTag) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    assert shortTag != null;</span>
+<span class="nc" id="L41">    Class c = getTagClass();</span>
+<span class="nc" id="L42">    nameTag = createTag(shortTag, c);</span>
+<span class="nc" id="L43">    this.shortTag = shortTag;</span>
+<span class="nc" id="L44">  }</span>
 
   protected Class getTagClass() {
-<span class="nc" id="L46">    return getClass();</span>
+<span class="nc" id="L47">    return getClass();</span>
   }
 
   /*
    * @see de.bea.util.Nameable#getNameTag()
    */
   public String getNameTag() {
-<span class="nc" id="L53">    return nameTag;</span>
+<span class="nc" id="L54">    return nameTag;</span>
   }
 
   /*
    * @see de.bea.util.Nameable#getShortTag()
    */
   public String getShortTag() {
-<span class="nc" id="L60">    return shortTag;</span>
+<span class="nc" id="L61">    return shortTag;</span>
   }
 
   /**
@@ -68,7 +69,7 @@ import org.gui4j.util.Translator;
    * @return String
    */
   public static String createTag(String tag, Class clazz) {
-<span class="nc" id="L71">    return clazz.getName() + &quot;_&quot; + tag;</span>
+<span class="nc" id="L72">    return clazz.getName() + &quot;_&quot; + tag;</span>
   }
 
   /**
@@ -79,32 +80,32 @@ import org.gui4j.util.Translator;
    * @return String
    */
   public static String createShortTag(String tag, Class clazz) {
-<span class="nc" id="L82">    return Extract.getClassname(clazz) + &quot;_&quot; + tag;</span>
+<span class="nc" id="L83">    return Extract.getClassname(clazz) + &quot;_&quot; + tag;</span>
   }
 
   /*
    * @see java.lang.Object#toString()
    */
   public String toString() {
-<span class="nc" id="L89">    return Extract.getClassname(getClass()) + &quot;[&quot; + shortTag + &quot;]&quot;;</span>
+<span class="nc" id="L90">    return Extract.getClassname(getClass()) + &quot;[&quot; + shortTag + &quot;]&quot;;</span>
   }
 
   /*
    * @see java.lang.Object#hashCode()
    */
   public int hashCode() {
-<span class="nc" id="L96">    return getNameTag().hashCode();</span>
+<span class="nc" id="L97">    return getNameTag().hashCode();</span>
   }
 
   /*
    * @see java.lang.Object#equals(java.lang.Object)
    */
   public boolean equals(Object o) {
-<span class="nc bnc" id="L103" title="All 4 branches missed.">    if (o == null || !(o instanceof Nameable)) {</span>
-<span class="nc" id="L104">      return false;</span>
+<span class="nc bnc" id="L104" title="All 4 branches missed.">    if (o == null || !(o instanceof Nameable)) {</span>
+<span class="nc" id="L105">      return false;</span>
     } else {
-<span class="nc" id="L106">      Nameable arg = (Nameable) o;</span>
-<span class="nc" id="L107">      return getNameTag().equals(arg.getNameTag());</span>
+<span class="nc" id="L107">      Nameable arg = (Nameable) o;</span>
+<span class="nc" id="L108">      return getNameTag().equals(arg.getNameTag());</span>
     }
   }
 }

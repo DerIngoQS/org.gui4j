@@ -5,6 +5,7 @@ import java.util.Map;
 import org.gui4j.exception.ErrorTags;
 
 abstract class Gui4jAccessImpl implements Serializable, ErrorTags {
+  private static final long serialVersionUID = 1L;
   /**
    * Returns <code>true</code> if the value returned by <code>getValue(Object)</code> never changes
    *

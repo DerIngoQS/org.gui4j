@@ -22,25 +22,26 @@ public class Gui4jFactory {
 <span class="nc" id="L22">      throw new NullPointerException(&quot;URL must not be null&quot;);</span>
     }
     try {
-<span class="nc" id="L25">      Class clazz = Class.forName(&quot;org.gui4j.core.impl.Gui4jImpl&quot;);</span>
-<span class="nc" id="L26">      Constructor c =</span>
-<span class="nc" id="L27">          clazz.getConstructor(new Class[] {Boolean.TYPE, Boolean.TYPE, Integer.TYPE, URL.class});</span>
-<span class="nc" id="L28">      c.setAccessible(true);</span>
-<span class="nc" id="L29">      Gui4j gui4j =</span>
+<span class="nc" id="L25">      Class&lt;?&gt; clazz = Class.forName(&quot;org.gui4j.core.impl.Gui4jImpl&quot;);</span>
+<span class="nc" id="L26">      Constructor&lt;?&gt; c =</span>
+<span class="nc" id="L27">          clazz.getDeclaredConstructor(Boolean.TYPE, Boolean.TYPE, Integer.TYPE, URL.class);</span>
+      // Gui4jImpl is package-private in org.gui4j.core.impl, so reflective access is required.
+<span class="nc" id="L29">      c.setAccessible(true);</span>
+<span class="nc" id="L30">      Gui4j gui4j =</span>
           (Gui4j)
-<span class="nc" id="L31">              c.newInstance(</span>
+<span class="nc" id="L32">              c.newInstance(</span>
                   new Object[] {
-                    new Boolean(validateXML),
-                    new Boolean(logInvoke),
-                    new Integer(numberOfWorkerThreads),
+<span class="nc" id="L34">                    Boolean.valueOf(validateXML),</span>
+<span class="nc" id="L35">                    Boolean.valueOf(logInvoke),</span>
+<span class="nc" id="L36">                    Integer.valueOf(numberOfWorkerThreads),</span>
                     url
                   });
-<span class="nc" id="L38">      LogFactory.getLog(Gui4jFactory.class)</span>
-<span class="nc" id="L39">          .info(&quot;Gui4j initialized (version &quot; + Const.GUI4J_VERSION + &quot;)&quot;);</span>
-<span class="nc" id="L40">      return gui4j;</span>
-<span class="nc" id="L41">    } catch (Exception e) {</span>
-<span class="nc" id="L42">      LogFactory.getLog(Gui4jFactory.class).fatal(e, e);</span>
-<span class="nc" id="L43">      throw new RuntimeException(e);</span>
+<span class="nc" id="L39">      LogFactory.getLog(Gui4jFactory.class)</span>
+<span class="nc" id="L40">          .info(&quot;Gui4j initialized (version &quot; + Const.GUI4J_VERSION + &quot;)&quot;);</span>
+<span class="nc" id="L41">      return gui4j;</span>
+<span class="nc" id="L42">    } catch (Exception e) {</span>
+<span class="nc" id="L43">      LogFactory.getLog(Gui4jFactory.class).fatal(e, e);</span>
+<span class="nc" id="L44">      throw new RuntimeException(e);</span>
     }
   }
 

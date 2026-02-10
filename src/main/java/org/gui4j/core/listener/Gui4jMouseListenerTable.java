@@ -83,9 +83,9 @@ public final class Gui4jMouseListenerTable
     }
     Gui4jCall call = getAction(value == null ? mDefaultType : value.getClass());
     if (call != null) {
-      paramMap.put(Const.PARAM_ROW_INDEX, new Integer(rowIndex));
+      paramMap.put(Const.PARAM_ROW_INDEX, Integer.valueOf(rowIndex));
       paramMap.put(Const.PARAM_ROW_INDICES, rows);
-      paramMap.put(Const.PARAM_COL_INDEX, new Integer(colIndex));
+      paramMap.put(Const.PARAM_COL_INDEX, Integer.valueOf(colIndex));
       paramMap.put(Const.PARAM_COL_INDICES, columns);
       paramMap.put(Const.PARAM_ITEM, value);
     }

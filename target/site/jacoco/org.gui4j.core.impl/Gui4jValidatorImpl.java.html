@@ -31,7 +31,7 @@ final class Gui4jValidatorImpl implements Gui4jValidator {
    * @param resourceName the name of the resource containing the Gui4j definitions
    * @return true if everything is ok
    */
-  public boolean validateResourceFile(Class controllerClass, String resourceName) {
+  public boolean validateResourceFile(Class&lt;?&gt; controllerClass, String resourceName) {
 <span class="nc" id="L35">    String fullyQualifiedName =</span>
 <span class="nc" id="L36">        Gui4jComponentContainerManager.getResourceNameFullyQuantified(</span>
 <span class="nc" id="L37">            Gui4jComponentContainerManager.getBaseName(controllerClass), resourceName);</span>
@@ -45,7 +45,7 @@ final class Gui4jValidatorImpl implements Gui4jValidator {
 <span class="nc" id="L45">        gui4jComponentContainer.getToplevelAttrValue(</span>
             Gui4jComponentManager.FIELD_Gui4jViewTopComponent);
 <span class="nc bnc" id="L47" title="All 2 branches missed.">    top = top == null ? &quot;TOP&quot; : top;</span>
-<span class="nc" id="L48">    List errorList = new ArrayList();</span>
+<span class="nc" id="L48">    List&lt;Throwable&gt; errorList = new ArrayList&lt;Throwable&gt;();</span>
 <span class="nc bnc" id="L49" title="All 2 branches missed.">    if (!gui4jComponentContainer.isDefined(top)) {</span>
 <span class="nc" id="L50">      Object[] args = new Object[] {top};</span>
 <span class="nc" id="L51">      errorList.add(</span>
@@ -83,7 +83,7 @@ final class Gui4jValidatorImpl implements Gui4jValidator {
 <span class="nc" id="L83">      }</span>
     }
 
-<span class="nc bnc" id="L86" title="All 2 branches missed.">    for (Iterator it = gui4jComponentContainer.getMappedIds().iterator(); it.hasNext(); ) {</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">    for (Iterator&lt;?&gt; it = gui4jComponentContainer.getMappedIds().iterator(); it.hasNext(); ) {</span>
 <span class="nc" id="L87">      String id = (String) it.next();</span>
       try {
 <span class="nc" id="L89">        gui4jComponentContainer.getGui4jQualifiedComponent(id);</span>
@@ -109,29 +109,30 @@ final class Gui4jValidatorImpl implements Gui4jValidator {
    * @param ids
    * @return -1 if all ids are defined, otherwise the position in the given list of ids.
    */
-  public int validateExistenceOfGuiIDs(Class controllerClass, String resourceName, List ids) {
-<span class="nc" id="L113">    String fullyQuantifiedName =</span>
-<span class="nc" id="L114">        Gui4jComponentContainerManager.getResourceNameFullyQuantified(</span>
-<span class="nc" id="L115">            Gui4jComponentContainerManager.getBaseName(controllerClass), resourceName);</span>
-<span class="nc" id="L116">    Gui4jComponentContainer gui4jComponentContainer =</span>
+  public int validateExistenceOfGuiIDs(
+      Class&lt;?&gt; controllerClass, String resourceName, List&lt;String&gt; ids) {
+<span class="nc" id="L114">    String fullyQuantifiedName =</span>
+<span class="nc" id="L115">        Gui4jComponentContainerManager.getResourceNameFullyQuantified(</span>
+<span class="nc" id="L116">            Gui4jComponentContainerManager.getBaseName(controllerClass), resourceName);</span>
+<span class="nc" id="L117">    Gui4jComponentContainer gui4jComponentContainer =</span>
         mGui4j
-<span class="nc" id="L118">            .getGui4jComponentContainerManager()</span>
-<span class="nc" id="L119">            .getGui4jComponentContainer(controllerClass, fullyQuantifiedName);</span>
-<span class="nc" id="L120">    int pos = 0;</span>
-<span class="nc" id="L121">    boolean ok = gui4jComponentContainer.isDefined(&quot;TOP&quot;);</span>
-<span class="nc bnc" id="L122" title="All 2 branches missed.">    if (ok) {</span>
-<span class="nc" id="L123">      gui4jComponentContainer.getGui4jQualifiedComponent(&quot;TOP&quot;);</span>
-<span class="nc bnc" id="L124" title="All 2 branches missed.">      if (gui4jComponentContainer.isDefined(&quot;MENU&quot;)) {</span>
-<span class="nc" id="L125">        gui4jComponentContainer.getGui4jQualifiedComponent(&quot;MENU&quot;);</span>
+<span class="nc" id="L119">            .getGui4jComponentContainerManager()</span>
+<span class="nc" id="L120">            .getGui4jComponentContainer(controllerClass, fullyQuantifiedName);</span>
+<span class="nc" id="L121">    int pos = 0;</span>
+<span class="nc" id="L122">    boolean ok = gui4jComponentContainer.isDefined(&quot;TOP&quot;);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">    if (ok) {</span>
+<span class="nc" id="L124">      gui4jComponentContainer.getGui4jQualifiedComponent(&quot;TOP&quot;);</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">      if (gui4jComponentContainer.isDefined(&quot;MENU&quot;)) {</span>
+<span class="nc" id="L126">        gui4jComponentContainer.getGui4jQualifiedComponent(&quot;MENU&quot;);</span>
       }
     }
-<span class="nc bnc" id="L128" title="All 2 branches missed.">    for (Iterator it = ids.iterator(); it.hasNext(); pos++) {</span>
-<span class="nc" id="L129">      String id = (String) it.next();</span>
-<span class="nc bnc" id="L130" title="All 2 branches missed.">      if (!gui4jComponentContainer.isDefined(id)) {</span>
-<span class="nc" id="L131">        return pos;</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">    for (Iterator&lt;String&gt; it = ids.iterator(); it.hasNext(); pos++) {</span>
+<span class="nc" id="L130">      String id = it.next();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">      if (!gui4jComponentContainer.isDefined(id)) {</span>
+<span class="nc" id="L132">        return pos;</span>
       }
     }
-<span class="nc" id="L134">    return -1;</span>
+<span class="nc" id="L135">    return -1;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

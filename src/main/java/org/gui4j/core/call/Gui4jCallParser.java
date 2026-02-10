@@ -14,6 +14,7 @@ import org.gui4j.exception.ErrorTags;
 import org.gui4j.exception.Gui4jUncheckedException;
 
 public final class Gui4jCallParser implements Gui4jCallFactory, ErrorTags, Serializable {
+  private static final long serialVersionUID = 1L;
 
   /** Constructor for Gui4jCallParser. */
   public Gui4jCallParser() {
@@ -69,7 +70,7 @@ public final class Gui4jCallParser implements Gui4jCallFactory, ErrorTags, Seria
 
     Gui4jAccessImpl result = parseSeqSequence(parseCtx, accessPath);
     if (parseCtx.i < accessPath.length()) {
-      Object[] args = {accessPath, new Integer(parseCtx.i)};
+      Object[] args = {accessPath, Integer.valueOf(parseCtx.i)};
       throw new Gui4jUncheckedException.ResourceError(
           parseCtx.getConfigurationName(),
           parseCtx.getLineNumber(),
@@ -86,7 +87,7 @@ public final class Gui4jCallParser implements Gui4jCallFactory, ErrorTags, Seria
     int pos = parseCtx.i;
     int len = accessPath.length();
     if (pos >= len) {
-      Object[] args = {accessPath, new Integer(pos)};
+      Object[] args = {accessPath, Integer.valueOf(pos)};
       throw new Gui4jUncheckedException.ResourceError(
           parseCtx.getConfigurationName(),
           parseCtx.getLineNumber(),
@@ -104,7 +105,7 @@ public final class Gui4jCallParser implements Gui4jCallFactory, ErrorTags, Seria
       case '.':
       case ';':
         {
-          Object[] args = {accessPath, new Integer(pos)};
+          Object[] args = {accessPath, Integer.valueOf(pos)};
           throw new Gui4jUncheckedException.ResourceError(
               parseCtx.getConfigurationName(),
               parseCtx.getLineNumber(),
@@ -115,7 +116,7 @@ public final class Gui4jCallParser implements Gui4jCallFactory, ErrorTags, Seria
         parseCtx.i = parseCtx.i + 1;
         Gui4jAccessImpl gui4jAccess = getInstance(parseCtx, thisAccess, accessPath);
         if (len >= parseCtx.i || accessPath.charAt(parseCtx.i) != ')') {
-          Object[] args = {accessPath, new Integer(pos)};
+          Object[] args = {accessPath, Integer.valueOf(pos)};
           throw new Gui4jUncheckedException.ResourceError(
               parseCtx.getConfigurationName(),
               parseCtx.getLineNumber(),
@@ -230,7 +231,7 @@ public final class Gui4jCallParser implements Gui4jCallFactory, ErrorTags, Seria
             parseCtx.i++;
             break;
           default:
-            Object[] args = {accessPath, new Integer(parseCtx.i)};
+            Object[] args = {accessPath, Integer.valueOf(parseCtx.i)};
             throw new Gui4jUncheckedException.ResourceError(
                 parseCtx.getConfigurationName(),
                 parseCtx.getLineNumber(),
@@ -238,7 +239,7 @@ public final class Gui4jCallParser implements Gui4jCallFactory, ErrorTags, Seria
                 args);
         }
       } else {
-        Object[] args = {accessPath, new Integer(parseCtx.i)};
+        Object[] args = {accessPath, Integer.valueOf(parseCtx.i)};
         throw new Gui4jUncheckedException.ResourceError(
             parseCtx.getConfigurationName(),
             parseCtx.getLineNumber(),

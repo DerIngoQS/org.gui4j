@@ -53,7 +53,7 @@ public final class Gui4jMouseListenerList extends Gui4jMouseListener
       items[i] = mModel.getInternalElementAt(rows[i]);
     }
     Map paramMap = new HashMap();
-    paramMap.put(Const.PARAM_INDEX, new Integer(index));
+    paramMap.put(Const.PARAM_INDEX, Integer.valueOf(index));
     paramMap.put(Const.PARAM_INDICES, rows);
     paramMap.put(Const.PARAM_ITEM, value);
     paramMap.put(Const.PARAM_ITEMS, items);

@@ -33,6 +33,7 @@ import org.gui4j.util.Filter;
  * one instance of a defined factory class.
  */
 public abstract class Gui4jComponentFactory implements ErrorTags, Serializable {
+  private static final long serialVersionUID = 1L;
   private static final Log mLog = LogFactory.getLog(Gui4jComponentFactory.class);
 
   public static final String FIELD_Id = "guiId";

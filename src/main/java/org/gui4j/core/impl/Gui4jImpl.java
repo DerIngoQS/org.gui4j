@@ -44,6 +44,7 @@ import org.gui4j.exception.Gui4jExceptionHandler;
  * independant; and each instance maintains its own cache for reflection calls and worker threads.
  */
 final class Gui4jImpl implements Serializable, Gui4jInternal {
+  private static final long serialVersionUID = 1L;
   private Log mLogger = LogFactory.getLog(getClass());
   private final Gui4jComponentManager mGui4jComponentManager;
   private final Gui4jComponentContainerManager mGui4jComponentContainerManager;
@@ -56,7 +57,7 @@ final class Gui4jImpl implements Serializable, Gui4jInternal {
   private Gui4jErrorHandler mErrorHandler;
   private Gui4jResourceProvider mResourceProvider;
 
-  private Set windowCollector = new HashSet();
+  private final Set<Gui4jWindow> windowCollector = new HashSet<Gui4jWindow>();
 
   public Gui4jImpl(
       boolean validateXML, boolean logInvoke, int numberOfWorkerThreads, URL configURL) {
@@ -332,7 +333,7 @@ final class Gui4jImpl implements Serializable, Gui4jInternal {
    *
    * @return Set
    */
-  public Set getViewCollector() {
+  public Set<Gui4jWindow> getViewCollector() {
     return windowCollector;
   }
 

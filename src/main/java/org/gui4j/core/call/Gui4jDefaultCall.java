@@ -13,6 +13,7 @@ import org.gui4j.core.Gui4jMap1;
 import org.gui4j.exception.ErrorTags;
 
 final class Gui4jDefaultCall implements ErrorTags, Serializable, Gui4jCall {
+  private static final long serialVersionUID = 1L;
   private final Gui4jComponent mGui4jComponent;
   private final Gui4jAccessImpl mGui4jAccessImpl;
   private final List mDependantProperties;

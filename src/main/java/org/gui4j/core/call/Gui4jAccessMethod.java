@@ -46,7 +46,7 @@ final class Gui4jAccessMethod extends Gui4jAccessImpl {
       while (true) {
         Gui4jCallParser.skipSpaces(parseCtx, len);
         if (parseCtx.i >= len) {
-          Object[] args = {accessPath, new Integer(parseCtx.i)};
+          Object[] args = {accessPath, Integer.valueOf(parseCtx.i)};
           throw new Gui4jUncheckedException.ResourceError(
               parseCtx.getConfigurationName(),
               parseCtx.getLineNumber(),

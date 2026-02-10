@@ -686,6 +686,7 @@ public final class Gui4jTable extends Gui4jJComponent {
   // **************************************************************************
 
   public class Gui4jColumnTable implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jCall mColumnName;
     private Gui4jCall mColumnValue;
     private final Gui4jCall mColumnSetValue;
@@ -754,14 +755,14 @@ public final class Gui4jTable extends Gui4jJComponent {
 
     public int getCharacters(Gui4jCallBase gui4jCallBase) {
       assert mCharacters != null;
-      Integer i = (Integer) mCharacters.getValueNoParams(gui4jCallBase, new Integer(5));
+      Integer i = (Integer) mCharacters.getValueNoParams(gui4jCallBase, Integer.valueOf(5));
       assert i != null;
       return i.intValue();
     }
 
     public int getMaxCharacters(Gui4jCallBase gui4jCallBase) {
       assert mMaxCharacters != null;
-      Integer i = (Integer) mMaxCharacters.getValueNoParams(gui4jCallBase, new Integer(5));
+      Integer i = (Integer) mMaxCharacters.getValueNoParams(gui4jCallBase, Integer.valueOf(5));
       return i.intValue();
     }
 
@@ -770,7 +771,7 @@ public final class Gui4jTable extends Gui4jJComponent {
         Map paramMap = new HashMap();
         assert rowInstance != null;
         paramMap.put(Const.PARAM_ITEM, rowInstance);
-        paramMap.put(Const.PARAM_ROW_INDEX, new Integer(row));
+        paramMap.put(Const.PARAM_ROW_INDEX, Integer.valueOf(row));
         if (mList != null) {
           Collection collection = (Collection) mList.getValue(gui4jCallBase, paramMap, null);
           assert collection != null;
@@ -797,7 +798,7 @@ public final class Gui4jTable extends Gui4jJComponent {
         Map paramMap = new HashMap();
         assert rowInstance != null;
         paramMap.put(Const.PARAM_ITEM, rowInstance);
-        paramMap.put(Const.PARAM_ROW_INDEX, new Integer(row));
+        paramMap.put(Const.PARAM_ROW_INDEX, Integer.valueOf(row));
         if (mList != null) {
           Collection collection = (Collection) mList.getValue(gui4jCallBase, paramMap, null);
           assert collection != null;
@@ -832,7 +833,7 @@ public final class Gui4jTable extends Gui4jJComponent {
         }
 
         Map paramMap = new HashMap();
-        paramMap.put(Const.PARAM_ROW_INDEX, new Integer(row));
+        paramMap.put(Const.PARAM_ROW_INDEX, Integer.valueOf(row));
         paramMap.put(Const.PARAM_ITEM, rowInstance);
         paramMap.put(Const.PARAM_VALUE, value);
 
@@ -939,7 +940,7 @@ public final class Gui4jTable extends Gui4jJComponent {
         ComboBoxCellEdit edit = (ComboBoxCellEdit) editor;
         Map m = new HashMap();
         m.put(Const.PARAM_ITEM, rowElement);
-        m.put(Const.PARAM_ROW_INDEX, new Integer(row));
+        m.put(Const.PARAM_ROW_INDEX, Integer.valueOf(row));
         Collection list = (Collection) mList.getValue(gui4jController, m, null);
         String nullItemText = null;
         if (mListNullItem != null) {
@@ -962,6 +963,7 @@ public final class Gui4jTable extends Gui4jJComponent {
   // *******************************************************************************
 
   private final class ColumnManager implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final HashMap mTypeMap; // Class -> List(Gui4jColumnTable)
     private final List mMainColumns;
     // private final Class mDefaultType;
@@ -1410,7 +1412,7 @@ public final class Gui4jTable extends Gui4jJComponent {
             }
             if (selectedRow != -1 && selectedCol != -1 && !mRowSelectionAllowed) {
               setCellSelectionPair(
-                  table, new Pair(new Integer(selectedRow), new Integer(selectedCol)));
+                  table, new Pair(Integer.valueOf(selectedRow), Integer.valueOf(selectedCol)));
             }
           }
         }
@@ -1591,6 +1593,7 @@ public final class Gui4jTable extends Gui4jJComponent {
   // *************************************************************************************
 
   public class Gui4jColumnHeaderTable implements Serializable {
+    private static final long serialVersionUID = 1L;
     private Gui4jCall mName;
     private List mColumns;
 
@@ -1617,6 +1620,7 @@ public final class Gui4jTable extends Gui4jJComponent {
   // ROW
   // *************************************************************************************
   public final class Gui4jRow implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jCall mRowName;
     private final Gui4jTextAttribute mGui4jTextAttribute;
 

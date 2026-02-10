@@ -36,13 +36,13 @@ public final class Gui4jScrollPaneFactory extends Gui4jJComponentFactory {
   private static final Map mVScrollPolicy = new HashMap();
 
   static {
-    mHScrollPolicy.put(ALWAYS, new Integer(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS));
-    mHScrollPolicy.put(NEVER, new Integer(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
-    mHScrollPolicy.put(AUTO, new Integer(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED));
+    mHScrollPolicy.put(ALWAYS, Integer.valueOf(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS));
+    mHScrollPolicy.put(NEVER, Integer.valueOf(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
+    mHScrollPolicy.put(AUTO, Integer.valueOf(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 
-    mVScrollPolicy.put(ALWAYS, new Integer(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS));
-    mVScrollPolicy.put(NEVER, new Integer(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER));
-    mVScrollPolicy.put(AUTO, new Integer(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED));
+    mVScrollPolicy.put(ALWAYS, Integer.valueOf(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS));
+    mVScrollPolicy.put(NEVER, Integer.valueOf(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER));
+    mVScrollPolicy.put(AUTO, Integer.valueOf(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED));
   }
 
   /* (non-Javadoc)

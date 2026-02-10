@@ -22,12 +22,12 @@ public class Gui4jTreePopupMenuItemFactory extends Gui4jPopupMenuItemFactory {
 
   static {
     mCommand = new HashMap();
-    mCommand.put("collapse", new Integer(Gui4jTree.COMMAND_COLLAPSE));
-    mCommand.put("expand", new Integer(Gui4jTree.COMMAND_EXPAND));
-    mCommand.put("setroot", new Integer(Gui4jTree.COMMAND_SETROOT));
-    mCommand.put("resetroot", new Integer(Gui4jTree.COMMAND_RESETROOT));
-    mCommand.put("collapseall", new Integer(Gui4jTree.COMMAND_COLLAPSE_ALL));
-    mCommand.put("expandall", new Integer(Gui4jTree.COMMAND_EXPAND_ALL));
+    mCommand.put("collapse", Integer.valueOf(Gui4jTree.COMMAND_COLLAPSE));
+    mCommand.put("expand", Integer.valueOf(Gui4jTree.COMMAND_EXPAND));
+    mCommand.put("setroot", Integer.valueOf(Gui4jTree.COMMAND_SETROOT));
+    mCommand.put("resetroot", Integer.valueOf(Gui4jTree.COMMAND_RESETROOT));
+    mCommand.put("collapseall", Integer.valueOf(Gui4jTree.COMMAND_COLLAPSE_ALL));
+    mCommand.put("expandall", Integer.valueOf(Gui4jTree.COMMAND_EXPAND_ALL));
   }
 
   /* (non-Javadoc)

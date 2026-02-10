@@ -7,6 +7,7 @@ import java.io.Serializable;
  * </code> are immutable.
  */
 public class Pair implements Serializable {
+  private static final long serialVersionUID = 1L;
   private final Object first;
   private final Object second;
 

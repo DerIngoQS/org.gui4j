@@ -145,7 +145,7 @@ import org.gui4j.util.Filter;
 <span class="nc" id="L145">          int col = getIntValue(gui4jComponentContainer, child, COL);</span>
 
 <span class="nc bnc" id="L147" title="All 4 branches missed.">          if (col &lt; 0 || col &gt;= cols) {</span>
-<span class="nc" id="L148">            Object[] args = {new Integer(col), new Integer(cols)};</span>
+<span class="nc" id="L148">            Object[] args = {Integer.valueOf(col), Integer.valueOf(cols)};</span>
 <span class="nc" id="L149">            throw new Gui4jUncheckedException.ResourceError(</span>
 <span class="nc" id="L150">                gui4jComponentContainer.getConfigurationName(),</span>
 <span class="nc" id="L151">                Gui4jComponentContainerManager.getLineNumber(child),</span>
@@ -183,7 +183,7 @@ import org.gui4j.util.Filter;
 <span class="nc" id="L183">          int row = getIntValue(gui4jComponentContainer, child, ROW);</span>
 
 <span class="nc bnc" id="L185" title="All 4 branches missed.">          if (row &lt; 0 || row &gt;= rows) {</span>
-<span class="nc" id="L186">            Object[] args = {new Integer(row), new Integer(rows)};</span>
+<span class="nc" id="L186">            Object[] args = {Integer.valueOf(row), Integer.valueOf(rows)};</span>
 <span class="nc" id="L187">            throw new Gui4jUncheckedException.ResourceError(</span>
 <span class="nc" id="L188">                gui4jComponentContainer.getConfigurationName(),</span>
 <span class="nc" id="L189">                Gui4jComponentContainerManager.getLineNumber(child),</span>
@@ -221,7 +221,7 @@ import org.gui4j.util.Filter;
 <span class="nc" id="L221">          int row = getIntValue(gui4jComponentContainer, child, ROW);</span>
 
 <span class="nc bnc" id="L223" title="All 4 branches missed.">          if (col &lt; 0 || col &gt;= cols) {</span>
-<span class="nc" id="L224">            Object[] args = {new Integer(col), new Integer(cols)};</span>
+<span class="nc" id="L224">            Object[] args = {Integer.valueOf(col), Integer.valueOf(cols)};</span>
 <span class="nc" id="L225">            throw new Gui4jUncheckedException.ResourceError(</span>
 <span class="nc" id="L226">                gui4jComponentContainer.getConfigurationName(),</span>
 <span class="nc" id="L227">                Gui4jComponentContainerManager.getLineNumber(child),</span>
@@ -230,7 +230,7 @@ import org.gui4j.util.Filter;
           }
 
 <span class="nc bnc" id="L232" title="All 4 branches missed.">          if (row &lt; 0 || row &gt;= rows) {</span>
-<span class="nc" id="L233">            Object[] args = {new Integer(row), new Integer(rows)};</span>
+<span class="nc" id="L233">            Object[] args = {Integer.valueOf(row), Integer.valueOf(rows)};</span>
 <span class="nc" id="L234">            throw new Gui4jUncheckedException.ResourceError(</span>
 <span class="nc" id="L235">                gui4jComponentContainer.getConfigurationName(),</span>
 <span class="nc" id="L236">                Gui4jComponentContainerManager.getLineNumber(child),</span>
@@ -324,7 +324,7 @@ import org.gui4j.util.Filter;
 <span class="nc" id="L324">              Gui4jTextAttribute.getInstance(this, gui4jCellTable, child);</span>
 
 <span class="nc bnc" id="L326" title="All 2 branches missed.">          if (gui4jCellTable.isDefined(row, col)) {</span>
-<span class="nc" id="L327">            Object[] args = {new Integer(row), new Integer(col)};</span>
+<span class="nc" id="L327">            Object[] args = {Integer.valueOf(row), Integer.valueOf(col)};</span>
 <span class="nc" id="L328">            throw new Gui4jUncheckedException.ResourceError(</span>
 <span class="nc" id="L329">                gui4jComponentContainer.getConfigurationName(),</span>
 <span class="nc" id="L330">                Gui4jComponentContainerManager.getLineNumber(child),</span>

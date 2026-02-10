@@ -18,14 +18,14 @@ public class Gui4jAlignment {
   public static final String BOTTOM = "bottom";
 
   static {
-    mHorizontalAlign.put(LEFT, new Integer(SwingConstants.LEFT));
-    mHorizontalAlign.put(CENTER, new Integer(SwingConstants.CENTER));
-    mHorizontalAlign.put(RIGHT, new Integer(SwingConstants.RIGHT));
-    mHorizontalAlign.put(LEADING, new Integer(SwingConstants.LEADING));
-    mHorizontalAlign.put(TRAILING, new Integer(SwingConstants.TRAILING));
+    mHorizontalAlign.put(LEFT, Integer.valueOf(SwingConstants.LEFT));
+    mHorizontalAlign.put(CENTER, Integer.valueOf(SwingConstants.CENTER));
+    mHorizontalAlign.put(RIGHT, Integer.valueOf(SwingConstants.RIGHT));
+    mHorizontalAlign.put(LEADING, Integer.valueOf(SwingConstants.LEADING));
+    mHorizontalAlign.put(TRAILING, Integer.valueOf(SwingConstants.TRAILING));
 
-    mVerticalAlign.put(TOP, new Integer(SwingConstants.TOP));
-    mVerticalAlign.put(CENTER, new Integer(SwingConstants.CENTER));
-    mVerticalAlign.put(BOTTOM, new Integer(SwingConstants.BOTTOM));
+    mVerticalAlign.put(TOP, Integer.valueOf(SwingConstants.TOP));
+    mVerticalAlign.put(CENTER, Integer.valueOf(SwingConstants.CENTER));
+    mVerticalAlign.put(BOTTOM, Integer.valueOf(SwingConstants.BOTTOM));
   }
 }

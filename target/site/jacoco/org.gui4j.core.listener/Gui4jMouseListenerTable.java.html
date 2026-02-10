@@ -83,9 +83,9 @@ public final class Gui4jMouseListenerTable
     }
 <span class="nc bnc" id="L84" title="All 2 branches missed.">    Gui4jCall call = getAction(value == null ? mDefaultType : value.getClass());</span>
 <span class="nc bnc" id="L85" title="All 2 branches missed.">    if (call != null) {</span>
-<span class="nc" id="L86">      paramMap.put(Const.PARAM_ROW_INDEX, new Integer(rowIndex));</span>
+<span class="nc" id="L86">      paramMap.put(Const.PARAM_ROW_INDEX, Integer.valueOf(rowIndex));</span>
 <span class="nc" id="L87">      paramMap.put(Const.PARAM_ROW_INDICES, rows);</span>
-<span class="nc" id="L88">      paramMap.put(Const.PARAM_COL_INDEX, new Integer(colIndex));</span>
+<span class="nc" id="L88">      paramMap.put(Const.PARAM_COL_INDEX, Integer.valueOf(colIndex));</span>
 <span class="nc" id="L89">      paramMap.put(Const.PARAM_COL_INDICES, columns);</span>
 <span class="nc" id="L90">      paramMap.put(Const.PARAM_ITEM, value);</span>
     }

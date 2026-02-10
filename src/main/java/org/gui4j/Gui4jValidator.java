@@ -11,7 +11,7 @@ public interface Gui4jValidator {
    * @param resourceName the name of the resource containing the Gui4j definitions
    * @return true if everything is ok
    */
-  boolean validateResourceFile(Class controllerClass, String resourceName);
+  boolean validateResourceFile(Class<?> controllerClass, String resourceName);
 
   /**
    * @param controllerClass
@@ -19,5 +19,5 @@ public interface Gui4jValidator {
    * @param ids
    * @return -1 if all ids are defined, otherwise the position in the given list of ids.
    */
-  int validateExistenceOfGuiIDs(Class controllerClass, String resourceName, List ids);
+  int validateExistenceOfGuiIDs(Class<?> controllerClass, String resourceName, List<String> ids);
 }

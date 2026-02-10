@@ -87,11 +87,11 @@ public final class Gui4jMatrixFactory extends Gui4jJComponentFactory {
 
   static {
     mResizeMode = new HashMap();
-    mResizeMode.put("off", new Integer(JTable.AUTO_RESIZE_OFF));
-    mResizeMode.put("nextColumn", new Integer(JTable.AUTO_RESIZE_NEXT_COLUMN));
-    mResizeMode.put("subsequentColumns", new Integer(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS));
-    mResizeMode.put("lastColumn", new Integer(JTable.AUTO_RESIZE_LAST_COLUMN));
-    mResizeMode.put("allColumns", new Integer(JTable.AUTO_RESIZE_ALL_COLUMNS));
+    mResizeMode.put("off", Integer.valueOf(JTable.AUTO_RESIZE_OFF));
+    mResizeMode.put("nextColumn", Integer.valueOf(JTable.AUTO_RESIZE_NEXT_COLUMN));
+    mResizeMode.put("subsequentColumns", Integer.valueOf(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS));
+    mResizeMode.put("lastColumn", Integer.valueOf(JTable.AUTO_RESIZE_LAST_COLUMN));
+    mResizeMode.put("allColumns", Integer.valueOf(JTable.AUTO_RESIZE_ALL_COLUMNS));
   }
 
   /*

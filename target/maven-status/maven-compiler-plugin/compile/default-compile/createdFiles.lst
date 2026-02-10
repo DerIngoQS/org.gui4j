@@ -23,6 +23,7 @@ org/gui4j/component/factory/Gui4jGridLayoutFactory.class
 org/gui4j/core/swing/IViewListener$2.class
 org/gui4j/core/Gui4jComponentFactory.class
 org/gui4j/component/Gui4jMatrix$Gui4jTableModel$1.class
+org/gui4j/core/Gui4jThreadManager$2.class
 org/gui4j/core/util/SparseMatrix$Traverser.class
 org/gui4j/core/interfaces/Gui4jDialogInternal.class
 org/gui4j/exception/Gui4jDefaultErrorHandler.class
@@ -292,6 +293,7 @@ org/gui4j/component/Gui4jLabelForm$CellAllocation.class
 org/gui4j/component/factory/Gui4jTabbedPaneFactory.class
 org/gui4j/component/Gui4jBox.class
 org/gui4j/core/Gui4jComponentFactory$SubElement.class
+org/gui4j/core/Gui4jThreadManager$3.class
 org/gui4j/component/factory/Gui4jListFactory.class
 org/gui4j/core/swing/RowHeaderAbstractTableModel.class
 org/gui4j/core/impl/Gui4jResourceProviderImpl.class

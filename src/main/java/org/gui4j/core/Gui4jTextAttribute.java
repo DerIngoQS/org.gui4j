@@ -13,6 +13,7 @@ import org.gui4j.component.util.Gui4jAlignment;
 
 /** Encapsulates foreground color, background color, and font */
 public final class Gui4jTextAttribute implements Serializable {
+  private static final long serialVersionUID = 1L;
   public static final String FOREGROUND = "foreground";
   public static final String BACKGROUND = "background";
   public static final String EVEN_BACKGROUND = "evenBackground";

@@ -50,6 +50,7 @@ import java.util.StringTokenizer;
  * @author Daniel E. Barbalace
  */
 public class TableLayoutConstraints implements TableLayoutConstants, Serializable {
+  private static final long serialVersionUID = 1L;
 
   /** Cell in which the upper left corner of the component lays */
   public int col1, row1;
@@ -67,10 +68,10 @@ public class TableLayoutConstraints implements TableLayoutConstants, Serializabl
    * Constructs an TableLayoutConstraints with the default settings. This constructor is equivalent
    * to TableLayoutConstraints(0, 0, 0, 0, FULL, FULL).
    */
-<span class="nc" id="L70">  public TableLayoutConstraints() {</span>
-<span class="nc" id="L71">    col1 = row1 = col2 = col2 = 0;</span>
-<span class="nc" id="L72">    hAlign = vAlign = FULL;</span>
-<span class="nc" id="L73">  }</span>
+<span class="nc" id="L71">  public TableLayoutConstraints() {</span>
+<span class="nc" id="L72">    col1 = row1 = col2 = col2 = 0;</span>
+<span class="nc" id="L73">    hAlign = vAlign = FULL;</span>
+<span class="nc" id="L74">  }</span>
 
   /**
    * Constructs an TableLayoutConstraints from a string.
@@ -80,71 +81,71 @@ public class TableLayoutConstraints implements TableLayoutConstants, Serializabl
    *     or &quot;row 1, column 1, row 2, column 2&quot;. It is also acceptable to delimit the paramters with
    *     spaces instead of commas.
    */
-<span class="nc" id="L83">  public TableLayoutConstraints(String constraints) {</span>
+<span class="nc" id="L84">  public TableLayoutConstraints(String constraints) {</span>
     // Use default values for any parameter not specified or specified
     // incorrectly.  The default parameters place the component in a single
     // cell at column 0, row 0.  The component is fully justified.
-<span class="nc" id="L87">    col1 = 0;</span>
-<span class="nc" id="L88">    row1 = 0;</span>
-<span class="nc" id="L89">    col2 = 0;</span>
-<span class="nc" id="L90">    row2 = 0;</span>
-<span class="nc" id="L91">    hAlign = FULL;</span>
-<span class="nc" id="L92">    vAlign = FULL;</span>
+<span class="nc" id="L88">    col1 = 0;</span>
+<span class="nc" id="L89">    row1 = 0;</span>
+<span class="nc" id="L90">    col2 = 0;</span>
+<span class="nc" id="L91">    row2 = 0;</span>
+<span class="nc" id="L92">    hAlign = FULL;</span>
+<span class="nc" id="L93">    vAlign = FULL;</span>
 
     // Parse constraints using spaces or commas
-<span class="nc" id="L95">    StringTokenizer st = new StringTokenizer(constraints, &quot;, &quot;);</span>
-<span class="nc" id="L96">    int numToken = st.countTokens();</span>
+<span class="nc" id="L96">    StringTokenizer st = new StringTokenizer(constraints, &quot;, &quot;);</span>
+<span class="nc" id="L97">    int numToken = st.countTokens();</span>
 
     try {
       // Check constraints
-<span class="nc bnc" id="L100" title="All 6 branches missed.">      if ((numToken != 2) &amp;&amp; (numToken != 4) &amp;&amp; (numToken != 6)) throw new RuntimeException();</span>
+<span class="nc bnc" id="L101" title="All 6 branches missed.">      if ((numToken != 2) &amp;&amp; (numToken != 4) &amp;&amp; (numToken != 6)) throw new RuntimeException();</span>
 
       // Get the first column (assume component is in only one column)
-<span class="nc" id="L103">      String tokenA = st.nextToken();</span>
-<span class="nc" id="L104">      col1 = new Integer(tokenA).intValue();</span>
-<span class="nc" id="L105">      col2 = col1;</span>
+<span class="nc" id="L104">      String tokenA = st.nextToken();</span>
+<span class="nc" id="L105">      col1 = Integer.valueOf(tokenA).intValue();</span>
+<span class="nc" id="L106">      col2 = col1;</span>
 
       // Get the first row (assume component is in only one row)
-<span class="nc" id="L108">      String tokenB = st.nextToken();</span>
-<span class="nc" id="L109">      row1 = new Integer(tokenB).intValue();</span>
-<span class="nc" id="L110">      row2 = row1;</span>
+<span class="nc" id="L109">      String tokenB = st.nextToken();</span>
+<span class="nc" id="L110">      row1 = Integer.valueOf(tokenB).intValue();</span>
+<span class="nc" id="L111">      row2 = row1;</span>
 
       // Get next two tokens
-<span class="nc" id="L113">      tokenA = st.nextToken();</span>
-<span class="nc" id="L114">      tokenB = st.nextToken();</span>
+<span class="nc" id="L114">      tokenA = st.nextToken();</span>
+<span class="nc" id="L115">      tokenB = st.nextToken();</span>
 
       try {
         // Attempt to use tokens A and B as col2 and row2
-<span class="nc" id="L118">        col2 = new Integer(tokenA).intValue();</span>
-<span class="nc" id="L119">        row2 = new Integer(tokenB).intValue();</span>
+<span class="nc" id="L119">        col2 = Integer.valueOf(tokenA).intValue();</span>
+<span class="nc" id="L120">        row2 = Integer.valueOf(tokenB).intValue();</span>
 
         // Get next two tokens
-<span class="nc" id="L122">        tokenA = st.nextToken();</span>
-<span class="nc" id="L123">        tokenB = st.nextToken();</span>
-<span class="nc" id="L124">      } catch (NumberFormatException error) {</span>
-<span class="nc" id="L125">        col2 = col1;</span>
-<span class="nc" id="L126">        row2 = row1;</span>
-<span class="nc" id="L127">      }</span>
+<span class="nc" id="L123">        tokenA = st.nextToken();</span>
+<span class="nc" id="L124">        tokenB = st.nextToken();</span>
+<span class="nc" id="L125">      } catch (NumberFormatException error) {</span>
+<span class="nc" id="L126">        col2 = col1;</span>
+<span class="nc" id="L127">        row2 = row1;</span>
+<span class="nc" id="L128">      }</span>
 
       // Check if token means horizontally justification the component
-<span class="nc bnc" id="L130" title="All 4 branches missed.">      if ((tokenA.equalsIgnoreCase(&quot;L&quot;)) || (tokenA.equalsIgnoreCase(&quot;LEFT&quot;))) hAlign = LEFT;</span>
-<span class="nc bnc" id="L131" title="All 4 branches missed.">      else if ((tokenA.equalsIgnoreCase(&quot;C&quot;)) || (tokenA.equalsIgnoreCase(&quot;CENTER&quot;)))</span>
-<span class="nc" id="L132">        hAlign = CENTER;</span>
-<span class="nc bnc" id="L133" title="All 4 branches missed.">      else if ((tokenA.equalsIgnoreCase(&quot;F&quot;)) || (tokenA.equalsIgnoreCase(&quot;FULL&quot;))) hAlign = FULL;</span>
-<span class="nc bnc" id="L134" title="All 4 branches missed.">      else if ((tokenA.equalsIgnoreCase(&quot;R&quot;)) || (tokenA.equalsIgnoreCase(&quot;RIGHT&quot;))) hAlign = RIGHT;</span>
-<span class="nc" id="L135">      else throw new RuntimeException();</span>
+<span class="nc bnc" id="L131" title="All 4 branches missed.">      if ((tokenA.equalsIgnoreCase(&quot;L&quot;)) || (tokenA.equalsIgnoreCase(&quot;LEFT&quot;))) hAlign = LEFT;</span>
+<span class="nc bnc" id="L132" title="All 4 branches missed.">      else if ((tokenA.equalsIgnoreCase(&quot;C&quot;)) || (tokenA.equalsIgnoreCase(&quot;CENTER&quot;)))</span>
+<span class="nc" id="L133">        hAlign = CENTER;</span>
+<span class="nc bnc" id="L134" title="All 4 branches missed.">      else if ((tokenA.equalsIgnoreCase(&quot;F&quot;)) || (tokenA.equalsIgnoreCase(&quot;FULL&quot;))) hAlign = FULL;</span>
+<span class="nc bnc" id="L135" title="All 4 branches missed.">      else if ((tokenA.equalsIgnoreCase(&quot;R&quot;)) || (tokenA.equalsIgnoreCase(&quot;RIGHT&quot;))) hAlign = RIGHT;</span>
+<span class="nc" id="L136">      else throw new RuntimeException();</span>
 
       // Check if token means horizontally justification the component
-<span class="nc bnc" id="L138" title="All 4 branches missed.">      if ((tokenB.equalsIgnoreCase(&quot;T&quot;)) || (tokenB.equalsIgnoreCase(&quot;TOP&quot;))) vAlign = TOP;</span>
-<span class="nc bnc" id="L139" title="All 4 branches missed.">      else if ((tokenB.equalsIgnoreCase(&quot;C&quot;)) || (tokenB.equalsIgnoreCase(&quot;CENTER&quot;)))</span>
-<span class="nc" id="L140">        vAlign = CENTER;</span>
-<span class="nc bnc" id="L141" title="All 4 branches missed.">      else if ((tokenB.equalsIgnoreCase(&quot;F&quot;)) || (tokenB.equalsIgnoreCase(&quot;FULL&quot;))) vAlign = FULL;</span>
-<span class="nc bnc" id="L142" title="All 4 branches missed.">      else if ((tokenB.equalsIgnoreCase(&quot;B&quot;)) || (tokenB.equalsIgnoreCase(&quot;BOTTOM&quot;)))</span>
-<span class="nc" id="L143">        vAlign = BOTTOM;</span>
-<span class="nc" id="L144">      else throw new RuntimeException();</span>
-<span class="nc" id="L145">    } catch (NoSuchElementException error) {</span>
-<span class="nc" id="L146">    } catch (RuntimeException error) {</span>
-<span class="nc" id="L147">      throw new IllegalArgumentException(</span>
+<span class="nc bnc" id="L139" title="All 4 branches missed.">      if ((tokenB.equalsIgnoreCase(&quot;T&quot;)) || (tokenB.equalsIgnoreCase(&quot;TOP&quot;))) vAlign = TOP;</span>
+<span class="nc bnc" id="L140" title="All 4 branches missed.">      else if ((tokenB.equalsIgnoreCase(&quot;C&quot;)) || (tokenB.equalsIgnoreCase(&quot;CENTER&quot;)))</span>
+<span class="nc" id="L141">        vAlign = CENTER;</span>
+<span class="nc bnc" id="L142" title="All 4 branches missed.">      else if ((tokenB.equalsIgnoreCase(&quot;F&quot;)) || (tokenB.equalsIgnoreCase(&quot;FULL&quot;))) vAlign = FULL;</span>
+<span class="nc bnc" id="L143" title="All 4 branches missed.">      else if ((tokenB.equalsIgnoreCase(&quot;B&quot;)) || (tokenB.equalsIgnoreCase(&quot;BOTTOM&quot;)))</span>
+<span class="nc" id="L144">        vAlign = BOTTOM;</span>
+<span class="nc" id="L145">      else throw new RuntimeException();</span>
+<span class="nc" id="L146">    } catch (NoSuchElementException error) {</span>
+<span class="nc" id="L147">    } catch (RuntimeException error) {</span>
+<span class="nc" id="L148">      throw new IllegalArgumentException(</span>
           &quot;Expected constraints in one of the following formats:\n&quot;
               + &quot;  col1, row1\n  col1, row1, col2, row2\n&quot;
               + &quot;  col1, row1, hAlign, vAlign\n&quot;
@@ -152,14 +153,14 @@ public class TableLayoutConstraints implements TableLayoutConstants, Serializabl
               + &quot;Constraints provided '&quot;
               + constraints
               + &quot;'&quot;);
-<span class="nc" id="L155">    }</span>
+<span class="nc" id="L156">    }</span>
 
     // Make sure row2 &gt;= row1
-<span class="nc bnc" id="L158" title="All 2 branches missed.">    if (row2 &lt; row1) row2 = row1;</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">    if (row2 &lt; row1) row2 = row1;</span>
 
     // Make sure col2 &gt;= col1
-<span class="nc bnc" id="L161" title="All 2 branches missed.">    if (col2 &lt; col1) col2 = col1;</span>
-<span class="nc" id="L162">  }</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">    if (col2 &lt; col1) col2 = col1;</span>
+<span class="nc" id="L163">  }</span>
 
   /**
    * Constructs an TableLayoutConstraints a set of constraints.
@@ -171,18 +172,18 @@ public class TableLayoutConstraints implements TableLayoutConstants, Serializabl
    * @param hAlign horizontal justification of a component in a single cell
    * @param vAlign vertical justification of a component in a single cell
    */
-<span class="nc" id="L174">  public TableLayoutConstraints(int col1, int row1, int col2, int row2, int hAlign, int vAlign) {</span>
-<span class="nc" id="L175">    this.col1 = col1;</span>
-<span class="nc" id="L176">    this.row1 = row1;</span>
-<span class="nc" id="L177">    this.col2 = col2;</span>
-<span class="nc" id="L178">    this.row2 = row2;</span>
+<span class="nc" id="L175">  public TableLayoutConstraints(int col1, int row1, int col2, int row2, int hAlign, int vAlign) {</span>
+<span class="nc" id="L176">    this.col1 = col1;</span>
+<span class="nc" id="L177">    this.row1 = row1;</span>
+<span class="nc" id="L178">    this.col2 = col2;</span>
+<span class="nc" id="L179">    this.row2 = row2;</span>
 
-<span class="nc bnc" id="L180" title="All 4 branches missed.">    if ((hAlign &lt; MIN_ALIGN) || (hAlign &gt; MAX_ALIGN)) this.hAlign = FULL;</span>
-<span class="nc" id="L181">    else this.hAlign = hAlign;</span>
+<span class="nc bnc" id="L181" title="All 4 branches missed.">    if ((hAlign &lt; MIN_ALIGN) || (hAlign &gt; MAX_ALIGN)) this.hAlign = FULL;</span>
+<span class="nc" id="L182">    else this.hAlign = hAlign;</span>
 
-<span class="nc bnc" id="L183" title="All 4 branches missed.">    if ((vAlign &lt; MIN_ALIGN) || (vAlign &gt; MAX_ALIGN)) this.vAlign = FULL;</span>
-<span class="nc" id="L184">    else this.vAlign = vAlign;</span>
-<span class="nc" id="L185">  }</span>
+<span class="nc bnc" id="L184" title="All 4 branches missed.">    if ((vAlign &lt; MIN_ALIGN) || (vAlign &gt; MAX_ALIGN)) this.vAlign = FULL;</span>
+<span class="nc" id="L185">    else this.vAlign = vAlign;</span>
+<span class="nc" id="L186">  }</span>
 
   /**
    * Gets a string representation of this TableLayoutConstraints.
@@ -191,26 +192,26 @@ public class TableLayoutConstraints implements TableLayoutConstants, Serializabl
    *     vertical justification&quot;
    */
   public String toString() {
-<span class="nc" id="L194">    StringBuffer buffer = new StringBuffer();</span>
+<span class="nc" id="L195">    StringBuffer buffer = new StringBuffer();</span>
 
-<span class="nc" id="L196">    buffer.append(col1);</span>
-<span class="nc" id="L197">    buffer.append(&quot;, &quot;);</span>
-<span class="nc" id="L198">    buffer.append(row1);</span>
-<span class="nc" id="L199">    buffer.append(&quot;, &quot;);</span>
+<span class="nc" id="L197">    buffer.append(col1);</span>
+<span class="nc" id="L198">    buffer.append(&quot;, &quot;);</span>
+<span class="nc" id="L199">    buffer.append(row1);</span>
+<span class="nc" id="L200">    buffer.append(&quot;, &quot;);</span>
 
-<span class="nc" id="L201">    buffer.append(col2);</span>
-<span class="nc" id="L202">    buffer.append(&quot;, &quot;);</span>
-<span class="nc" id="L203">    buffer.append(row2);</span>
-<span class="nc" id="L204">    buffer.append(&quot;, &quot;);</span>
+<span class="nc" id="L202">    buffer.append(col2);</span>
+<span class="nc" id="L203">    buffer.append(&quot;, &quot;);</span>
+<span class="nc" id="L204">    buffer.append(row2);</span>
+<span class="nc" id="L205">    buffer.append(&quot;, &quot;);</span>
 
-<span class="nc" id="L206">    final String h[] = {&quot;left&quot;, &quot;center&quot;, &quot;full&quot;, &quot;right&quot;};</span>
-<span class="nc" id="L207">    final String v[] = {&quot;top&quot;, &quot;center&quot;, &quot;full&quot;, &quot;bottom&quot;};</span>
+<span class="nc" id="L207">    final String h[] = {&quot;left&quot;, &quot;center&quot;, &quot;full&quot;, &quot;right&quot;};</span>
+<span class="nc" id="L208">    final String v[] = {&quot;top&quot;, &quot;center&quot;, &quot;full&quot;, &quot;bottom&quot;};</span>
 
-<span class="nc" id="L209">    buffer.append(h[hAlign]);</span>
-<span class="nc" id="L210">    buffer.append(&quot;, &quot;);</span>
-<span class="nc" id="L211">    buffer.append(v[vAlign]);</span>
+<span class="nc" id="L210">    buffer.append(h[hAlign]);</span>
+<span class="nc" id="L211">    buffer.append(&quot;, &quot;);</span>
+<span class="nc" id="L212">    buffer.append(v[vAlign]);</span>
 
-<span class="nc" id="L213">    return buffer.toString();</span>
+<span class="nc" id="L214">    return buffer.toString();</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

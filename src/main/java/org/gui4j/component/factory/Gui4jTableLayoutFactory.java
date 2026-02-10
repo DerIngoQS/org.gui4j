@@ -52,14 +52,14 @@ public final class Gui4jTableLayoutFactory extends Gui4jJComponentFactory {
   static {
     mHAlign = new HashMap();
     mVAlign = new HashMap();
-    mHAlign.put("left", new Integer(TableLayoutConstants.LEFT));
-    mHAlign.put("center", new Integer(TableLayoutConstants.CENTER));
-    mHAlign.put("full", new Integer(TableLayoutConstants.FULL));
-    mHAlign.put("right", new Integer(TableLayoutConstants.RIGHT));
-    mVAlign.put("top", new Integer(TableLayoutConstants.TOP));
-    mVAlign.put("center", new Integer(TableLayoutConstants.CENTER));
-    mVAlign.put("full", new Integer(TableLayoutConstants.FULL));
-    mVAlign.put("bottom", new Integer(TableLayoutConstants.BOTTOM));
+    mHAlign.put("left", Integer.valueOf(TableLayoutConstants.LEFT));
+    mHAlign.put("center", Integer.valueOf(TableLayoutConstants.CENTER));
+    mHAlign.put("full", Integer.valueOf(TableLayoutConstants.FULL));
+    mHAlign.put("right", Integer.valueOf(TableLayoutConstants.RIGHT));
+    mVAlign.put("top", Integer.valueOf(TableLayoutConstants.TOP));
+    mVAlign.put("center", Integer.valueOf(TableLayoutConstants.CENTER));
+    mVAlign.put("full", Integer.valueOf(TableLayoutConstants.FULL));
+    mVAlign.put("bottom", Integer.valueOf(TableLayoutConstants.BOTTOM));
   }
 
   /* (non-Javadoc)
@@ -137,11 +137,11 @@ public final class Gui4jTableLayoutFactory extends Gui4jJComponentFactory {
     while (tokenizer.hasMoreTokens()) {
       String token = tokenizer.nextToken().trim();
       if ("preferred".equalsIgnoreCase(token) || "p".equalsIgnoreCase(token)) {
-        values.add(new Double(TableLayoutConstants.PREFERRED));
+        values.add(Double.valueOf(TableLayoutConstants.PREFERRED));
       } else if ("minimum".equalsIgnoreCase(token) || "m".equalsIgnoreCase(token)) {
-        values.add(new Double(TableLayoutConstants.MINIMUM));
+        values.add(Double.valueOf(TableLayoutConstants.MINIMUM));
       } else if ("fill".equalsIgnoreCase(token) || "f".equalsIgnoreCase(token)) {
-        values.add(new Double(TableLayoutConstants.FILL));
+        values.add(Double.valueOf(TableLayoutConstants.FILL));
       } else if (token.length() > 0) {
         try {
           values.add(Double.valueOf(token));

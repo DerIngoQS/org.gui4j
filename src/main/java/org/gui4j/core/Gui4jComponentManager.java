@@ -17,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.Element;
 import org.dom4j.LElement;
 import org.dom4j.io.LNSAXReader;
 import org.gui4j.exception.ErrorTags;
@@ -30,6 +31,7 @@ import org.gui4j.exception.Gui4jUncheckedException;
  * Gui4jComponent definition in given XML resource files.
  */
 public final class Gui4jComponentManager implements Serializable, ErrorTags {
+  private static final long serialVersionUID = 1L;
   private static final Log mLogger = LogFactory.getLog(Gui4jComponentManager.class);
 
   public static final String ELEMENT_Gui4jView = "View";
@@ -75,7 +77,7 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
   private final boolean VALIDATE = true;
   private final Gui4jInternal mGui4j;
   private final Gui4jCallFactory mGui4jCallFactory;
-  private final Map mGui4jComponentMap = new HashMap();
+  private final Map<String, Object> mGui4jComponentMap = new HashMap<String, Object>();
 
   private Gui4jComponentManager(Gui4jInternal gui4j) {
     mGui4j = gui4j;
@@ -139,8 +141,8 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
 
     out.print("<!ENTITY % Component \"(");
     boolean first = true;
-    for (Iterator it = mGui4jComponentMap.keySet().iterator(); it.hasNext(); ) {
-      String name = (String) it.next();
+    for (Iterator<String> it = mGui4jComponentMap.keySet().iterator(); it.hasNext(); ) {
+      String name = it.next();
       if (first) {
         out.print(name);
         first = false;
@@ -153,9 +155,10 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
     out.print("<!ENTITY % " + ELEMENT_Gui4jStyle + "s \"(");
     first = true;
     loadAll();
-    for (Iterator it = mGui4jComponentMap.entrySet().iterator(); it.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) it.next();
-      String name = (String) entry.getKey();
+    for (Iterator<Map.Entry<String, Object>> it = mGui4jComponentMap.entrySet().iterator();
+        it.hasNext(); ) {
+      Map.Entry<String, Object> entry = it.next();
+      String name = entry.getKey();
       Gui4jComponentFactory gui4jComponentFactory = (Gui4jComponentFactory) entry.getValue();
       if (first) {
         out.print(ELEMENT_Gui4jStyle + "_" + name);
@@ -240,8 +243,9 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
     out.println("  " + FIELD_Gui4jArgId + " CDATA #REQUIRED");
     out.println(">");
     loadAll();
-    for (Iterator it = mGui4jComponentMap.entrySet().iterator(); it.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) it.next();
+    for (Iterator<Map.Entry<String, Object>> it = mGui4jComponentMap.entrySet().iterator();
+        it.hasNext(); ) {
+      Map.Entry<String, Object> entry = it.next();
       Gui4jComponentFactory gui4jComponent = (Gui4jComponentFactory) entry.getValue();
       gui4jComponent.writeDTD(out);
     }
@@ -269,8 +273,8 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
   }
 
   private void loadAll() {
-    for (Iterator it = mGui4jComponentMap.keySet().iterator(); it.hasNext(); ) {
-      String tag = (String) it.next();
+    for (Iterator<String> it = mGui4jComponentMap.keySet().iterator(); it.hasNext(); ) {
+      String tag = it.next();
       getGui4jComponentFactory(tag);
     }
   }
@@ -288,9 +292,9 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
     }
     if (object instanceof String) {
       try {
-        Class gui4jComponentClass = Class.forName((String) object);
+        Class<?> gui4jComponentClass = Class.forName((String) object);
         Gui4jComponentFactory gui4jComponentFactory =
-            (Gui4jComponentFactory) gui4jComponentClass.newInstance();
+            (Gui4jComponentFactory) gui4jComponentClass.getDeclaredConstructor().newInstance();
         gui4jComponentFactory.setGui4j(mGui4j);
         gui4jComponentFactory.setGui4jCallFactory(mGui4jCallFactory);
         mLogger.debug("Installing Gui4jComponent: " + name);
@@ -316,7 +320,7 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
     return mGui4jComponentMap.containsKey(name);
   }
 
-  public Set getInstalledComponentNames() {
+  public Set<String> getInstalledComponentNames() {
     return mGui4jComponentMap.keySet();
   }
 
@@ -332,8 +336,8 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
   }
 
   private void installComponents(Properties properties, URL configurationSource) {
-    for (Iterator it = properties.entrySet().iterator(); it.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) it.next();
+    for (Iterator<Map.Entry<Object, Object>> it = properties.entrySet().iterator(); it.hasNext(); ) {
+      Map.Entry<Object, Object> entry = it.next();
       String tag = (String) entry.getKey();
       String className = (String) entry.getValue();
       if (className != null) {
@@ -344,8 +348,8 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
   }
 
   private void installComponents(LElement e, URL configurationSource) {
-    List children = e.elements();
-    for (Iterator it = children.iterator(); it.hasNext(); ) {
+    List<Element> children = e.elements();
+    for (Iterator<Element> it = children.iterator(); it.hasNext(); ) {
       LElement gui4jComponent = (LElement) it.next();
       if (gui4jComponent.getName().equals(ELEMENT_Gui4jComponent)) {
         installComponent(gui4jComponent, configurationSource);
@@ -371,9 +375,9 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
     String className = e.attributeValue(ATTR_FactoryClass);
 
     try {
-      Class gui4jComponentClass = Class.forName(className);
+      Class<?> gui4jComponentClass = Class.forName(className);
       Gui4jComponentFactory gui4jComponentFactory =
-          (Gui4jComponentFactory) gui4jComponentClass.newInstance();
+          (Gui4jComponentFactory) gui4jComponentClass.getDeclaredConstructor().newInstance();
       gui4jComponentFactory.setGui4j(mGui4j);
       gui4jComponentFactory.setGui4jCallFactory(mGui4jCallFactory);
       String name = gui4jComponentFactory.getName();
@@ -399,8 +403,14 @@ public final class Gui4jComponentManager implements Serializable, ErrorTags {
    *
    * @return Map
    */
-  public Map getGui4jComponentMap() {
+  public Map<String, Gui4jComponentFactory> getGui4jComponentMap() {
     loadAll();
-    return mGui4jComponentMap;
+    Map<String, Gui4jComponentFactory> result = new HashMap<String, Gui4jComponentFactory>();
+    for (Iterator<Map.Entry<String, Object>> it = mGui4jComponentMap.entrySet().iterator();
+        it.hasNext(); ) {
+      Map.Entry<String, Object> entry = it.next();
+      result.put(entry.getKey(), (Gui4jComponentFactory) entry.getValue());
+    }
+    return result;
   }
 }

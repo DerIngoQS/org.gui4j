@@ -15,6 +15,7 @@ import java.util.Set;
  * @author Joachim Schmid
  */
 public final class Gui4jMap1 implements Map, Map.Entry, Serializable {
+  private static final long serialVersionUID = 1L;
   private final Object mKey;
   private Object mValue;
 

@@ -45,10 +45,10 @@ import org.gui4j.util.Filter;
 
   static {
 <span class="nc" id="L47">    mSelectionMode = new HashMap();</span>
-<span class="nc" id="L48">    mSelectionMode.put(&quot;multiple&quot;, new Integer(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION));</span>
+<span class="nc" id="L48">    mSelectionMode.put(&quot;multiple&quot;, Integer.valueOf(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION));</span>
 <span class="nc" id="L49">    mSelectionMode.put(</span>
-        &quot;single_interval&quot;, new Integer(ListSelectionModel.SINGLE_INTERVAL_SELECTION));
-<span class="nc" id="L51">    mSelectionMode.put(&quot;single&quot;, new Integer(ListSelectionModel.SINGLE_SELECTION));</span>
+<span class="nc" id="L50">        &quot;single_interval&quot;, Integer.valueOf(ListSelectionModel.SINGLE_INTERVAL_SELECTION));</span>
+<span class="nc" id="L51">    mSelectionMode.put(&quot;single&quot;, Integer.valueOf(ListSelectionModel.SINGLE_SELECTION));</span>
 <span class="nc" id="L52">  }</span>
 
   public static String listSelectionModeType() {

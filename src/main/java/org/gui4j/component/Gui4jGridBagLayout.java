@@ -105,6 +105,7 @@ public final class Gui4jGridBagLayout extends Gui4jJComponent {
   }
 
   private static class Layout implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jQualifiedComponent mGui4jComponentInPath;
     private final int mGridX;
     private final int mGridY;

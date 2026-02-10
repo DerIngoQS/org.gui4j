@@ -89,7 +89,7 @@ public interface Gui4j {
    *
    * @return Set(Gui4vView)
    */
-  Set getViewCollector();
+  Set<Gui4jWindow> getViewCollector();
 
   /**
    * Defines if the call stack of invokers of WorkerThreads should always be saved so that it can be

@@ -9,6 +9,7 @@ import org.gui4j.core.Gui4jComponentContainer;
 import org.gui4j.core.Gui4jReflectionManager;
 
 final class ParseCtx implements Serializable {
+  private static final long serialVersionUID = 1L;
   int i;
   private final Gui4jComponent mGui4jComponent;
   private final Gui4jComponentContainer mGui4jComponentContainer;
@@ -26,71 +27,71 @@ final class ParseCtx implements Serializable {
       int lineNumber,
       Map valueClassMap,
       Gui4jAccessImpl baseAccess,
-<span class="fc" id="L29">      String accessPath) {</span>
-<span class="fc" id="L30">    mParser = parser;</span>
-<span class="fc" id="L31">    mGui4jComponent = gui4jComponent;</span>
-<span class="fc" id="L32">    mGui4jComponentContainer = gui4jComponent.getGui4jComponentContainer();</span>
-<span class="fc" id="L33">    mValueClassMap = valueClassMap;</span>
-<span class="fc" id="L34">    mBaseAccess = baseAccess;</span>
-<span class="fc" id="L35">    mGui4jReflectionManager = mGui4jComponentContainer.getGui4j().getGui4jReflectionManager();</span>
-<span class="fc" id="L36">    mAccessPath = accessPath;</span>
-<span class="fc" id="L37">    mLineNumber = lineNumber;</span>
-<span class="fc" id="L38">    mUsedParams = new HashSet();</span>
-<span class="fc" id="L39">  }</span>
+<span class="fc" id="L30">      String accessPath) {</span>
+<span class="fc" id="L31">    mParser = parser;</span>
+<span class="fc" id="L32">    mGui4jComponent = gui4jComponent;</span>
+<span class="fc" id="L33">    mGui4jComponentContainer = gui4jComponent.getGui4jComponentContainer();</span>
+<span class="fc" id="L34">    mValueClassMap = valueClassMap;</span>
+<span class="fc" id="L35">    mBaseAccess = baseAccess;</span>
+<span class="fc" id="L36">    mGui4jReflectionManager = mGui4jComponentContainer.getGui4j().getGui4jReflectionManager();</span>
+<span class="fc" id="L37">    mAccessPath = accessPath;</span>
+<span class="fc" id="L38">    mLineNumber = lineNumber;</span>
+<span class="fc" id="L39">    mUsedParams = new HashSet();</span>
+<span class="fc" id="L40">  }</span>
 
   Class getBaseClass() {
-<span class="nc" id="L42">    return mGui4jComponentContainer.getGui4jControllerClass();</span>
+<span class="nc" id="L43">    return mGui4jComponentContainer.getGui4jControllerClass();</span>
   }
 
   Class getValueClass(String paramName) {
-<span class="nc bnc" id="L46" title="All 2 branches missed.">    return mValueClassMap == null ? null : (Class) mValueClassMap.get(paramName);</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">    return mValueClassMap == null ? null : (Class) mValueClassMap.get(paramName);</span>
   }
 
   Gui4jAccessImpl getBaseAccess() {
-<span class="fc" id="L50">    return mBaseAccess;</span>
+<span class="fc" id="L51">    return mBaseAccess;</span>
   }
 
   Class getClassForAliasName(String aliasName) {
-<span class="nc" id="L54">    return mGui4jComponentContainer.getClassForAliasName(aliasName);</span>
+<span class="nc" id="L55">    return mGui4jComponentContainer.getClassForAliasName(aliasName);</span>
   }
 
   Gui4jReflectionManager getGui4jReflectionManager() {
-<span class="fc" id="L58">    return mGui4jReflectionManager;</span>
+<span class="fc" id="L59">    return mGui4jReflectionManager;</span>
   }
 
   Gui4jComponentContainer getGui4jComponentContainer() {
-<span class="fc" id="L62">    return mGui4jComponentContainer;</span>
+<span class="fc" id="L63">    return mGui4jComponentContainer;</span>
   }
 
   Gui4jComponent getGui4jComponent() {
-<span class="nc" id="L66">    return mGui4jComponent;</span>
+<span class="nc" id="L67">    return mGui4jComponent;</span>
   }
 
   String getConfigurationName() {
-<span class="fc" id="L70">    return getGui4jComponentContainer().getConfigurationName();</span>
+<span class="fc" id="L71">    return getGui4jComponentContainer().getConfigurationName();</span>
   }
 
   int getLineNumber() {
-<span class="fc" id="L74">    return mLineNumber;</span>
+<span class="fc" id="L75">    return mLineNumber;</span>
   }
 
   String getAccessPath() {
-<span class="nc" id="L78">    return mAccessPath;</span>
+<span class="nc" id="L79">    return mAccessPath;</span>
   }
 
   Gui4jCallParser getGui4jCallParser() {
-<span class="fc" id="L82">    return mParser;</span>
+<span class="fc" id="L83">    return mParser;</span>
   }
 
   /**
    * @return
    */
   public Set getUsedParams() {
-<span class="fc" id="L89">    return mUsedParams;</span>
+<span class="fc" id="L90">    return mUsedParams;</span>
   }
 
   public void addUsedParam(String paramName) {
-<span class="nc" id="L93">    mUsedParams.add(paramName);</span>
-<span class="nc" id="L94">  }</span>
+<span class="nc" id="L94">    mUsedParams.add(paramName);</span>
+<span class="nc" id="L95">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

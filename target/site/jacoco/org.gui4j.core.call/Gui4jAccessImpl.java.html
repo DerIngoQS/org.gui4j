@@ -5,6 +5,7 @@ import java.util.Map;
 import org.gui4j.exception.ErrorTags;
 
 <span class="fc" id="L7">abstract class Gui4jAccessImpl implements Serializable, ErrorTags {</span>
+  private static final long serialVersionUID = 1L;
   /**
    * Returns &lt;code&gt;true&lt;/code&gt; if the value returned by &lt;code&gt;getValue(Object)&lt;/code&gt; never changes
    *
@@ -17,15 +18,15 @@ import org.gui4j.exception.ErrorTags;
   abstract Class getResultClass();
 
   protected int minIndex(String str, String chars, int startIdx) {
-<span class="fc" id="L20">    int i = -1;</span>
-<span class="fc bfc" id="L21" title="All 2 branches covered.">    for (int j = 0; j &lt; chars.length(); j++) {</span>
-<span class="fc" id="L22">      char c = chars.charAt(j);</span>
-<span class="fc" id="L23">      int idx = str.indexOf(c, startIdx);</span>
-<span class="fc bfc" id="L24" title="All 6 branches covered.">      if (idx != -1 &amp;&amp; (idx &lt; i || (i == -1))) {</span>
-<span class="fc" id="L25">        i = idx;</span>
+<span class="fc" id="L21">    int i = -1;</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">    for (int j = 0; j &lt; chars.length(); j++) {</span>
+<span class="fc" id="L23">      char c = chars.charAt(j);</span>
+<span class="fc" id="L24">      int idx = str.indexOf(c, startIdx);</span>
+<span class="fc bfc" id="L25" title="All 6 branches covered.">      if (idx != -1 &amp;&amp; (idx &lt; i || (i == -1))) {</span>
+<span class="fc" id="L26">        i = idx;</span>
       }
     }
-<span class="fc" id="L28">    return i;</span>
+<span class="fc" id="L29">    return i;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

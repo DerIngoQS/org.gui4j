@@ -8,6 +8,7 @@ import org.gui4j.util.Translator;
 
 /** Default Implementierung für das Nameable Interface. */
 public class DefaultNameable implements Nameable, Serializable {
+  private static final long serialVersionUID = 1L;
   protected final String nameTag;
   private final String shortTag;
 

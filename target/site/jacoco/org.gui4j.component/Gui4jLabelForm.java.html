@@ -227,7 +227,7 @@ public class Gui4jLabelForm extends Gui4jJComponent {
 <span class="nc" id="L227">    int vSpacing = 0;</span>
 <span class="nc bnc" id="L228" title="All 2 branches missed.">    if (vspCall != null) {</span>
 <span class="nc" id="L229">      Integer vspCallResult =</span>
-<span class="nc" id="L230">          (Integer) vspCall.getValue(gui4jCallBase, Collections.EMPTY_MAP, new Integer(0));</span>
+<span class="nc" id="L230">          (Integer) vspCall.getValue(gui4jCallBase, Collections.EMPTY_MAP, Integer.valueOf(0));</span>
 <span class="nc bnc" id="L231" title="All 2 branches missed.">      if (vspCallResult != null) {</span>
 <span class="nc" id="L232">        vSpacing = vspCallResult.intValue();</span>
       }
@@ -239,7 +239,7 @@ public class Gui4jLabelForm extends Gui4jJComponent {
 <span class="nc" id="L239">    int hSpacing = 0;</span>
 <span class="nc bnc" id="L240" title="All 2 branches missed.">    if (hspCall != null) {</span>
 <span class="nc" id="L241">      Integer hspCallResult =</span>
-<span class="nc" id="L242">          (Integer) hspCall.getValue(gui4jCallBase, Collections.EMPTY_MAP, new Integer(0));</span>
+<span class="nc" id="L242">          (Integer) hspCall.getValue(gui4jCallBase, Collections.EMPTY_MAP, Integer.valueOf(0));</span>
 <span class="nc bnc" id="L243" title="All 2 branches missed.">      if (hspCallResult != null) {</span>
 <span class="nc" id="L244">        hSpacing = hspCallResult.intValue();</span>
       }

@@ -91,7 +91,7 @@ public class JSplitPaneExtended extends JSplitPane {
   public void setDividerBorderVisible(boolean newVisibility) {
     if (isDividerBorderVisible() == null
         || isDividerBorderVisible().booleanValue() != newVisibility) {
-      dividerBorderVisible = new Boolean(newVisibility);
+      dividerBorderVisible = Boolean.valueOf(newVisibility);
       updateUI();
     }
   }

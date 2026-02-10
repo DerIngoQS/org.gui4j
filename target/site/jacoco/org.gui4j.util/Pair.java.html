@@ -7,6 +7,7 @@ import java.io.Serializable;
  * &lt;/code&gt; are immutable.
  */
 <span class="nc" id="L9">public class Pair implements Serializable {</span>
+  private static final long serialVersionUID = 1L;
   private final Object first;
   private final Object second;
 
@@ -16,12 +17,12 @@ import java.io.Serializable;
    * @param first must be different from null
    * @param second must be different from null
    */
-<span class="nc" id="L19">  public Pair(Object first, Object second) {</span>
-<span class="nc bnc" id="L20" title="All 2 branches missed.">    assert first != null;</span>
-<span class="nc bnc" id="L21" title="All 2 branches missed.">    assert second != null;</span>
-<span class="nc" id="L22">    this.first = first;</span>
-<span class="nc" id="L23">    this.second = second;</span>
-<span class="nc" id="L24">  }</span>
+<span class="nc" id="L20">  public Pair(Object first, Object second) {</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">    assert first != null;</span>
+<span class="nc bnc" id="L22" title="All 2 branches missed.">    assert second != null;</span>
+<span class="nc" id="L23">    this.first = first;</span>
+<span class="nc" id="L24">    this.second = second;</span>
+<span class="nc" id="L25">  }</span>
 
   /**
    * Returns the first.
@@ -29,7 +30,7 @@ import java.io.Serializable;
    * @return Object
    */
   public Object getFirst() {
-<span class="nc" id="L32">    return first;</span>
+<span class="nc" id="L33">    return first;</span>
   }
 
   /**
@@ -38,21 +39,21 @@ import java.io.Serializable;
    * @return Object
    */
   public Object getSecond() {
-<span class="nc" id="L41">    return second;</span>
+<span class="nc" id="L42">    return second;</span>
   }
 
   /**
    * @see java.lang.Object#equals(Object)
    */
   public boolean equals(Object obj) {
-<span class="nc bnc" id="L48" title="All 2 branches missed.">    if (obj == this) {</span>
-<span class="nc" id="L49">      return true;</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">    if (obj == this) {</span>
+<span class="nc" id="L50">      return true;</span>
     }
-<span class="nc bnc" id="L51" title="All 2 branches missed.">    if (!(obj instanceof Pair)) {</span>
-<span class="nc" id="L52">      return false;</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">    if (!(obj instanceof Pair)) {</span>
+<span class="nc" id="L53">      return false;</span>
     }
-<span class="nc" id="L54">    Pair pair = (Pair) obj;</span>
-<span class="nc bnc" id="L55" title="All 4 branches missed.">    return first.equals(pair.first) &amp;&amp; second.equals(pair.second);</span>
+<span class="nc" id="L55">    Pair pair = (Pair) obj;</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">    return first.equals(pair.first) &amp;&amp; second.equals(pair.second);</span>
   }
 
   /*
@@ -60,18 +61,18 @@ import java.io.Serializable;
    * KKB, 17.3.04: hashCode calculated after &quot;Effective Java&quot;, Item 8
    */
   public int hashCode() {
-<span class="nc" id="L63">    int result = 17;</span>
-<span class="nc" id="L64">    result = 37 * result + first.hashCode();</span>
-<span class="nc" id="L65">    result = 37 * result + second.hashCode();</span>
+<span class="nc" id="L64">    int result = 17;</span>
+<span class="nc" id="L65">    result = 37 * result + first.hashCode();</span>
+<span class="nc" id="L66">    result = 37 * result + second.hashCode();</span>
 
-<span class="nc" id="L67">    return result;</span>
+<span class="nc" id="L68">    return result;</span>
   }
 
   /**
    * @see java.lang.Object#toString()
    */
   public String toString() {
-<span class="nc" id="L74">    return &quot;(&quot; + first + &quot;, &quot; + second + &quot;)&quot;;</span>
+<span class="nc" id="L75">    return &quot;(&quot; + first + &quot;, &quot; + second + &quot;)&quot;;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

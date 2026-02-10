@@ -115,11 +115,11 @@ import org.gui4j.Gui4jWindow;
 <span class="nc" id="L115">    }</span>
 
     protected static Result getResult(int i) {
-<span class="nc" id="L118">      return (Result) resultMap.get(new Integer(i));</span>
+<span class="nc" id="L118">      return (Result) resultMap.get(Integer.valueOf(i));</span>
     }
 
 <span class="nc" id="L121">    private Result(int i) {</span>
-<span class="nc" id="L122">      resultMap.put(new Integer(i), this);</span>
+<span class="nc" id="L122">      resultMap.put(Integer.valueOf(i), this);</span>
 <span class="nc" id="L123">    }</span>
   }
 }

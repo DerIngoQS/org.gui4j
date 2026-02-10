@@ -11,7 +11,7 @@ final class Gui4jAccessStatic extends Gui4jAccessImpl {
 <span class="nc" id="L11">    startIndex++; // accessPath.charAt(startIndex)=':'</span>
 <span class="nc" id="L12">    int endIndex = accessPath.indexOf('.', startIndex);</span>
 <span class="nc bnc" id="L13" title="All 2 branches missed.">    if (endIndex == -1) {</span>
-<span class="nc" id="L14">      Object[] args = {accessPath, new Integer(startIndex)};</span>
+<span class="nc" id="L14">      Object[] args = {accessPath, Integer.valueOf(startIndex)};</span>
 <span class="nc" id="L15">      throw new Gui4jUncheckedException.ResourceError(</span>
 <span class="nc" id="L16">          parseCtx.getConfigurationName(),</span>
 <span class="nc" id="L17">          parseCtx.getLineNumber(),</span>

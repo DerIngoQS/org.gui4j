@@ -115,11 +115,11 @@ public final class Dialog {
     }
 
     protected static Result getResult(int i) {
-      return (Result) resultMap.get(new Integer(i));
+      return (Result) resultMap.get(Integer.valueOf(i));
     }
 
     private Result(int i) {
-      resultMap.put(new Integer(i), this);
+      resultMap.put(Integer.valueOf(i), this);
     }
   }
 }

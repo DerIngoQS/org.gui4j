@@ -50,7 +50,7 @@ public final class Gui4jGridLayoutFactory extends Gui4jJComponentFactory {
         int row = getIntValue(gui4jComponentContainer, child, ROW);
 
         if (row < 0 || row >= rows) {
-          Object[] args = {new Integer(row), new Integer(rows)};
+          Object[] args = {Integer.valueOf(row), Integer.valueOf(rows)};
           throw new Gui4jUncheckedException.ResourceError(
               gui4jComponentContainer.getConfigurationName(),
               Gui4jComponentContainerManager.getLineNumber(child),
@@ -61,7 +61,7 @@ public final class Gui4jGridLayoutFactory extends Gui4jJComponentFactory {
         int col = getIntValue(gui4jComponentContainer, child, COL);
 
         if (col < 0 || col >= cols) {
-          Object[] args = {new Integer(col), new Integer(cols)};
+          Object[] args = {Integer.valueOf(col), Integer.valueOf(cols)};
           throw new Gui4jUncheckedException.ResourceError(
               gui4jComponentContainer.getConfigurationName(),
               Gui4jComponentContainerManager.getLineNumber(child),
@@ -87,7 +87,7 @@ public final class Gui4jGridLayoutFactory extends Gui4jJComponentFactory {
         }
 
         if (gui4jGridLayout.isDefined(row, col)) {
-          Object[] args = {new Integer(row), new Integer(col)};
+          Object[] args = {Integer.valueOf(row), Integer.valueOf(col)};
           new Gui4jUncheckedException.ResourceError(
               gui4jComponentContainer.getConfigurationName(),
               Gui4jComponentContainerManager.getLineNumber(child),

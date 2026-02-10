@@ -29,6 +29,7 @@ import org.gui4j.exception.Gui4jUncheckedException;
  * implements feature which are available for java.awt.Component.
  */
 public abstract class Gui4jAbstractComponent implements ErrorTags, Gui4jComponent, Serializable {
+  private static final long serialVersionUID = 1L;
   private static final Log mLogger = LogFactory.getLog(Gui4jAbstractComponent.class);
 
   public static final String STORAGE_POPUP_CONTEXT = "context";

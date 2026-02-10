@@ -35,11 +35,11 @@ public class Gui4jEditFactory extends Gui4jJComponentFactory {
   public static final Map mHorizontalAlign = new HashMap();
 
   static {
-    mHorizontalAlign.put("left", new Integer(SwingConstants.LEFT));
-    mHorizontalAlign.put("center", new Integer(SwingConstants.CENTER));
-    mHorizontalAlign.put("right", new Integer(SwingConstants.RIGHT));
-    mHorizontalAlign.put("leading", new Integer(SwingConstants.LEADING));
-    mHorizontalAlign.put("trailing", new Integer(SwingConstants.TRAILING));
+    mHorizontalAlign.put("left", Integer.valueOf(SwingConstants.LEFT));
+    mHorizontalAlign.put("center", Integer.valueOf(SwingConstants.CENTER));
+    mHorizontalAlign.put("right", Integer.valueOf(SwingConstants.RIGHT));
+    mHorizontalAlign.put("leading", Integer.valueOf(SwingConstants.LEADING));
+    mHorizontalAlign.put("trailing", Integer.valueOf(SwingConstants.TRAILING));
   }
 
   public void addToplevelAttributes(List attrList, Filter filter) {

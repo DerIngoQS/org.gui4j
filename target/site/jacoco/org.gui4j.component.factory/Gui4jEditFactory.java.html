@@ -35,11 +35,11 @@ import org.gui4j.util.Filter;
 <span class="nc" id="L35">  public static final Map mHorizontalAlign = new HashMap();</span>
 
   static {
-<span class="nc" id="L38">    mHorizontalAlign.put(&quot;left&quot;, new Integer(SwingConstants.LEFT));</span>
-<span class="nc" id="L39">    mHorizontalAlign.put(&quot;center&quot;, new Integer(SwingConstants.CENTER));</span>
-<span class="nc" id="L40">    mHorizontalAlign.put(&quot;right&quot;, new Integer(SwingConstants.RIGHT));</span>
-<span class="nc" id="L41">    mHorizontalAlign.put(&quot;leading&quot;, new Integer(SwingConstants.LEADING));</span>
-<span class="nc" id="L42">    mHorizontalAlign.put(&quot;trailing&quot;, new Integer(SwingConstants.TRAILING));</span>
+<span class="nc" id="L38">    mHorizontalAlign.put(&quot;left&quot;, Integer.valueOf(SwingConstants.LEFT));</span>
+<span class="nc" id="L39">    mHorizontalAlign.put(&quot;center&quot;, Integer.valueOf(SwingConstants.CENTER));</span>
+<span class="nc" id="L40">    mHorizontalAlign.put(&quot;right&quot;, Integer.valueOf(SwingConstants.RIGHT));</span>
+<span class="nc" id="L41">    mHorizontalAlign.put(&quot;leading&quot;, Integer.valueOf(SwingConstants.LEADING));</span>
+<span class="nc" id="L42">    mHorizontalAlign.put(&quot;trailing&quot;, Integer.valueOf(SwingConstants.TRAILING));</span>
 <span class="nc" id="L43">  }</span>
 
   public void addToplevelAttributes(List attrList, Filter filter) {

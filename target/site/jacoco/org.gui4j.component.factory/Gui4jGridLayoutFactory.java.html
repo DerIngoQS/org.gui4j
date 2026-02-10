@@ -50,7 +50,7 @@ import org.gui4j.util.Filter;
 <span class="nc" id="L50">        int row = getIntValue(gui4jComponentContainer, child, ROW);</span>
 
 <span class="nc bnc" id="L52" title="All 4 branches missed.">        if (row &lt; 0 || row &gt;= rows) {</span>
-<span class="nc" id="L53">          Object[] args = {new Integer(row), new Integer(rows)};</span>
+<span class="nc" id="L53">          Object[] args = {Integer.valueOf(row), Integer.valueOf(rows)};</span>
 <span class="nc" id="L54">          throw new Gui4jUncheckedException.ResourceError(</span>
 <span class="nc" id="L55">              gui4jComponentContainer.getConfigurationName(),</span>
 <span class="nc" id="L56">              Gui4jComponentContainerManager.getLineNumber(child),</span>
@@ -61,7 +61,7 @@ import org.gui4j.util.Filter;
 <span class="nc" id="L61">        int col = getIntValue(gui4jComponentContainer, child, COL);</span>
 
 <span class="nc bnc" id="L63" title="All 4 branches missed.">        if (col &lt; 0 || col &gt;= cols) {</span>
-<span class="nc" id="L64">          Object[] args = {new Integer(col), new Integer(cols)};</span>
+<span class="nc" id="L64">          Object[] args = {Integer.valueOf(col), Integer.valueOf(cols)};</span>
 <span class="nc" id="L65">          throw new Gui4jUncheckedException.ResourceError(</span>
 <span class="nc" id="L66">              gui4jComponentContainer.getConfigurationName(),</span>
 <span class="nc" id="L67">              Gui4jComponentContainerManager.getLineNumber(child),</span>
@@ -87,7 +87,7 @@ import org.gui4j.util.Filter;
         }
 
 <span class="nc bnc" id="L89" title="All 2 branches missed.">        if (gui4jGridLayout.isDefined(row, col)) {</span>
-<span class="nc" id="L90">          Object[] args = {new Integer(row), new Integer(col)};</span>
+<span class="nc" id="L90">          Object[] args = {Integer.valueOf(row), Integer.valueOf(col)};</span>
 <span class="nc" id="L91">          new Gui4jUncheckedException.ResourceError(</span>
 <span class="nc" id="L92">              gui4jComponentContainer.getConfigurationName(),</span>
 <span class="nc" id="L93">              Gui4jComponentContainerManager.getLineNumber(child),</span>

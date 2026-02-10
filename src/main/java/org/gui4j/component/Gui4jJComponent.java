@@ -1,6 +1,7 @@
 package org.gui4j.component;
 
 import java.awt.KeyboardFocusManager;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JComponent;
@@ -92,7 +93,8 @@ public abstract class Gui4jJComponent extends Gui4jAbstractPopupComponent implem
       Gui4jCallBase gui4jCallBase,
       Gui4jQualifiedComponent gui4jComponentInPath) {
     try {
-      JComponent jComponent = (JComponent) getComponentClass().newInstance();
+      JComponent jComponent =
+          (JComponent) getComponentClass().getDeclaredConstructor().newInstance();
       Gui4jComponentInstance gui4jComponentInstance =
           new Gui4jComponentInstance(gui4jSwingContainer, jComponent, gui4jComponentInPath);
       return gui4jComponentInstance;
@@ -100,6 +102,12 @@ public abstract class Gui4jJComponent extends Gui4jAbstractPopupComponent implem
       throw new Gui4jUncheckedException.ProgrammingError(
           PROGRAMMING_ERROR_illegal_access_exception, e);
     } catch (InstantiationException e) {
+      throw new Gui4jUncheckedException.ProgrammingError(
+          PROGRAMMING_ERROR_instantiation_exception, e);
+    } catch (NoSuchMethodException e) {
+      throw new Gui4jUncheckedException.ProgrammingError(
+          PROGRAMMING_ERROR_instantiation_exception, e);
+    } catch (InvocationTargetException e) {
       throw new Gui4jUncheckedException.ProgrammingError(
           PROGRAMMING_ERROR_instantiation_exception, e);
     }

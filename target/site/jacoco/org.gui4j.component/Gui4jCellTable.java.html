@@ -423,55 +423,56 @@ public class Gui4jCellTable extends Gui4jJComponent {
   // ***************************************************************************************
 
   public class Gui4jColumnTable implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jCall mEnabled;
     protected final Gui4jCall mColumnName;
     protected final Gui4jCall mColumnValue;
     private final Gui4jTextAttribute mGui4jTextAttribute;
 
-<span class="nc" id="L431">    private double mWeight = 1.0;</span>
+<span class="nc" id="L432">    private double mWeight = 1.0;</span>
 
     public Gui4jColumnTable(
         int col,
         Gui4jCall columnName,
         Gui4jCall columnValue,
         Gui4jTextAttribute gui4jTextAttribute,
-<span class="nc" id="L438">        Gui4jCall enabled) {</span>
-<span class="nc" id="L439">      mColumnName = columnName;</span>
-<span class="nc" id="L440">      mColumnValue = columnValue;</span>
-<span class="nc" id="L441">      mEnabled = enabled;</span>
-<span class="nc" id="L442">      mGui4jTextAttribute = gui4jTextAttribute;</span>
-<span class="nc" id="L443">      setColumn(col, this);</span>
-<span class="nc" id="L444">    }</span>
+<span class="nc" id="L439">        Gui4jCall enabled) {</span>
+<span class="nc" id="L440">      mColumnName = columnName;</span>
+<span class="nc" id="L441">      mColumnValue = columnValue;</span>
+<span class="nc" id="L442">      mEnabled = enabled;</span>
+<span class="nc" id="L443">      mGui4jTextAttribute = gui4jTextAttribute;</span>
+<span class="nc" id="L444">      setColumn(col, this);</span>
+<span class="nc" id="L445">    }</span>
 
     public String getName(Gui4jCallBase gui4jController) {
-<span class="nc bnc" id="L447" title="All 2 branches missed.">      if (mColumnName != null) {</span>
-<span class="nc" id="L448">        Map m = null;</span>
-<span class="nc bnc" id="L449" title="All 2 branches missed.">        if (mColumnValue != null) {</span>
-<span class="nc" id="L450">          Map nullMap = null;</span>
-<span class="nc" id="L451">          m = new Gui4jMap1(PARAM_COLVALUE, mColumnValue.getValue(gui4jController, nullMap, null));</span>
+<span class="nc bnc" id="L448" title="All 2 branches missed.">      if (mColumnName != null) {</span>
+<span class="nc" id="L449">        Map m = null;</span>
+<span class="nc bnc" id="L450" title="All 2 branches missed.">        if (mColumnValue != null) {</span>
+<span class="nc" id="L451">          Map nullMap = null;</span>
+<span class="nc" id="L452">          m = new Gui4jMap1(PARAM_COLVALUE, mColumnValue.getValue(gui4jController, nullMap, null));</span>
         }
-<span class="nc" id="L453">        return (String) mColumnName.getValue(gui4jController, m, null);</span>
+<span class="nc" id="L454">        return (String) mColumnName.getValue(gui4jController, m, null);</span>
       } else {
-<span class="nc" id="L455">        return &quot;&quot;;</span>
+<span class="nc" id="L456">        return &quot;&quot;;</span>
       }
     }
 
     public boolean isEnabled(Gui4jCallBase gui4jController) {
-<span class="nc" id="L460">      Map m = null;</span>
-<span class="nc bnc" id="L461" title="All 4 branches missed.">      return mEnabled == null || !Boolean.FALSE.equals(mEnabled.getValue(gui4jController, m, null));</span>
+<span class="nc" id="L461">      Map m = null;</span>
+<span class="nc bnc" id="L462" title="All 4 branches missed.">      return mEnabled == null || !Boolean.FALSE.equals(mEnabled.getValue(gui4jController, m, null));</span>
     }
 
     public Class getColumnClass() {
-<span class="nc bnc" id="L465" title="All 2 branches missed.">      if (mColumnValue != null) {</span>
-<span class="nc" id="L466">        return mColumnValue.getResultClass();</span>
+<span class="nc bnc" id="L466" title="All 2 branches missed.">      if (mColumnValue != null) {</span>
+<span class="nc" id="L467">        return mColumnValue.getResultClass();</span>
       } else {
-<span class="nc" id="L468">        return Object.class;</span>
+<span class="nc" id="L469">        return Object.class;</span>
       }
     }
 
     public void setColumnAttributes(TableColumn tableColumn) {
       // currently empty
-<span class="nc" id="L474">    }</span>
+<span class="nc" id="L475">    }</span>
 
     /**
      * Returns the weight.
@@ -479,7 +480,7 @@ public class Gui4jCellTable extends Gui4jJComponent {
      * @return double
      */
     public double getWeight() {
-<span class="nc" id="L482">      return mWeight;</span>
+<span class="nc" id="L483">      return mWeight;</span>
     }
 
     /**
@@ -488,8 +489,8 @@ public class Gui4jCellTable extends Gui4jJComponent {
      * @param weight The weight to set
      */
     public void setWeight(double weight) {
-<span class="nc" id="L491">      mWeight = weight;</span>
-<span class="nc" id="L492">    }</span>
+<span class="nc" id="L492">      mWeight = weight;</span>
+<span class="nc" id="L493">    }</span>
 
     /**
      * Returns the gui4jTextAttribute.
@@ -497,7 +498,7 @@ public class Gui4jCellTable extends Gui4jJComponent {
      * @return Gui4jTextAttribute
      */
     public Gui4jTextAttribute getGui4jTextAttribute() {
-<span class="nc" id="L500">      return mGui4jTextAttribute;</span>
+<span class="nc" id="L501">      return mGui4jTextAttribute;</span>
     }
   }
 
@@ -518,104 +519,105 @@ public class Gui4jCellTable extends Gui4jJComponent {
     private Enabled mEnabledInstance;
 
     public CellRenderer(
-<span class="nc" id="L521">        Gui4jComponentInstance gui4jComponentInstance, Gui4jJTable table, Enabled enabledInstance) {</span>
-<span class="nc" id="L522">      mEnabledInstance = enabledInstance;</span>
-<span class="nc" id="L523">      Gui4jCallBase gui4jController = gui4jComponentInstance.getGui4jCallBase();</span>
-<span class="nc" id="L524">      mDefaultBackground = getBackground();</span>
-<span class="nc" id="L525">      mDefaultForeground = getForeground();</span>
-<span class="nc" id="L526">      mDefaultFont = getFont();</span>
+<span class="nc" id="L522">        Gui4jComponentInstance gui4jComponentInstance, Gui4jJTable table, Enabled enabledInstance) {</span>
+<span class="nc" id="L523">      mEnabledInstance = enabledInstance;</span>
+<span class="nc" id="L524">      Gui4jCallBase gui4jController = gui4jComponentInstance.getGui4jCallBase();</span>
+<span class="nc" id="L525">      mDefaultBackground = getBackground();</span>
+<span class="nc" id="L526">      mDefaultForeground = getForeground();</span>
+<span class="nc" id="L527">      mDefaultFont = getFont();</span>
 
-<span class="nc" id="L528">      mForeground = new Color[mRows][mCols];</span>
-<span class="nc" id="L529">      mBackground = new Color[mRows][mCols];</span>
-<span class="nc" id="L530">      mAlignment = new int[mRows][mCols];</span>
-<span class="nc" id="L531">      mFont = new Font[mRows][mCols];</span>
+<span class="nc" id="L529">      mForeground = new Color[mRows][mCols];</span>
+<span class="nc" id="L530">      mBackground = new Color[mRows][mCols];</span>
+<span class="nc" id="L531">      mAlignment = new int[mRows][mCols];</span>
+<span class="nc" id="L532">      mFont = new Font[mRows][mCols];</span>
 
-<span class="nc" id="L533">      booleanCellRenderer = new BooleanTableCellRenderer(noFocusBorder);</span>
+<span class="nc" id="L534">      booleanCellRenderer = new BooleanTableCellRenderer(noFocusBorder);</span>
 
-<span class="nc" id="L535">      Gui4jTextAttribute[] columnTextAttribute = new Gui4jTextAttribute[mCols];</span>
-<span class="nc bnc" id="L536" title="All 2 branches missed.">      for (int col = 0; col &lt; mCols; col++) {</span>
-<span class="nc" id="L537">        Gui4jColumnTable tableColumn = mColumn[col];</span>
-<span class="nc bnc" id="L538" title="All 2 branches missed.">        if (tableColumn != null) {</span>
-<span class="nc" id="L539">          columnTextAttribute[col] = tableColumn.getGui4jTextAttribute();</span>
+<span class="nc" id="L536">      Gui4jTextAttribute[] columnTextAttribute = new Gui4jTextAttribute[mCols];</span>
+<span class="nc bnc" id="L537" title="All 2 branches missed.">      for (int col = 0; col &lt; mCols; col++) {</span>
+<span class="nc" id="L538">        Gui4jColumnTable tableColumn = mColumn[col];</span>
+<span class="nc bnc" id="L539" title="All 2 branches missed.">        if (tableColumn != null) {</span>
+<span class="nc" id="L540">          columnTextAttribute[col] = tableColumn.getGui4jTextAttribute();</span>
         }
       }
 
-<span class="nc bnc" id="L543" title="All 2 branches missed.">      for (int row = 0; row &lt; mRows; row++) {</span>
-<span class="nc bnc" id="L544" title="All 2 branches missed.">        for (int col = 0; col &lt; mCols; col++) {</span>
-<span class="nc" id="L545">          Gui4jTextAttribute cellTextAttribute = null;</span>
-<span class="nc" id="L546">          Gui4jCell cell = mCell[row][col];</span>
-<span class="nc bnc" id="L547" title="All 2 branches missed.">          if (cell != null) {</span>
-<span class="nc" id="L548">            cellTextAttribute = cell.getGui4jTextAttribute();</span>
+<span class="nc bnc" id="L544" title="All 2 branches missed.">      for (int row = 0; row &lt; mRows; row++) {</span>
+<span class="nc bnc" id="L545" title="All 2 branches missed.">        for (int col = 0; col &lt; mCols; col++) {</span>
+<span class="nc" id="L546">          Gui4jTextAttribute cellTextAttribute = null;</span>
+<span class="nc" id="L547">          Gui4jCell cell = mCell[row][col];</span>
+<span class="nc bnc" id="L548" title="All 2 branches missed.">          if (cell != null) {</span>
+<span class="nc" id="L549">            cellTextAttribute = cell.getGui4jTextAttribute();</span>
           }
-<span class="nc" id="L550">          mForeground[row][col] =</span>
-<span class="nc" id="L551">              Gui4jTextAttribute.getForeground(</span>
+<span class="nc" id="L551">          mForeground[row][col] =</span>
+<span class="nc" id="L552">              Gui4jTextAttribute.getForeground(</span>
                   gui4jController,
                   cellTextAttribute,
                   columnTextAttribute[col],
                   mRowTextAttribute[row]);
-<span class="nc" id="L556">          mBackground[row][col] =</span>
-<span class="nc" id="L557">              Gui4jTextAttribute.getBackground(</span>
+<span class="nc" id="L557">          mBackground[row][col] =</span>
+<span class="nc" id="L558">              Gui4jTextAttribute.getBackground(</span>
                   gui4jController,
                   cellTextAttribute,
                   columnTextAttribute[col],
                   mRowTextAttribute[row]);
-<span class="nc" id="L562">          mFont[row][col] =</span>
-<span class="nc" id="L563">              Gui4jTextAttribute.getFont(</span>
+<span class="nc" id="L563">          mFont[row][col] =</span>
+<span class="nc" id="L564">              Gui4jTextAttribute.getFont(</span>
                   gui4jController,
                   cellTextAttribute,
                   columnTextAttribute[col],
                   mRowTextAttribute[row]);
-<span class="nc" id="L568">          mAlignment[row][col] =</span>
-<span class="nc" id="L569">              Gui4jTextAttribute.getAlignment(</span>
+<span class="nc" id="L569">          mAlignment[row][col] =</span>
+<span class="nc" id="L570">              Gui4jTextAttribute.getAlignment(</span>
                   cellTextAttribute, columnTextAttribute[col], mRowTextAttribute[row]);
         }
       }
-<span class="nc" id="L573">    }</span>
+<span class="nc" id="L574">    }</span>
 
     public Component getTableCellRendererComponent(
         JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-<span class="nc" id="L577">      setForeground(mDefaultForeground);</span>
-<span class="nc" id="L578">      setBackground(mDefaultBackground);</span>
-<span class="nc" id="L579">      setFont(mDefaultFont);</span>
-<span class="nc" id="L580">      setEnabled(mEnabledInstance.isEnabled(row, column));</span>
+<span class="nc" id="L578">      setForeground(mDefaultForeground);</span>
+<span class="nc" id="L579">      setBackground(mDefaultBackground);</span>
+<span class="nc" id="L580">      setFont(mDefaultFont);</span>
+<span class="nc" id="L581">      setEnabled(mEnabledInstance.isEnabled(row, column));</span>
 
       JComponent c;
-<span class="nc bnc" id="L583" title="All 6 branches missed.">      if ((value != null &amp;&amp; value.getClass() == Boolean.class)</span>
-<span class="nc bnc" id="L584" title="All 2 branches missed.">          || (value == null &amp;&amp; table.getColumnClass(column).equals(Boolean.class))) {</span>
-<span class="nc" id="L585">        c =</span>
+<span class="nc bnc" id="L584" title="All 6 branches missed.">      if ((value != null &amp;&amp; value.getClass() == Boolean.class)</span>
+<span class="nc bnc" id="L585" title="All 2 branches missed.">          || (value == null &amp;&amp; table.getColumnClass(column).equals(Boolean.class))) {</span>
+<span class="nc" id="L586">        c =</span>
             (JComponent)
-<span class="nc" id="L587">                booleanCellRenderer.getTableCellRendererComponent(</span>
+<span class="nc" id="L588">                booleanCellRenderer.getTableCellRendererComponent(</span>
                     table, value, isSelected, hasFocus, row, column);
       } else {
-<span class="nc" id="L590">        c =</span>
+<span class="nc" id="L591">        c =</span>
             (JComponent)
-<span class="nc" id="L592">                super.getTableCellRendererComponent(</span>
+<span class="nc" id="L593">                super.getTableCellRendererComponent(</span>
                     table, value, isSelected, hasFocus, row, column);
       }
 
-<span class="nc bnc" id="L596" title="All 2 branches missed.">      if (!isSelected) {</span>
-<span class="nc" id="L597">        Color foreground = mForeground[row][column];</span>
-<span class="nc bnc" id="L598" title="All 2 branches missed.">        if (foreground != null) {</span>
-<span class="nc" id="L599">          c.setForeground(foreground);</span>
+<span class="nc bnc" id="L597" title="All 2 branches missed.">      if (!isSelected) {</span>
+<span class="nc" id="L598">        Color foreground = mForeground[row][column];</span>
+<span class="nc bnc" id="L599" title="All 2 branches missed.">        if (foreground != null) {</span>
+<span class="nc" id="L600">          c.setForeground(foreground);</span>
         }
-<span class="nc" id="L601">        Color background = mBackground[row][column];</span>
-<span class="nc bnc" id="L602" title="All 2 branches missed.">        if (background != null) {</span>
-<span class="nc" id="L603">          c.setBackground(background);</span>
+<span class="nc" id="L602">        Color background = mBackground[row][column];</span>
+<span class="nc bnc" id="L603" title="All 2 branches missed.">        if (background != null) {</span>
+<span class="nc" id="L604">          c.setBackground(background);</span>
         }
       }
-<span class="nc" id="L606">      Font font = mFont[row][column];</span>
-<span class="nc bnc" id="L607" title="All 2 branches missed.">      if (font != null) {</span>
-<span class="nc" id="L608">        c.setFont(font);</span>
+<span class="nc" id="L607">      Font font = mFont[row][column];</span>
+<span class="nc bnc" id="L608" title="All 2 branches missed.">      if (font != null) {</span>
+<span class="nc" id="L609">        c.setFont(font);</span>
       }
-<span class="nc bnc" id="L610" title="All 2 branches missed.">      if (c instanceof JLabel) {</span>
-<span class="nc" id="L611">        JLabel l = (JLabel) c;</span>
-<span class="nc" id="L612">        l.setHorizontalAlignment(mAlignment[row][column]);</span>
+<span class="nc bnc" id="L611" title="All 2 branches missed.">      if (c instanceof JLabel) {</span>
+<span class="nc" id="L612">        JLabel l = (JLabel) c;</span>
+<span class="nc" id="L613">        l.setHorizontalAlignment(mAlignment[row][column]);</span>
       }
-<span class="nc" id="L614">      return c;</span>
+<span class="nc" id="L615">      return c;</span>
     }
   }
 
   public final class Gui4jCell implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jCall mGetValue;
     private final Gui4jCall mSetValue;
     private final Gui4jCall mEnabled;
@@ -639,159 +641,159 @@ public class Gui4jCellTable extends Gui4jJComponent {
         Gui4jCall stringConvert,
         int row,
         int col,
-<span class="nc" id="L642">        Gui4jTextAttribute gui4jTextAttribute) {</span>
-<span class="nc" id="L643">      mGetValue = getValue;</span>
-<span class="nc" id="L644">      mSetValue = setValue;</span>
-<span class="nc" id="L645">      mEnabled = enabled;</span>
-<span class="nc" id="L646">      mCol = col;</span>
-<span class="nc" id="L647">      mRow = row;</span>
-<span class="nc" id="L648">      mGui4jTextAttribute = gui4jTextAttribute;</span>
-<span class="nc" id="L649">      mList = list;</span>
-<span class="nc" id="L650">      mListItem = listItem;</span>
-<span class="nc" id="L651">      mListNullItem = listNullItem;</span>
-<span class="nc" id="L652">      mListEditable = listEditable;</span>
-<span class="nc" id="L653">      mStringConvert = stringConvert;</span>
-<span class="nc" id="L654">      setCell(row, col, this);</span>
-<span class="nc" id="L655">    }</span>
+<span class="nc" id="L644">        Gui4jTextAttribute gui4jTextAttribute) {</span>
+<span class="nc" id="L645">      mGetValue = getValue;</span>
+<span class="nc" id="L646">      mSetValue = setValue;</span>
+<span class="nc" id="L647">      mEnabled = enabled;</span>
+<span class="nc" id="L648">      mCol = col;</span>
+<span class="nc" id="L649">      mRow = row;</span>
+<span class="nc" id="L650">      mGui4jTextAttribute = gui4jTextAttribute;</span>
+<span class="nc" id="L651">      mList = list;</span>
+<span class="nc" id="L652">      mListItem = listItem;</span>
+<span class="nc" id="L653">      mListNullItem = listNullItem;</span>
+<span class="nc" id="L654">      mListEditable = listEditable;</span>
+<span class="nc" id="L655">      mStringConvert = stringConvert;</span>
+<span class="nc" id="L656">      setCell(row, col, this);</span>
+<span class="nc" id="L657">    }</span>
 
     protected void prepareEditor(Gui4jCallBase gui4jController, TableCellEditor editor) {
-<span class="nc bnc" id="L658" title="All 2 branches missed.">      if (mList != null) {</span>
-<span class="nc" id="L659">        ComboBoxCellEdit edit = (ComboBoxCellEdit) editor;</span>
-<span class="nc" id="L660">        Map m = getParamMap(gui4jController, true);</span>
-<span class="nc" id="L661">        edit.setParamMap(m);</span>
-<span class="nc" id="L662">        String nullItemText = null;</span>
-<span class="nc bnc" id="L663" title="All 2 branches missed.">        if (mListNullItem != null) {</span>
-<span class="nc" id="L664">          nullItemText = (String) mListNullItem.getValueNoParams(gui4jController, &quot;(undefined)&quot;);</span>
-<span class="nc bnc" id="L665" title="All 4 branches missed.">          if (nullItemText == null || nullItemText.length() == 0) {</span>
-<span class="nc" id="L666">            nullItemText = &quot; &quot;; // combobox can't deal correctly</span>
+<span class="nc bnc" id="L660" title="All 2 branches missed.">      if (mList != null) {</span>
+<span class="nc" id="L661">        ComboBoxCellEdit edit = (ComboBoxCellEdit) editor;</span>
+<span class="nc" id="L662">        Map m = getParamMap(gui4jController, true);</span>
+<span class="nc" id="L663">        edit.setParamMap(m);</span>
+<span class="nc" id="L664">        String nullItemText = null;</span>
+<span class="nc bnc" id="L665" title="All 2 branches missed.">        if (mListNullItem != null) {</span>
+<span class="nc" id="L666">          nullItemText = (String) mListNullItem.getValueNoParams(gui4jController, &quot;(undefined)&quot;);</span>
+<span class="nc bnc" id="L667" title="All 4 branches missed.">          if (nullItemText == null || nullItemText.length() == 0) {</span>
+<span class="nc" id="L668">            nullItemText = &quot; &quot;; // combobox can't deal correctly</span>
             // with null elements and empty
             // strings
           }
         }
-<span class="nc" id="L671">        edit.setContent((Collection) m.get(PARAM_LIST), nullItemText);</span>
-<span class="nc" id="L672">        edit.setSelectedItem(m.get(PARAM_LIST_ITEM));</span>
+<span class="nc" id="L673">        edit.setContent((Collection) m.get(PARAM_LIST), nullItemText);</span>
+<span class="nc" id="L674">        edit.setSelectedItem(m.get(PARAM_LIST_ITEM));</span>
       }
-<span class="nc" id="L674">    }</span>
+<span class="nc" id="L676">    }</span>
 
     protected TableCellEditor getCellEditor(
         Gui4jCallBase gui4jController, Font font, TableCellEditor editor) {
-<span class="nc bnc" id="L678" title="All 2 branches missed.">      if (mList != null) {</span>
-<span class="nc bnc" id="L679" title="All 4 branches missed.">        if (mGui4jTextAttribute != null &amp;&amp; mGui4jTextAttribute.getFont() != null) {</span>
-<span class="nc" id="L680">          font = (Font) mGui4jTextAttribute.getFont().getValueNoParams(gui4jController, font);</span>
+<span class="nc bnc" id="L680" title="All 2 branches missed.">      if (mList != null) {</span>
+<span class="nc bnc" id="L681" title="All 4 branches missed.">        if (mGui4jTextAttribute != null &amp;&amp; mGui4jTextAttribute.getFont() != null) {</span>
+<span class="nc" id="L682">          font = (Font) mGui4jTextAttribute.getFont().getValueNoParams(gui4jController, font);</span>
         }
-<span class="nc" id="L682">        ComboBoxCellEdit edit =</span>
-<span class="nc" id="L683">            ComboBoxCellEdit.getInstance(</span>
+<span class="nc" id="L684">        ComboBoxCellEdit edit =</span>
+<span class="nc" id="L685">            ComboBoxCellEdit.getInstance(</span>
                 gui4jController, mGetValue, mStringConvert, PARAM_LIST_ITEM, font);
-<span class="nc" id="L685">        edit.setParamMap(getParamMap(gui4jController, true));</span>
-<span class="nc bnc" id="L686" title="All 2 branches missed.">        if (mListEditable != null) {</span>
-<span class="nc" id="L687">          Boolean editable = (Boolean) mListEditable.getValueNoParams(gui4jController, null);</span>
-<span class="nc" id="L688">          edit.setEditable(Boolean.TRUE.equals(editable));</span>
+<span class="nc" id="L687">        edit.setParamMap(getParamMap(gui4jController, true));</span>
+<span class="nc bnc" id="L688" title="All 2 branches missed.">        if (mListEditable != null) {</span>
+<span class="nc" id="L689">          Boolean editable = (Boolean) mListEditable.getValueNoParams(gui4jController, null);</span>
+<span class="nc" id="L690">          edit.setEditable(Boolean.TRUE.equals(editable));</span>
         }
 
-<span class="nc" id="L691">        return edit;</span>
+<span class="nc" id="L693">        return edit;</span>
       } else {
-<span class="nc" id="L693">        return editor;</span>
+<span class="nc" id="L695">        return editor;</span>
       }
     }
 
     boolean hasSetter(Gui4jCallBase gui4jController) {
-<span class="nc bnc" id="L698" title="All 4 branches missed.">      return mSetValue != null &amp;&amp; isEnabled(gui4jController);</span>
+<span class="nc bnc" id="L700" title="All 4 branches missed.">      return mSetValue != null &amp;&amp; isEnabled(gui4jController);</span>
     }
 
     private Map getParamMap(Gui4jCallBase gui4jController, boolean includeListItem) {
-<span class="nc" id="L702">      Map m = new HashMap();</span>
-<span class="nc" id="L703">      m.put(PARAM_COL, new Integer(mCol));</span>
-<span class="nc" id="L704">      m.put(PARAM_ROW, new Integer(mRow));</span>
+<span class="nc" id="L704">      Map m = new HashMap();</span>
+<span class="nc" id="L705">      m.put(PARAM_COL, Integer.valueOf(mCol));</span>
+<span class="nc" id="L706">      m.put(PARAM_ROW, Integer.valueOf(mRow));</span>
 
-<span class="nc" id="L706">      Gui4jCall columnValue = null;</span>
-<span class="nc bnc" id="L707" title="All 2 branches missed.">      if (mColumn[mCol] != null) {</span>
-<span class="nc" id="L708">        columnValue = mColumn[mCol].mColumnValue;</span>
+<span class="nc" id="L708">      Gui4jCall columnValue = null;</span>
+<span class="nc bnc" id="L709" title="All 2 branches missed.">      if (mColumn[mCol] != null) {</span>
+<span class="nc" id="L710">        columnValue = mColumn[mCol].mColumnValue;</span>
       }
-<span class="nc" id="L710">      Gui4jCall rowValue = mRowValue[mRow];</span>
-<span class="nc bnc" id="L711" title="All 2 branches missed.">      if (columnValue != null) {</span>
-<span class="nc" id="L712">        Map nullMap = null;</span>
-<span class="nc" id="L713">        m.put(PARAM_COLVALUE, columnValue.getValue(gui4jController, nullMap, null));</span>
+<span class="nc" id="L712">      Gui4jCall rowValue = mRowValue[mRow];</span>
+<span class="nc bnc" id="L713" title="All 2 branches missed.">      if (columnValue != null) {</span>
+<span class="nc" id="L714">        Map nullMap = null;</span>
+<span class="nc" id="L715">        m.put(PARAM_COLVALUE, columnValue.getValue(gui4jController, nullMap, null));</span>
       }
-<span class="nc bnc" id="L715" title="All 2 branches missed.">      if (rowValue != null) {</span>
-<span class="nc" id="L716">        Map nullMap = null;</span>
-<span class="nc" id="L717">        m.put(PARAM_ROWVALUE, rowValue.getValue(gui4jController, nullMap, null));</span>
+<span class="nc bnc" id="L717" title="All 2 branches missed.">      if (rowValue != null) {</span>
+<span class="nc" id="L718">        Map nullMap = null;</span>
+<span class="nc" id="L719">        m.put(PARAM_ROWVALUE, rowValue.getValue(gui4jController, nullMap, null));</span>
       }
 
-<span class="nc bnc" id="L720" title="All 2 branches missed.">      if (mList != null) {</span>
-<span class="nc" id="L721">        Collection collection = (Collection) mList.getValue(gui4jController, m, null);</span>
-<span class="nc" id="L722">        m.put(PARAM_LIST, collection);</span>
-<span class="nc bnc" id="L723" title="All 4 branches missed.">        if (includeListItem &amp;&amp; mListItem != null) {</span>
-<span class="nc" id="L724">          Object listItem = mListItem.getValue(gui4jController, m, null);</span>
-<span class="nc" id="L725">          m.put(PARAM_LIST_ITEM, listItem);</span>
+<span class="nc bnc" id="L722" title="All 2 branches missed.">      if (mList != null) {</span>
+<span class="nc" id="L723">        Collection collection = (Collection) mList.getValue(gui4jController, m, null);</span>
+<span class="nc" id="L724">        m.put(PARAM_LIST, collection);</span>
+<span class="nc bnc" id="L725" title="All 4 branches missed.">        if (includeListItem &amp;&amp; mListItem != null) {</span>
+<span class="nc" id="L726">          Object listItem = mListItem.getValue(gui4jController, m, null);</span>
+<span class="nc" id="L727">          m.put(PARAM_LIST_ITEM, listItem);</span>
         }
       }
 
-<span class="nc" id="L729">      return m;</span>
+<span class="nc" id="L731">      return m;</span>
     }
 
     boolean isEnabled(Gui4jCallBase gui4jController) {
-<span class="nc bnc" id="L733" title="All 4 branches missed.">      boolean columnEnabled = mColumn[mCol] == null || mColumn[mCol].isEnabled(gui4jController);</span>
-<span class="nc bnc" id="L734" title="All 2 branches missed.">      if (columnEnabled) {</span>
-<span class="nc bnc" id="L735" title="All 2 branches missed.">        if (mEnabled != null) {</span>
-<span class="nc" id="L736">          Map m = getParamMap(gui4jController, true);</span>
+<span class="nc bnc" id="L735" title="All 4 branches missed.">      boolean columnEnabled = mColumn[mCol] == null || mColumn[mCol].isEnabled(gui4jController);</span>
+<span class="nc bnc" id="L736" title="All 2 branches missed.">      if (columnEnabled) {</span>
+<span class="nc bnc" id="L737" title="All 2 branches missed.">        if (mEnabled != null) {</span>
+<span class="nc" id="L738">          Map m = getParamMap(gui4jController, true);</span>
 
-<span class="nc" id="L738">          Boolean enabled = (Boolean) mEnabled.getValue(gui4jController, m, Boolean.TRUE);</span>
-<span class="nc bnc" id="L739" title="All 2 branches missed.">          if (enabled != null) {</span>
-<span class="nc" id="L740">            return enabled.booleanValue();</span>
+<span class="nc" id="L740">          Boolean enabled = (Boolean) mEnabled.getValue(gui4jController, m, Boolean.TRUE);</span>
+<span class="nc bnc" id="L741" title="All 2 branches missed.">          if (enabled != null) {</span>
+<span class="nc" id="L742">            return enabled.booleanValue();</span>
           } else {
-<span class="nc" id="L742">            return false;</span>
+<span class="nc" id="L744">            return false;</span>
           }
         } else {
-<span class="nc" id="L745">          return true;</span>
+<span class="nc" id="L747">          return true;</span>
         }
       } else {
-<span class="nc" id="L748">        return false;</span>
+<span class="nc" id="L750">        return false;</span>
       }
     }
 
     Object getValue(Gui4jCallBase gui4jController) {
-<span class="nc bnc" id="L753" title="All 2 branches missed.">      if (mGetValue != null) {</span>
-<span class="nc" id="L754">        Map m = getParamMap(gui4jController, true);</span>
-<span class="nc" id="L755">        return mGetValue.getValue(gui4jController, m, null);</span>
+<span class="nc bnc" id="L755" title="All 2 branches missed.">      if (mGetValue != null) {</span>
+<span class="nc" id="L756">        Map m = getParamMap(gui4jController, true);</span>
+<span class="nc" id="L757">        return mGetValue.getValue(gui4jController, m, null);</span>
       } else {
-<span class="nc" id="L757">        return null;</span>
+<span class="nc" id="L759">        return null;</span>
       }
     }
 
     void setValue(Gui4jCallBase gui4jController, Object value, Gui4jTableModel model) {
-<span class="nc bnc" id="L762" title="All 2 branches missed.">      if (mSetValue != null) {</span>
-<span class="nc" id="L763">        Map paramMap = getParamMap(gui4jController, false);</span>
+<span class="nc bnc" id="L764" title="All 2 branches missed.">      if (mSetValue != null) {</span>
+<span class="nc" id="L765">        Map paramMap = getParamMap(gui4jController, false);</span>
 
-<span class="nc bnc" id="L765" title="All 2 branches missed.">        if (value instanceof ComboBoxNullItem) {</span>
-<span class="nc" id="L766">          value = null;</span>
+<span class="nc bnc" id="L767" title="All 2 branches missed.">        if (value instanceof ComboBoxNullItem) {</span>
+<span class="nc" id="L768">          value = null;</span>
         }
 
-<span class="nc" id="L769">        paramMap.put(PARAM_VALUE, value);</span>
+<span class="nc" id="L771">        paramMap.put(PARAM_VALUE, value);</span>
 
         Gui4jGetValue[] work;
-<span class="nc bnc" id="L772" title="All 2 branches missed.">        if (mOnSetValue != null) {</span>
-<span class="nc" id="L773">          work =</span>
+<span class="nc bnc" id="L774" title="All 2 branches missed.">        if (mOnSetValue != null) {</span>
+<span class="nc" id="L775">          work =</span>
               new Gui4jGetValue[] {
                 mSetValue,
                 new Gui4jRefreshTable(model, mRow, mCol),
-<span class="nc" id="L777">                model.getAutomaticRefresh(),</span>
+<span class="nc" id="L779">                model.getAutomaticRefresh(),</span>
                 mOnSetValue
               };
         } else {
-<span class="nc" id="L781">          work =</span>
+<span class="nc" id="L783">          work =</span>
               new Gui4jGetValue[] {
-<span class="nc" id="L783">                mSetValue, new Gui4jRefreshTable(model, mRow, mCol), model.getAutomaticRefresh()</span>
+<span class="nc" id="L785">                mSetValue, new Gui4jRefreshTable(model, mRow, mCol), model.getAutomaticRefresh()</span>
               };
         }
-<span class="nc" id="L786">        mGui4jThreadManager.performWork(gui4jController, work, paramMap);</span>
+<span class="nc" id="L788">        mGui4jThreadManager.performWork(gui4jController, work, paramMap);</span>
       }
-<span class="nc" id="L788">    }</span>
+<span class="nc" id="L790">    }</span>
 
     Class getCellClass() {
-<span class="nc bnc" id="L791" title="All 2 branches missed.">      if (mGetValue != null) {</span>
-<span class="nc" id="L792">        return mGetValue.getResultClass();</span>
+<span class="nc bnc" id="L793" title="All 2 branches missed.">      if (mGetValue != null) {</span>
+<span class="nc" id="L794">        return mGetValue.getResultClass();</span>
       } else {
-<span class="nc" id="L794">        return Object.class;</span>
+<span class="nc" id="L796">        return Object.class;</span>
       }
     }
 
@@ -801,7 +803,7 @@ public class Gui4jCellTable extends Gui4jJComponent {
      * @return Gui4jTextAttribute
      */
     public Gui4jTextAttribute getGui4jTextAttribute() {
-<span class="nc" id="L804">      return mGui4jTextAttribute;</span>
+<span class="nc" id="L806">      return mGui4jTextAttribute;</span>
     }
   }
 
@@ -812,180 +814,180 @@ public class Gui4jCellTable extends Gui4jJComponent {
     private Gui4jCallBase mGui4jController;
     private Gui4jComponentInstance mGui4jComponentInstance;
 
-<span class="nc" id="L815">    public Gui4jTableModel(Gui4jSwingContainer gui4jSwingContainer, Gui4jCallBase gui4jCallBase) {</span>
-<span class="nc" id="L816">      mGui4jSwingContainer = gui4jSwingContainer;</span>
-<span class="nc" id="L817">      mGui4jController = gui4jCallBase;</span>
-<span class="nc" id="L818">    }</span>
+<span class="nc" id="L817">    public Gui4jTableModel(Gui4jSwingContainer gui4jSwingContainer, Gui4jCallBase gui4jCallBase) {</span>
+<span class="nc" id="L818">      mGui4jSwingContainer = gui4jSwingContainer;</span>
+<span class="nc" id="L819">      mGui4jController = gui4jCallBase;</span>
+<span class="nc" id="L820">    }</span>
 
     public void eventOccured() {
-<span class="nc" id="L821">      Runnable run =</span>
-<span class="nc" id="L822">          new Runnable() {</span>
+<span class="nc" id="L823">      Runnable run =</span>
+<span class="nc" id="L824">          new Runnable() {</span>
             public void run() {
-<span class="nc" id="L824">              fireTableRowsUpdated(0, getRowCount() - 1);</span>
-<span class="nc" id="L825">            }</span>
+<span class="nc" id="L826">              fireTableRowsUpdated(0, getRowCount() - 1);</span>
+<span class="nc" id="L827">            }</span>
           };
-<span class="nc" id="L827">      Gui4jThreadManager.executeInSwingThreadAndWait(run);</span>
-<span class="nc" id="L828">    }</span>
+<span class="nc" id="L829">      Gui4jThreadManager.executeInSwingThreadAndWait(run);</span>
+<span class="nc" id="L830">    }</span>
 
     public Gui4jGetValue getAutomaticRefresh() {
-<span class="nc" id="L831">      Gui4jJTable table = (Gui4jJTable) mGui4jComponentInstance.getSwingComponent();</span>
-<span class="nc bnc" id="L832" title="All 4 branches missed.">      if (mAutomaticRefresh &amp;&amp; table != null) {</span>
-<span class="nc" id="L833">        return table.getAutomaticRefreshAction();</span>
+<span class="nc" id="L833">      Gui4jJTable table = (Gui4jJTable) mGui4jComponentInstance.getSwingComponent();</span>
+<span class="nc bnc" id="L834" title="All 4 branches missed.">      if (mAutomaticRefresh &amp;&amp; table != null) {</span>
+<span class="nc" id="L835">        return table.getAutomaticRefreshAction();</span>
       } else {
-<span class="nc" id="L835">        return null;</span>
+<span class="nc" id="L837">        return null;</span>
       }
     }
 
     public int getColumnCount() {
-<span class="nc" id="L840">      return mCols;</span>
+<span class="nc" id="L842">      return mCols;</span>
     }
 
     public int getRowCount() {
-<span class="nc" id="L844">      return mRows;</span>
+<span class="nc" id="L846">      return mRows;</span>
     }
 
     public boolean isEnabled(int row, int column) {
-<span class="nc bnc" id="L848" title="All 8 branches missed.">      if (row &gt;= 0 &amp;&amp; column &gt;= 0 &amp;&amp; row &lt; mRows &amp;&amp; column &lt; mCols) {</span>
-<span class="nc" id="L849">        Gui4jCell cell = mCell[row][column];</span>
-<span class="nc bnc" id="L850" title="All 2 branches missed.">        if (cell != null) {</span>
-<span class="nc" id="L851">          return cell.isEnabled(mGui4jController);</span>
+<span class="nc bnc" id="L850" title="All 8 branches missed.">      if (row &gt;= 0 &amp;&amp; column &gt;= 0 &amp;&amp; row &lt; mRows &amp;&amp; column &lt; mCols) {</span>
+<span class="nc" id="L851">        Gui4jCell cell = mCell[row][column];</span>
+<span class="nc bnc" id="L852" title="All 2 branches missed.">        if (cell != null) {</span>
+<span class="nc" id="L853">          return cell.isEnabled(mGui4jController);</span>
         } else {
-<span class="nc" id="L853">          return true;</span>
+<span class="nc" id="L855">          return true;</span>
         }
       } else {
-<span class="nc" id="L856">        return true;</span>
+<span class="nc" id="L858">        return true;</span>
       }
     }
 
     public String getRowName(int row) {
-<span class="nc bnc" id="L861" title="All 2 branches missed.">      if (mRowName[row] != null) {</span>
-<span class="nc" id="L862">        Map paramMap = new HashMap();</span>
-<span class="nc" id="L863">        paramMap.put(PARAM_ROW, new Integer(row));</span>
-<span class="nc bnc" id="L864" title="All 2 branches missed.">        if (mRowValue[row] != null) {</span>
-<span class="nc" id="L865">          Map nullMap = null;</span>
-<span class="nc" id="L866">          paramMap.put(PARAM_ROWVALUE, mRowValue[row].getValue(mGui4jController, nullMap, null));</span>
+<span class="nc bnc" id="L863" title="All 2 branches missed.">      if (mRowName[row] != null) {</span>
+<span class="nc" id="L864">        Map paramMap = new HashMap();</span>
+<span class="nc" id="L865">        paramMap.put(PARAM_ROW, Integer.valueOf(row));</span>
+<span class="nc bnc" id="L866" title="All 2 branches missed.">        if (mRowValue[row] != null) {</span>
+<span class="nc" id="L867">          Map nullMap = null;</span>
+<span class="nc" id="L868">          paramMap.put(PARAM_ROWVALUE, mRowValue[row].getValue(mGui4jController, nullMap, null));</span>
         }
-<span class="nc" id="L868">        String name = (String) mRowName[row].getValue(mGui4jController, paramMap, null);</span>
-<span class="nc bnc" id="L869" title="All 4 branches missed.">        if (name == null || name.equals(&quot;&quot;)) {</span>
-<span class="nc" id="L870">          return mRowIndentation[row];</span>
+<span class="nc" id="L870">        String name = (String) mRowName[row].getValue(mGui4jController, paramMap, null);</span>
+<span class="nc bnc" id="L871" title="All 4 branches missed.">        if (name == null || name.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L872">          return mRowIndentation[row];</span>
         }
-<span class="nc" id="L872">        return mRowIndentation[row] + name;</span>
+<span class="nc" id="L874">        return mRowIndentation[row] + name;</span>
       } else {
-<span class="nc" id="L874">        mLogger.info(&quot;Zeilenname für Zeile &quot; + row + &quot; ist nicht definiert&quot;);</span>
-<span class="nc" id="L875">        return &quot;&quot;;</span>
+<span class="nc" id="L876">        mLogger.info(&quot;Zeilenname für Zeile &quot; + row + &quot; ist nicht definiert&quot;);</span>
+<span class="nc" id="L877">        return &quot;&quot;;</span>
       }
     }
 
-<span class="nc" id="L879">    public void setRowName(int row, String name) {}</span>
+<span class="nc" id="L881">    public void setRowName(int row, String name) {}</span>
 
-<span class="nc" id="L881">    public void setRowName(int row, Object name) {}</span>
+<span class="nc" id="L883">    public void setRowName(int row, Object name) {}</span>
 
     public boolean isCellEditable(int row, int col) {
-<span class="nc bnc" id="L884" title="All 4 branches missed.">      if (handleReadOnly() &amp;&amp; mGui4jSwingContainer.inReadOnlyMode()) {</span>
-<span class="nc" id="L885">        return false;</span>
+<span class="nc bnc" id="L886" title="All 4 branches missed.">      if (handleReadOnly() &amp;&amp; mGui4jSwingContainer.inReadOnlyMode()) {</span>
+<span class="nc" id="L887">        return false;</span>
       } else {
 
-<span class="nc" id="L888">        Gui4jCell cell = mCell[row][col];</span>
-<span class="nc bnc" id="L889" title="All 2 branches missed.">        if (cell != null) {</span>
-<span class="nc" id="L890">          return cell.hasSetter(mGui4jController);</span>
+<span class="nc" id="L890">        Gui4jCell cell = mCell[row][col];</span>
+<span class="nc bnc" id="L891" title="All 2 branches missed.">        if (cell != null) {</span>
+<span class="nc" id="L892">          return cell.hasSetter(mGui4jController);</span>
         } else {
-<span class="nc" id="L892">          return false;</span>
+<span class="nc" id="L894">          return false;</span>
         }
       }
     }
 
     public Object getValueAt(int row, int col) {
-<span class="nc" id="L898">      Gui4jCell cell = mCell[row][col];</span>
-<span class="nc bnc" id="L899" title="All 2 branches missed.">      if (cell != null) {</span>
-<span class="nc" id="L900">        return cell.getValue(mGui4jController);</span>
+<span class="nc" id="L900">      Gui4jCell cell = mCell[row][col];</span>
+<span class="nc bnc" id="L901" title="All 2 branches missed.">      if (cell != null) {</span>
+<span class="nc" id="L902">        return cell.getValue(mGui4jController);</span>
       } else {
-<span class="nc" id="L902">        return null;</span>
+<span class="nc" id="L904">        return null;</span>
       }
     }
 
     public void setValueAt(Object value, int row, int col) {
-<span class="nc" id="L907">      Gui4jCell cell = mCell[row][col];</span>
-<span class="nc bnc" id="L908" title="All 2 branches missed.">      if (cell != null) {</span>
-<span class="nc" id="L909">        cell.setValue(mGui4jController, value, this);</span>
+<span class="nc" id="L909">      Gui4jCell cell = mCell[row][col];</span>
+<span class="nc bnc" id="L910" title="All 2 branches missed.">      if (cell != null) {</span>
+<span class="nc" id="L911">        cell.setValue(mGui4jController, value, this);</span>
       }
-<span class="nc" id="L911">    }</span>
+<span class="nc" id="L913">    }</span>
 
     public Class getColumnClass(int columnIndex) {
-<span class="nc" id="L914">      Class commonClass = null;</span>
-<span class="nc" id="L915">      boolean different = false;</span>
-<span class="nc bnc" id="L916" title="All 2 branches missed.">      for (int r = 0; r &lt; mRows; r++) {</span>
-<span class="nc" id="L917">        Gui4jCell cell = mCell[r][columnIndex];</span>
-<span class="nc bnc" id="L918" title="All 2 branches missed.">        if (cell != null) {</span>
-<span class="nc" id="L919">          Class c = cell.getCellClass();</span>
-<span class="nc bnc" id="L920" title="All 2 branches missed.">          if (commonClass == null) {</span>
-<span class="nc" id="L921">            commonClass = c;</span>
+<span class="nc" id="L916">      Class commonClass = null;</span>
+<span class="nc" id="L917">      boolean different = false;</span>
+<span class="nc bnc" id="L918" title="All 2 branches missed.">      for (int r = 0; r &lt; mRows; r++) {</span>
+<span class="nc" id="L919">        Gui4jCell cell = mCell[r][columnIndex];</span>
+<span class="nc bnc" id="L920" title="All 2 branches missed.">        if (cell != null) {</span>
+<span class="nc" id="L921">          Class c = cell.getCellClass();</span>
+<span class="nc bnc" id="L922" title="All 2 branches missed.">          if (commonClass == null) {</span>
+<span class="nc" id="L923">            commonClass = c;</span>
           } else {
-<span class="nc bnc" id="L923" title="All 2 branches missed.">            different |= commonClass != c;</span>
+<span class="nc bnc" id="L925" title="All 2 branches missed.">            different |= commonClass != c;</span>
           }
         }
       }
-<span class="nc bnc" id="L927" title="All 4 branches missed.">      if (commonClass != null &amp;&amp; !different) {</span>
-<span class="nc" id="L928">        return commonClass;</span>
+<span class="nc bnc" id="L929" title="All 4 branches missed.">      if (commonClass != null &amp;&amp; !different) {</span>
+<span class="nc" id="L930">        return commonClass;</span>
       } else {
-<span class="nc" id="L930">        return Object.class;</span>
+<span class="nc" id="L932">        return Object.class;</span>
       }
     }
 
     public String getColumnName(int columnIndex) {
-<span class="nc bnc" id="L935" title="All 2 branches missed.">      if (mColumn[columnIndex] != null) {</span>
-<span class="nc" id="L936">        String name = mColumn[columnIndex].getName(mGui4jController);</span>
-<span class="nc bnc" id="L937" title="All 4 branches missed.">        if (name == null || name.equals(&quot;&quot;)) {</span>
-<span class="nc" id="L938">          return &quot; &quot;;</span>
+<span class="nc bnc" id="L937" title="All 2 branches missed.">      if (mColumn[columnIndex] != null) {</span>
+<span class="nc" id="L938">        String name = mColumn[columnIndex].getName(mGui4jController);</span>
+<span class="nc bnc" id="L939" title="All 4 branches missed.">        if (name == null || name.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L940">          return &quot; &quot;;</span>
         }
-<span class="nc" id="L940">        return name;</span>
+<span class="nc" id="L942">        return name;</span>
       } else {
-<span class="nc" id="L942">        mLogger.info(</span>
-<span class="nc" id="L943">            getId()</span>
+<span class="nc" id="L944">        mLogger.info(</span>
+<span class="nc" id="L945">            getId()</span>
                 + &quot;: Spaltenname für Spalte &quot;
                 + columnIndex
                 + &quot; ist nicht definiert in XML Datei: &quot;
-<span class="nc" id="L947">                + getConfigurationName());</span>
-<span class="nc" id="L948">        return &quot; &quot;;</span>
+<span class="nc" id="L949">                + getConfigurationName());</span>
+<span class="nc" id="L950">        return &quot; &quot;;</span>
       }
     }
 
     public void setGui4jComponentInstance(Gui4jComponentInstance gui4jComponentInstance) {
-<span class="nc" id="L953">      mGui4jComponentInstance = gui4jComponentInstance;</span>
-<span class="nc" id="L954">    }</span>
+<span class="nc" id="L955">      mGui4jComponentInstance = gui4jComponentInstance;</span>
+<span class="nc" id="L956">    }</span>
 
     /**
      * @see org.gui4j.core.swing.Gui4jTableListener#prepareEditor(TableCellEditor, int, int)
      */
     public void prepareEditor(TableCellEditor editor, int row, int column) {
-<span class="nc" id="L960">      Gui4jCell cell = mCell[row][column];</span>
-<span class="nc bnc" id="L961" title="All 2 branches missed.">      if (cell != null) {</span>
-<span class="nc" id="L962">        cell.prepareEditor(mGui4jController, editor);</span>
+<span class="nc" id="L962">      Gui4jCell cell = mCell[row][column];</span>
+<span class="nc bnc" id="L963" title="All 2 branches missed.">      if (cell != null) {</span>
+<span class="nc" id="L964">        cell.prepareEditor(mGui4jController, editor);</span>
       }
-<span class="nc" id="L964">    }</span>
+<span class="nc" id="L966">    }</span>
 
     /**
      * @see org.gui4j.core.swing.Gui4jTableListener#getCellEditor(TableCellEditor, int, int)
      */
     public TableCellEditor getCellEditor(TableCellEditor editor, int row, int column) {
-<span class="nc" id="L970">      Gui4jCell cell = mCell[row][column];</span>
-<span class="nc bnc" id="L971" title="All 2 branches missed.">      return cell == null</span>
-<span class="nc" id="L972">          ? editor</span>
-<span class="nc" id="L973">          : cell.getCellEditor(</span>
-<span class="nc" id="L974">              mGui4jController, mGui4jComponentInstance.getSwingComponent().getFont(), editor);</span>
+<span class="nc" id="L972">      Gui4jCell cell = mCell[row][column];</span>
+<span class="nc bnc" id="L973" title="All 2 branches missed.">      return cell == null</span>
+<span class="nc" id="L974">          ? editor</span>
+<span class="nc" id="L975">          : cell.getCellEditor(</span>
+<span class="nc" id="L976">              mGui4jController, mGui4jComponentInstance.getSwingComponent().getFont(), editor);</span>
     }
 
     /**
      * @see org.gui4j.core.swing.Gui4jTableListener#getCellRenderer(TableCellRenderer, int, int)
      */
     public TableCellRenderer getCellRenderer(TableCellRenderer renderer, int row, int column) {
-<span class="nc" id="L981">      return renderer;</span>
+<span class="nc" id="L983">      return renderer;</span>
     }
 
     public void dispose() {
-<span class="nc" id="L985">      mGui4jSwingContainer = null;</span>
-<span class="nc" id="L986">      mGui4jController = null;</span>
-<span class="nc" id="L987">      mGui4jComponentInstance = null;</span>
-<span class="nc" id="L988">    }</span>
+<span class="nc" id="L987">      mGui4jSwingContainer = null;</span>
+<span class="nc" id="L988">      mGui4jController = null;</span>
+<span class="nc" id="L989">      mGui4jComponentInstance = null;</span>
+<span class="nc" id="L990">    }</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

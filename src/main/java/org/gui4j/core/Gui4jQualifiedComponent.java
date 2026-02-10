@@ -4,6 +4,7 @@ import java.io.Serializable;
 import org.gui4j.core.util.Extract;
 
 public class Gui4jQualifiedComponent implements Serializable {
+  private static final long serialVersionUID = 1L;
   private final Gui4jComponentPath mPath;
   private final Gui4jComponent mGui4jComponent;
 

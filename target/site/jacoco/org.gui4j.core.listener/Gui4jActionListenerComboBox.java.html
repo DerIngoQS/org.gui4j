@@ -51,7 +51,7 @@ public final class Gui4jActionListenerComboBox extends Gui4jActionListener {
       }
 <span class="nc" id="L52">      Map paramMap = new HashMap();</span>
 <span class="nc" id="L53">      paramMap.put(Const.PARAM_ITEM, item);</span>
-<span class="nc" id="L54">      paramMap.put(Const.PARAM_INDEX, new Integer(index));</span>
+<span class="nc" id="L54">      paramMap.put(Const.PARAM_INDEX, Integer.valueOf(index));</span>
 <span class="nc" id="L55">      log.debug(&quot;About to initiate onSelect call.&quot;);</span>
 <span class="nc" id="L56">      mGui4jThreadManager.performWork(</span>
           mGui4jController, mActionPerformed, paramMap, mGui4jComponentInstance);

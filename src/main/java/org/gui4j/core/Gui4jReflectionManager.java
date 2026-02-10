@@ -21,13 +21,14 @@ import org.gui4j.exception.Gui4jUncheckedException;
  * @author Joachim Schmid
  */
 public final class Gui4jReflectionManager implements ErrorTags, Serializable {
+  private static final long serialVersionUID = 1L;
   private static final Log mLogger = LogFactory.getLog(Gui4jReflectionManager.class);
-  private final Map mMethodsClass;
-  private final Map mMethodsName;
+  private final Map<Class<?>, Method[]> mMethodsClass;
+  private final Map<String, Method[]> mMethodsName;
 
   private Gui4jReflectionManager() {
-    mMethodsClass = new HashMap();
-    mMethodsName = new HashMap();
+    mMethodsClass = new HashMap<Class<?>, Method[]>();
+    mMethodsName = new HashMap<String, Method[]>();
   }
 
   public void dispose() {
@@ -46,12 +47,12 @@ public final class Gui4jReflectionManager implements ErrorTags, Serializable {
 
   public MethodCall getMethod(
       String context,
-      Class c,
+      Class<?> c,
       String methodName,
-      Class[] argumentsInit,
+      Class<?>[] argumentsInit,
       boolean throwExceptionIfNotFound) {
     Method[] methods = getMethods(c, methodName);
-    Class[] arguments = new Class[argumentsInit.length];
+    Class<?>[] arguments = new Class<?>[argumentsInit.length];
     String[] argumentsStr = new String[argumentsInit.length];
     for (int i = 0; i < argumentsInit.length; i++) {
       arguments[i] = argumentsInit[i];
@@ -120,12 +121,13 @@ public final class Gui4jReflectionManager implements ErrorTags, Serializable {
    * @param argumentsInit
    * @return MethodCall
    */
-  public MethodCall getMethod(String context, Class c, String methodName, Class[] argumentsInit) {
+  public MethodCall getMethod(
+      String context, Class<?> c, String methodName, Class<?>[] argumentsInit) {
     return getMethod(context, c, methodName, argumentsInit, true);
   }
 
-  private List arr2List(Object[] arr) {
-    List l = new ArrayList();
+  private List<Object> arr2List(Object[] arr) {
+    List<Object> l = new ArrayList<Object>();
     for (int i = 0; i < arr.length; i++) {
       l.add(arr[i]);
     }
@@ -144,8 +146,8 @@ public final class Gui4jReflectionManager implements ErrorTags, Serializable {
     return true;
   }
 
-  private boolean matching(Method m, Class[] arguments) {
-    Class[] parameterTypes = m.getParameterTypes();
+  private boolean matching(Method m, Class<?>[] arguments) {
+    Class<?>[] parameterTypes = m.getParameterTypes();
     if (parameterTypes.length != arguments.length) {
       return false;
     }
@@ -159,11 +161,11 @@ public final class Gui4jReflectionManager implements ErrorTags, Serializable {
     return true;
   }
 
-  private synchronized Method[] getMethods(Class c, String methodName) {
-    Method[] m = (Method[]) mMethodsName.get(c + "/" + methodName);
+  private synchronized Method[] getMethods(Class<?> c, String methodName) {
+    Method[] m = mMethodsName.get(c + "/" + methodName);
     if (m == null) {
       Method[] methods = getMethods(c);
-      List methodList = new ArrayList();
+      List<Method> methodList = new ArrayList<Method>();
       for (int i = 0; i < methods.length; i++) {
         if (methods[i].getName().equals(methodName)) {
           methodList.add(methods[i]);
@@ -171,15 +173,15 @@ public final class Gui4jReflectionManager implements ErrorTags, Serializable {
       }
       m = new Method[methodList.size()];
       for (int i = 0; i < m.length; i++) {
-        m[i] = (Method) methodList.get(i);
+        m[i] = methodList.get(i);
       }
       mMethodsName.put(c + "/" + methodName, m);
     }
     return m;
   }
 
-  private synchronized Method[] getMethods(Class c) {
-    Method[] methods = (Method[]) mMethodsClass.get(c);
+  private synchronized Method[] getMethods(Class<?> c) {
+    Method[] methods = mMethodsClass.get(c);
     if (methods == null) {
       methods = c.getMethods();
       /*

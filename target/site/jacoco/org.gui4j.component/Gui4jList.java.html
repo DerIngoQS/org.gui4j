@@ -250,7 +250,7 @@ public final class Gui4jList extends Gui4jJComponent {
 <span class="nc" id="L250">      Object value = super.getElementAt(index);</span>
 <span class="nc bnc" id="L251" title="All 2 branches missed.">      if (value != null) {</span>
 <span class="nc" id="L252">        Map paramMap = new HashMap();</span>
-<span class="nc" id="L253">        paramMap.put(Const.PARAM_INDEX, new Integer(index));</span>
+<span class="nc" id="L253">        paramMap.put(Const.PARAM_INDEX, Integer.valueOf(index));</span>
 <span class="nc" id="L254">        paramMap.put(Const.PARAM_ITEM, value);</span>
 <span class="nc bnc" id="L255" title="All 2 branches missed.">        if (mRowValue == null) {</span>
 <span class="nc" id="L256">          mLogger.warn(getId() + &quot;: rowValue not defined&quot;);</span>

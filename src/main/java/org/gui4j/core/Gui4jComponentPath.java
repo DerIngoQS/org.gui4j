@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class Gui4jComponentPath implements Serializable {
+  private static final long serialVersionUID = 1L;
   private final Gui4jComponentPath mSon;
   private final Gui4jComponentContainerInclude mInclude;
 

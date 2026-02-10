@@ -20,6 +20,7 @@ import org.gui4j.util.Pair;
  * element of the matrix.
  */
 public final class SparseMatrix implements Serializable {
+  private static final long serialVersionUID = 1L;
   /**
    * Allows objects to traverse the matrix.
    *

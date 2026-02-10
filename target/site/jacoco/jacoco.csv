@@ -1,5 +1,5 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-gui4j,org.gui4j.dflt,Dialog.Result,44,0,0,0,10,0,3,0,3,0
+gui4j,org.gui4j.dflt,Dialog.Result,40,0,0,0,10,0,3,0,3,0
 gui4j,org.gui4j.dflt,DefaultNameable.new Comparator() {...},36,0,4,0,7,0,5,0,3,0
 gui4j,org.gui4j.dflt,DefaultNameable,96,0,6,0,19,0,14,0,11,0
 gui4j,org.gui4j.dflt,Dialog,93,0,16,0,21,0,16,0,8,0
@@ -13,21 +13,21 @@ gui4j,org.gui4j.core.swing.calendar,CalendarBean.new ActionListener() {...},29,0
 gui4j,org.gui4j.core.swing.calendar,CalendarButton,312,0,18,0,78,0,19,0,10,0
 gui4j,org.gui4j.core.swing.calendar,CalendarBean.new ActionListener() {...},48,0,0,0,7,0,2,0,2,0
 gui4j,org.gui4j.core.swing.calendar,CalendarBean.new ActionListener() {...},10,0,0,0,3,0,2,0,2,0
-gui4j,org.gui4j.core.listener,Gui4jActionListenerButton,77,0,8,0,15,0,7,0,3,0
+gui4j,org.gui4j.core.listener,Gui4jActionListenerButton,75,0,8,0,15,0,7,0,3,0
 gui4j,org.gui4j.core.listener,Gui4jTabChangeListener,57,0,10,0,19,0,8,0,3,0
 gui4j,org.gui4j.core.listener,Gui4jMouseListenerTree,36,0,4,0,13,0,6,0,4,0
 gui4j,org.gui4j.core.listener,Gui4jActionListenerPopupMenuItem,36,0,2,0,10,0,3,0,2,0
 gui4j,org.gui4j.core.listener,Gui4jMouseListenerSimpleInternalFrame,33,0,4,0,10,0,6,0,4,0
 gui4j,org.gui4j.core.listener,Gui4jChangeListener,50,0,2,0,15,0,5,0,4,0
-gui4j,org.gui4j.core.listener,Gui4jMouseListenerList,126,0,10,0,35,0,12,0,7,0
-gui4j,org.gui4j.core.listener,Gui4jMouseListenerTable,188,0,16,0,56,0,20,0,12,0
+gui4j,org.gui4j.core.listener,Gui4jMouseListenerList,124,0,10,0,35,0,12,0,7,0
+gui4j,org.gui4j.core.listener,Gui4jMouseListenerTable,184,0,16,0,56,0,20,0,12,0
 gui4j,org.gui4j.core.listener,Gui4jMouseListenerMatrix,108,0,12,0,37,0,16,0,10,0
 gui4j,org.gui4j.core.listener,Gui4jMouseListenerTablePopup,52,0,8,0,17,0,7,0,3,0
 gui4j,org.gui4j.core.listener,Gui4jActionListener,91,0,4,0,24,0,6,0,4,0
 gui4j,org.gui4j.core.listener,Gui4jListenerEdit,137,0,10,0,35,0,13,0,8,0
 gui4j,org.gui4j.core.listener,Gui4jListenerTextArea,53,0,4,0,14,0,7,0,5,0
 gui4j,org.gui4j.core.listener,Gui4jListenerPasswordField,15,0,0,0,4,0,2,0,2,0
-gui4j,org.gui4j.core.listener,Gui4jActionListenerComboBox,86,0,10,0,23,0,9,0,4,0
+gui4j,org.gui4j.core.listener,Gui4jActionListenerComboBox,84,0,10,0,23,0,9,0,4,0
 gui4j,org.gui4j.core.swing,JPanelImage,137,0,16,0,28,0,13,0,5,0
 gui4j,org.gui4j.core.swing,IViewTracker,214,0,44,0,63,0,35,0,13,0
 gui4j,org.gui4j.core.swing,ComboBoxCellEdit.CellComboBoxModel,32,0,6,0,10,0,5,0,2,0
@@ -41,7 +41,7 @@ gui4j,org.gui4j.core.swing,IViewListener.new Runnable() {...},22,0,2,0,6,0,3,0,2
 gui4j,org.gui4j.core.swing,IViewTracker.new Thread() {...},17,0,0,0,4,0,2,0,2,0
 gui4j,org.gui4j.core.swing,GroupableTableHeaderUI,358,0,24,0,86,0,19,0,7,0
 gui4j,org.gui4j.core.swing,Gui4jJTable,201,0,40,0,49,0,27,0,7,0
-gui4j,org.gui4j.core.swing,JSplitPaneExtended,61,0,10,0,18,0,11,0,6,0
+gui4j,org.gui4j.core.swing,JSplitPaneExtended,59,0,10,0,18,0,11,0,6,0
 gui4j,org.gui4j.core.swing,IViewTracker.1.new Runnable() {...},14,0,0,0,3,0,2,0,2,0
 gui4j,org.gui4j.core.swing,ComboBoxCellEdit.new DefaultListCellRenderer() {...},20,0,0,0,3,0,2,0,2,0
 gui4j,org.gui4j.core.swing,ComboBoxCellEdit.new TransformValue() {...},69,0,6,0,12,0,5,0,2,0
@@ -70,14 +70,14 @@ gui4j,org.gui4j.core.swing,Gui4jCellEditor.NotificationDocument,36,0,2,0,14,0,6,
 gui4j,org.gui4j.core.swing,Gui4jJTableHeader,37,0,2,0,9,0,3,0,2,0
 gui4j,org.gui4j.core.swing,ComboBoxHorizontalScroll,114,0,14,0,38,0,17,0,10,0
 gui4j,org.gui4j.core.swing,MultiLineCellRenderer,118,0,12,0,35,0,12,0,6,0
-gui4j,org.gui4j.core.swing,RootWindow,698,0,142,0,114,0,100,0,29,0
+gui4j,org.gui4j.core.swing,RootWindow,696,0,142,0,114,0,100,0,29,0
 gui4j,org.gui4j.core.swing,Gui4jJTable.new Gui4jGetValue() {...},40,0,2,0,8,0,5,0,4,0
 gui4j,org.gui4j.core.swing,RowHeaderTable.RowHeaderListModel,43,0,4,0,11,0,8,0,6,0
 gui4j,org.gui4j.core.swing,ThreadCheckingRepaintManager,158,0,10,0,44,0,16,0,11,0
 gui4j,org.gui4j.core.swing,Gui4jCellEditor.CellEditorTextField,47,0,8,0,16,0,10,0,6,0
 gui4j,org.gui4j.core.swing,TableLayout,2784,0,331,0,381,0,216,0,49,0
 gui4j,org.gui4j.core.swing,MultiLineCellRenderer.UIResource,3,0,0,0,1,0,1,0,1,0
-gui4j,org.gui4j.core.swing,TableLayoutConstraints,406,0,50,0,75,0,29,0,4,0
+gui4j,org.gui4j.core.swing,TableLayoutConstraints,398,0,50,0,75,0,29,0,4,0
 gui4j,org.gui4j.core.swing,IViewListener,232,0,34,0,60,0,28,0,11,0
 gui4j,org.gui4j.core.swing,RowHeaderTable.new PropertyChangeListener() {...},34,0,0,0,9,0,2,0,2,0
 gui4j,org.gui4j.core.swing,MultiLineTable.new ComponentAdapter() {...},10,0,0,0,3,0,2,0,2,0
@@ -100,43 +100,43 @@ gui4j,org.gui4j.exception,Gui4jException,8,0,0,0,4,0,2,0,2,0
 gui4j,org.gui4j.exception,Gui4jUncheckedException.ProgrammingError,29,0,0,0,10,0,4,0,4,0
 gui4j,org.gui4j.exception,Gui4jUncheckedException,14,42,0,0,3,8,2,4,2,4
 gui4j,org.gui4j.component.util,StringUtil,18,0,2,0,4,0,2,0,1,0
-gui4j,org.gui4j.component.util,Gui4jAlignment,76,0,0,0,12,0,2,0,2,0
+gui4j,org.gui4j.component.util,Gui4jAlignment,60,0,0,0,12,0,2,0,2,0
 gui4j,org.gui4j.component.factory,Gui4jExternalComponentFactory,81,0,6,0,18,0,7,0,4,0
 gui4j,org.gui4j.component.factory,Gui4jAbstractButtonFactory,283,0,12,0,53,0,12,0,6,0
 gui4j,org.gui4j.component.factory,Gui4jAbstractToggleButtonFactory,65,0,4,0,12,0,5,0,3,0
 gui4j,org.gui4j.component.factory,Gui4jRadioButtonMenuItemFactory,11,0,0,0,3,0,3,0,3,0
-gui4j,org.gui4j.component.factory,Gui4jEditFactory,306,0,10,0,52,0,11,0,6,0
+gui4j,org.gui4j.component.factory,Gui4jEditFactory,296,0,10,0,52,0,11,0,6,0
 gui4j,org.gui4j.component.factory,Gui4jPasswordFieldFactory,14,0,0,0,4,0,3,0,3,0
-gui4j,org.gui4j.component.factory,Gui4jTableFactory,2362,0,88,0,335,0,55,0,11,0
-gui4j,org.gui4j.component.factory,Gui4jCellTableFactory,1596,0,92,0,235,0,54,0,8,0
+gui4j,org.gui4j.component.factory,Gui4jTableFactory,2352,0,88,0,335,0,55,0,11,0
+gui4j,org.gui4j.component.factory,Gui4jCellTableFactory,1576,0,92,0,235,0,54,0,8,0
 gui4j,org.gui4j.component.factory,Gui4jMenuItemFactory,53,0,4,0,12,0,7,0,5,0
 gui4j,org.gui4j.component.factory,Gui4jCheckBoxMenuItemFactory,11,0,0,0,3,0,3,0,3,0
 gui4j,org.gui4j.component.factory,Gui4jPopupMenuFactory,75,0,6,0,22,0,8,0,5,0
 gui4j,org.gui4j.component.factory,Gui4jSplitPaneFactory,196,0,10,0,39,0,11,0,6,0
-gui4j,org.gui4j.component.factory,Gui4jTableLayoutFactory,581,0,36,0,102,0,27,0,9,0
+gui4j,org.gui4j.component.factory,Gui4jTableLayoutFactory,559,0,36,0,102,0,27,0,9,0
 gui4j,org.gui4j.component.factory,Gui4jBoxVFactory,53,0,8,0,11,0,9,0,5,0
 gui4j,org.gui4j.component.factory,Gui4jBorderLayoutFactory,271,0,18,0,55,0,16,0,7,0
 gui4j,org.gui4j.component.factory,Gui4jRadioButtonFactory,11,0,0,0,3,0,3,0,3,0
 gui4j,org.gui4j.component.factory,Gui4jPanelFactory,163,0,10,0,35,0,12,0,7,0
-gui4j,org.gui4j.component.factory,Gui4jMatrixFactory,1864,0,86,0,266,0,51,0,8,0
+gui4j,org.gui4j.component.factory,Gui4jMatrixFactory,1854,0,86,0,266,0,51,0,8,0
 gui4j,org.gui4j.component.factory,Gui4jButtonFactory,14,0,0,0,4,0,3,0,3,0
 gui4j,org.gui4j.component.factory,Gui4jMenuFactory,133,0,12,0,36,0,12,0,6,0
-gui4j,org.gui4j.component.factory,Gui4jGridLayoutFactory,367,0,26,0,68,0,20,0,7,0
+gui4j,org.gui4j.component.factory,Gui4jGridLayoutFactory,355,0,26,0,68,0,20,0,7,0
 gui4j,org.gui4j.component.factory,Gui4jBoxFactory,60,0,2,0,19,0,5,0,4,0
-gui4j,org.gui4j.component.factory,Gui4jFlowLayoutFactory,181,0,10,0,39,0,12,0,7,0
+gui4j,org.gui4j.component.factory,Gui4jFlowLayoutFactory,171,0,10,0,39,0,12,0,7,0
 gui4j,org.gui4j.component.factory,Gui4jLabelFormFactory,405,0,34,0,81,0,26,0,9,0
 gui4j,org.gui4j.component.factory,Gui4jCardLayoutFactory,252,0,26,0,57,0,21,0,8,0
 gui4j,org.gui4j.component.factory,Gui4jSwitchFactory,251,0,26,0,56,0,21,0,8,0
 gui4j,org.gui4j.component.factory,Gui4jTreeFactory,634,0,24,0,99,0,20,0,8,0
 gui4j,org.gui4j.component.factory,Gui4jCalendarButtonFactory,54,0,6,0,12,0,8,0,5,0
-gui4j,org.gui4j.component.factory,Gui4jKeyMapFactory,327,0,26,0,50,0,21,0,8,0
-gui4j,org.gui4j.component.factory,Gui4jTreePopupMenuItemFactory,122,0,8,0,23,0,9,0,5,0
+gui4j,org.gui4j.component.factory,Gui4jKeyMapFactory,321,0,26,0,50,0,21,0,8,0
+gui4j,org.gui4j.component.factory,Gui4jTreePopupMenuItemFactory,110,0,8,0,23,0,9,0,5,0
 gui4j,org.gui4j.component.factory,Gui4jComboBoxFactory,372,0,16,0,62,0,12,0,4,0
 gui4j,org.gui4j.component.factory,Gui4jCheckBoxFactory,11,0,0,0,3,0,3,0,3,0
 gui4j,org.gui4j.component.factory,Gui4jToolbarFactory,241,0,22,0,54,0,17,0,6,0
 gui4j,org.gui4j.component.factory,Gui4jSeparatorFactory,11,0,0,0,3,0,3,0,3,0
-gui4j,org.gui4j.component.factory,Gui4jScrollPaneFactory,251,0,14,0,49,0,15,0,8,0
-gui4j,org.gui4j.component.factory,Gui4jGridBagLayoutFactory,570,0,18,0,78,0,16,0,7,0
+gui4j,org.gui4j.component.factory,Gui4jScrollPaneFactory,239,0,14,0,49,0,15,0,8,0
+gui4j,org.gui4j.component.factory,Gui4jGridBagLayoutFactory,544,0,18,0,78,0,16,0,7,0
 gui4j,org.gui4j.component.factory,Gui4jJComponentFactory,330,0,28,0,64,0,20,0,6,0
 gui4j,org.gui4j.component.factory,Gui4jTextAreaFactory,259,0,6,0,45,0,7,0,4,0
 gui4j,org.gui4j.component.factory,Gui4jBoxHFactory,53,0,8,0,11,0,9,0,5,0
@@ -146,8 +146,8 @@ gui4j,org.gui4j.component.factory,Gui4jTabbedPaneFactory,553,0,38,0,99,0,27,0,8,
 gui4j,org.gui4j.component.factory,Gui4jPopupMenuItemFactory,175,0,12,0,44,0,17,0,11,0
 gui4j,org.gui4j.component.factory,Gui4jToggleButtonFactory,11,0,0,0,3,0,3,0,3,0
 gui4j,org.gui4j.component.factory,Gui4jSimpleInternalFrameFactory,342,0,20,0,53,0,17,0,7,0
-gui4j,org.gui4j.component.factory,Gui4jListFactory,467,0,14,0,80,0,15,0,8,0
-gui4j,org.gui4j,Gui4jFactory,82,0,2,0,14,0,2,0,1,0
+gui4j,org.gui4j.component.factory,Gui4jListFactory,461,0,14,0,81,0,15,0,8,0
+gui4j,org.gui4j,Gui4jFactory,76,0,2,0,17,0,2,0,1,0
 gui4j,org.gui4j.util,Pair,96,0,12,0,20,0,13,0,7,0
 gui4j,org.gui4j.util,DefaultTranslator,73,77,17,5,18,22,13,4,2,4
 gui4j,org.gui4j.util,DefaultTranslator.IdTranslator,38,0,6,0,10,0,5,0,2,0
@@ -164,21 +164,21 @@ gui4j,org.gui4j.component,Gui4jMenu.new MenuListener() {...},22,0,0,0,5,0,4,0,4,
 gui4j,org.gui4j.component,Gui4jAbstractToggleButton,33,0,2,0,11,0,4,0,3,0
 gui4j,org.gui4j.component,Gui4jMenu.new ActionListener() {...},22,0,0,0,4,0,2,0,2,0
 gui4j,org.gui4j.component,Gui4jTable.Gui4jTableModel.new Runnable() {...},21,0,2,0,4,0,3,0,2,0
-gui4j,org.gui4j.component,Gui4jCellTable.Gui4jCell,423,0,52,0,88,0,36,0,10,0
+gui4j,org.gui4j.component,Gui4jCellTable.Gui4jCell,419,0,52,0,88,0,36,0,10,0
 gui4j,org.gui4j.component,Gui4jPopupMenu,155,0,22,0,46,0,17,0,6,0
 gui4j,org.gui4j.component,Gui4jToggleButton,6,0,0,0,2,0,1,0,1,0
 gui4j,org.gui4j.component,Gui4jCellTable.Gui4jColumnTable,94,0,10,0,25,0,13,0,8,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeSelectionListener,54,0,4,0,24,0,11,0,9,0
 gui4j,org.gui4j.component,Gui4jTable.CellRenderer,376,0,52,0,87,0,28,0,2,0
-gui4j,org.gui4j.component,Gui4jJComponent,128,0,8,0,47,0,16,0,12,0
+gui4j,org.gui4j.component,Gui4jJComponent,147,0,8,0,52,0,16,0,12,0
 gui4j,org.gui4j.component,Gui4jTabbedPane.EntryInstance,43,0,2,0,14,0,4,0,3,0
 gui4j,org.gui4j.component,Gui4jEdit.new Runnable() {...},21,0,0,0,4,0,2,0,2,0
-gui4j,org.gui4j.component,Gui4jMatrix.Gui4jCell,684,0,64,0,141,0,50,0,18,0
+gui4j,org.gui4j.component,Gui4jMatrix.Gui4jCell,680,0,64,0,141,0,50,0,18,0
 gui4j,org.gui4j.component,Gui4jTreePopupMenuItem,51,0,4,0,14,0,5,0,3,0
 gui4j,org.gui4j.component,Gui4jMatrix.Gui4jTableModel.new Runnable() {...},19,0,0,0,4,0,2,0,2,0
 gui4j,org.gui4j.component,Gui4jMatrix.Gui4jTableModel.new SparseMatrix.Traverser() {...},66,0,10,0,15,0,7,0,2,0
 gui4j,org.gui4j.component,Gui4jGridLayout,172,0,26,0,32,0,20,0,7,0
-gui4j,org.gui4j.component,Gui4jList.Gui4jListModel,92,0,8,0,22,0,10,0,6,0
+gui4j,org.gui4j.component,Gui4jList.Gui4jListModel,90,0,8,0,22,0,10,0,6,0
 gui4j,org.gui4j.component,Gui4jPanel,74,0,8,0,25,0,8,0,4,0
 gui4j,org.gui4j.component,Gui4jExternalComponent,34,0,0,0,9,0,3,0,3,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeExpander.new Runnable() {...},16,0,0,0,3,0,2,0,2,0
@@ -199,7 +199,7 @@ gui4j,org.gui4j.component,Gui4jCardLayout,142,0,10,0,33,0,10,0,5,0
 gui4j,org.gui4j.component,Gui4jTabbedPane.Entry,223,0,20,0,58,0,28,0,18,0
 gui4j,org.gui4j.component,Gui4jRadioButton,6,0,0,0,2,0,1,0,1,0
 gui4j,org.gui4j.component,Gui4jComboBox.ComboBoxCellRenderer,24,0,0,0,7,0,3,0,3,0
-gui4j,org.gui4j.component,Gui4jCellTable.Gui4jTableModel,380,0,54,0,84,0,46,0,19,0
+gui4j,org.gui4j.component,Gui4jCellTable.Gui4jTableModel,378,0,54,0,84,0,46,0,19,0
 gui4j,org.gui4j.component,Gui4jMatrix.CellRenderer.new Gui4jTextAttribute.Gui4jCallProvider() {...},12,0,0,0,2,0,2,0,2,0
 gui4j,org.gui4j.component,Gui4jTabbedPane.TabbedPaneListener.new Runnable() {...},18,0,0,0,3,0,2,0,2,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeMessage,9,0,0,0,4,0,2,0,2,0
@@ -221,7 +221,7 @@ gui4j,org.gui4j.component,Gui4jCardLayout.SwitchListener.new Runnable() {...},23
 gui4j,org.gui4j.component,Gui4jScrollPane,110,0,2,0,31,0,6,0,5,0
 gui4j,org.gui4j.component,Gui4jTabbedPane.Entry.new Gui4jTabbedPane.EntryInstance() {...},29,0,0,0,3,0,2,0,2,0
 gui4j,org.gui4j.component,Gui4jTabbedPane.Entry.new Gui4jTabbedPane.EntryInstance() {...},41,0,2,0,5,0,3,0,2,0
-gui4j,org.gui4j.component,Gui4jMatrix.Gui4jRow,62,0,2,0,13,0,5,0,4,0
+gui4j,org.gui4j.component,Gui4jMatrix.Gui4jRow,60,0,2,0,13,0,5,0,4,0
 gui4j,org.gui4j.component,Gui4jTabbedPane.Entry.new Gui4jTabbedPane.EntryInstance() {...},29,0,0,0,3,0,2,0,2,0
 gui4j,org.gui4j.component,Gui4jTabbedPane.Entry.new Gui4jTabbedPane.EntryInstance() {...},29,0,0,0,3,0,2,0,2,0
 gui4j,org.gui4j.component,Gui4jTabbedPane.Entry.new Gui4jTabbedPane.EntryInstance() {...},37,0,4,0,5,0,4,0,2,0
@@ -229,17 +229,17 @@ gui4j,org.gui4j.component,Gui4jSimpleInternalFrame,130,0,8,0,44,0,13,0,9,0
 gui4j,org.gui4j.component,Gui4jCheckBox,6,0,0,0,2,0,1,0,1,0
 gui4j,org.gui4j.component,Gui4jLabelForm.CellAllocation,290,0,32,0,56,0,22,0,6,0
 gui4j,org.gui4j.component,Gui4jCardLayout.SwitchListener,122,0,10,0,27,0,8,0,3,0
-gui4j,org.gui4j.component,Gui4jMatrix.Gui4jCol,139,0,10,0,30,0,16,0,11,0
+gui4j,org.gui4j.component,Gui4jMatrix.Gui4jCol,137,0,10,0,30,0,16,0,11,0
 gui4j,org.gui4j.component,Gui4jMatrix,721,0,58,0,178,0,50,0,21,0
 gui4j,org.gui4j.component,Gui4jTabbedPane.TabbedPaneListener,91,0,10,0,22,0,8,0,3,0
 gui4j,org.gui4j.component,Gui4jSwitch,92,0,6,0,21,0,8,0,5,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeNode,48,0,0,0,17,0,8,0,8,0
-gui4j,org.gui4j.component,Gui4jTable.Gui4jTableModel,789,0,102,0,183,0,79,0,28,0
+gui4j,org.gui4j.component,Gui4jTable.Gui4jTableModel,785,0,102,0,184,0,79,0,28,0
 gui4j,org.gui4j.component,Gui4jSwitch.SwitchListener,114,0,8,0,31,0,7,0,3,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jJTree.new MouseListener() {...},22,0,2,0,8,0,7,0,6,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jJTree.new Gui4jTree.Gui4jTreeSelectionListener() {...},49,0,4,0,9,0,4,0,2,0
 gui4j,org.gui4j.component,Gui4jList,384,0,52,0,113,0,43,0,17,0
-gui4j,org.gui4j.component,Gui4jTable.Gui4jColumnTable,601,0,68,0,125,0,54,0,20,0
+gui4j,org.gui4j.component,Gui4jTable.Gui4jColumnTable,589,0,68,0,125,0,54,0,20,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeSelector,101,0,8,0,21,0,10,0,6,0
 gui4j,org.gui4j.component,Gui4jCellTable.CellRenderer,284,0,28,0,55,0,16,0,2,0
 gui4j,org.gui4j.component,Gui4jMenu.2.new Gui4jGetValue() {...},28,0,0,0,5,0,4,0,4,0
@@ -259,7 +259,7 @@ gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeExpander,172,0,17,0,47,0,18,0,8,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeModel.new Gui4jEventListener() {...},15,0,0,0,4,0,2,0,2,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeModel.new Runnable() {...},18,0,0,0,4,0,2,0,2,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeModel,298,0,28,0,73,0,34,0,20,0
-gui4j,org.gui4j.component,Gui4jLabelForm,596,0,56,0,149,0,44,0,16,0
+gui4j,org.gui4j.component,Gui4jLabelForm,592,0,56,0,149,0,44,0,16,0
 gui4j,org.gui4j.component,Gui4jBoxH,13,0,0,0,5,0,3,0,3,0
 gui4j,org.gui4j.component,Gui4jTable.ColumnManager,147,0,16,0,34,0,17,0,9,0
 gui4j,org.gui4j.component,Gui4jTree.Gui4jTreeRootChanger.new Runnable() {...},87,0,4,0,12,0,4,0,2,0
@@ -315,7 +315,7 @@ gui4j,org.dom4j.io,LDocumentFactory,21,0,0,0,5,0,5,0,5,0
 gui4j,org.dom4j.io,LNSAXContentHandler,43,0,2,0,14,0,6,0,5,0
 gui4j,org.dom4j.io,LNSAXReader,126,0,0,0,43,0,13,0,13,0
 gui4j,org.gui4j.core,Gui4jComponentPropertyGetter.new Runnable() {...},45,0,0,0,9,0,2,0,2,0
-gui4j,org.gui4j.core,Gui4jTypeManager,110,0,12,0,32,0,14,0,8,0
+gui4j,org.gui4j.core,Gui4jTypeManager,110,0,12,0,33,0,14,0,8,0
 gui4j,org.gui4j.core,Gui4jSwingContainer,592,0,50,0,172,0,51,0,26,0
 gui4j,org.gui4j.core,Gui4jComponentPropertyGetter,157,0,8,0,45,0,11,0,7,0
 gui4j,org.gui4j.core,Gui4jComponentArg,71,0,0,0,24,0,13,0,13,0
@@ -325,10 +325,12 @@ gui4j,org.gui4j.core,Gui4jComponentInstance,203,0,22,0,58,0,28,0,17,0
 gui4j,org.gui4j.core,Gui4jComponentPropertySetter.new Runnable() {...},44,0,2,0,11,0,3,0,2,0
 gui4j,org.gui4j.core,Gui4jComponentContainerManager,226,0,18,0,49,0,19,0,10,0
 gui4j,org.gui4j.core,Gui4jSwingContainer.Gui4jComponentInstanceProperty,82,0,8,0,23,0,7,0,3,0
-gui4j,org.gui4j.core,Gui4jThreadManager,372,0,30,0,88,0,36,0,21,0
+gui4j,org.gui4j.core,Gui4jThreadManager,554,0,72,0,138,0,61,0,25,0
 gui4j,org.gui4j.core,Gui4jComponentContainerManager.Gui4jComponentContainerImpl.new Gui4jAbstractComponent() {...},18,0,0,0,4,0,4,0,4,0
 gui4j,org.gui4j.core,Gui4jComponentPath,233,0,46,0,53,0,35,0,12,0
-gui4j,org.gui4j.core,Gui4jThreadManager.new Runnable() {...},66,0,2,0,14,0,3,0,2,0
+gui4j,org.gui4j.core,Gui4jThreadManager.new ThreadFactory() {...},21,0,0,0,3,0,2,0,2,0
+gui4j,org.gui4j.core,Gui4jThreadManager.new Runnable() {...},82,0,10,0,17,0,7,0,2,0
+gui4j,org.gui4j.core,Gui4jThreadManager.new Runnable() {...},44,0,2,0,8,0,3,0,2,0
 gui4j,org.gui4j.core,Gui4jThreadManager.InvokerCallStack,16,0,0,0,3,0,2,0,2,0
 gui4j,org.gui4j.core,Gui4jComponentFactory.SubElement,161,0,8,0,28,0,16,0,12,0
 gui4j,org.gui4j.core,Gui4jMap1,136,0,20,0,40,0,26,0,16,0
@@ -338,10 +340,10 @@ gui4j,org.gui4j.core,Gui4jTypeCheck,90,0,14,0,19,0,11,0,4,0
 gui4j,org.gui4j.core,Gui4jAbstractComponent.new AbstractAction() {...},16,0,0,0,3,0,2,0,2,0
 gui4j,org.gui4j.core,Gui4jComponentContainerManager.Resource,776,0,60,0,185,0,49,0,19,0
 gui4j,org.gui4j.core,Gui4jSwingContainer.Gui4jComponentContainerIncludeInstance,139,0,20,0,39,0,17,0,7,0
-gui4j,org.gui4j.core,Gui4jStyleContainer,382,0,44,0,93,0,28,0,6,0
+gui4j,org.gui4j.core,Gui4jStyleContainer,384,0,44,0,97,0,28,0,6,0
 gui4j,org.gui4j.core,Gui4jMouseListener,83,0,8,0,27,0,14,0,10,0
-gui4j,org.gui4j.core,Gui4jThreadManager.WorkerThread,297,0,46,0,68,0,28,0,5,0
-gui4j,org.gui4j.core,Gui4jComponentManager,704,0,38,0,193,0,37,0,18,0
+gui4j,org.gui4j.core,Gui4jThreadManager.WorkerThread,50,0,2,0,11,0,5,0,4,0
+gui4j,org.gui4j.core,Gui4jComponentManager,739,0,40,0,201,0,38,0,18,0
 gui4j,org.gui4j.core,Gui4jComponentContainerManager.ImportInfo,3,0,0,0,1,0,1,0,1,0
 gui4j,org.gui4j.core,Gui4jComponentPropertySetter,124,0,12,0,37,0,12,0,6,0
 gui4j,org.gui4j.core,Gui4jComponentFactory,774,0,34,0,153,0,43,0,26,0
@@ -359,15 +361,15 @@ gui4j,org.gui4j.core.call,Gui4jAccessImpl,0,35,0,8,0,8,0,6,0,2
 gui4j,org.gui4j.core.call,Gui4jDefaultCall,115,32,10,0,22,9,17,3,12,3
 gui4j,org.gui4j.core.call,Gui4jAccessSetValue,123,0,10,0,27,0,10,0,5,0
 gui4j,org.gui4j.core.call,Gui4jAccessDouble,43,0,2,0,13,0,5,0,4,0
-gui4j,org.gui4j.core.call,Gui4jAccessBoolean,83,0,5,0,22,0,7,0,4,0
-gui4j,org.gui4j.core.call,Gui4jAccessCharacter,55,0,2,0,14,0,5,0,4,0
+gui4j,org.gui4j.core.call,Gui4jAccessBoolean,79,0,5,0,22,0,7,0,4,0
+gui4j,org.gui4j.core.call,Gui4jAccessCharacter,51,0,2,0,14,0,5,0,4,0
 gui4j,org.gui4j.core.call,Gui4jAccessInteger,10,33,1,1,3,10,2,3,1,3
-gui4j,org.gui4j.core.call,Gui4jAccessStatic,83,0,4,0,21,0,6,0,4,0
+gui4j,org.gui4j.core.call,Gui4jAccessStatic,81,0,4,0,21,0,6,0,4,0
 gui4j,org.gui4j.core.call,Gui4jInternalActionCall.new Runnable() {...},21,0,0,0,3,0,2,0,2,0
 gui4j,org.gui4j.core.call,ParseCtx,32,58,2,0,7,18,7,8,6,8
 gui4j,org.gui4j.core.call,Gui4jAccessSeq,16,23,4,0,2,6,4,2,2,2
 gui4j,org.gui4j.core.call,Gui4jInternalActionCall,136,0,10,0,36,0,21,0,16,0
-gui4j,org.gui4j.core.call,Gui4jAccessMethod,198,299,20,30,34,71,17,14,2,4
-gui4j,org.gui4j.core.call,Gui4jCallParser,330,218,29,28,60,50,27,16,2,8
+gui4j,org.gui4j.core.call,Gui4jAccessMethod,198,297,20,30,34,71,17,14,2,4
+gui4j,org.gui4j.core.call,Gui4jCallParser,318,218,29,28,60,50,27,16,2,8
 gui4j,org.gui4j.core.call,Gui4jAccessBase,2,11,0,0,1,5,1,3,1,3
-gui4j,org.gui4j.core.call,Gui4jAccessConstant,26,31,1,1,5,10,2,3,1,3
+gui4j,org.gui4j.core.call,Gui4jAccessConstant,24,31,1,1,5,10,2,3,1,3

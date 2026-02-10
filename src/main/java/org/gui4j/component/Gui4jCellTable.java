@@ -423,6 +423,7 @@ public class Gui4jCellTable extends Gui4jJComponent {
   // ***************************************************************************************
 
   public class Gui4jColumnTable implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jCall mEnabled;
     protected final Gui4jCall mColumnName;
     protected final Gui4jCall mColumnValue;
@@ -616,6 +617,7 @@ public class Gui4jCellTable extends Gui4jJComponent {
   }
 
   public final class Gui4jCell implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jCall mGetValue;
     private final Gui4jCall mSetValue;
     private final Gui4jCall mEnabled;
@@ -700,8 +702,8 @@ public class Gui4jCellTable extends Gui4jJComponent {
 
     private Map getParamMap(Gui4jCallBase gui4jController, boolean includeListItem) {
       Map m = new HashMap();
-      m.put(PARAM_COL, new Integer(mCol));
-      m.put(PARAM_ROW, new Integer(mRow));
+      m.put(PARAM_COL, Integer.valueOf(mCol));
+      m.put(PARAM_ROW, Integer.valueOf(mRow));
 
       Gui4jCall columnValue = null;
       if (mColumn[mCol] != null) {
@@ -860,7 +862,7 @@ public class Gui4jCellTable extends Gui4jJComponent {
     public String getRowName(int row) {
       if (mRowName[row] != null) {
         Map paramMap = new HashMap();
-        paramMap.put(PARAM_ROW, new Integer(row));
+        paramMap.put(PARAM_ROW, Integer.valueOf(row));
         if (mRowValue[row] != null) {
           Map nullMap = null;
           paramMap.put(PARAM_ROWVALUE, mRowValue[row].getValue(mGui4jController, nullMap, null));

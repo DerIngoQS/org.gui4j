@@ -250,7 +250,7 @@ public final class Gui4jList extends Gui4jJComponent {
       Object value = super.getElementAt(index);
       if (value != null) {
         Map paramMap = new HashMap();
-        paramMap.put(Const.PARAM_INDEX, new Integer(index));
+        paramMap.put(Const.PARAM_INDEX, Integer.valueOf(index));
         paramMap.put(Const.PARAM_ITEM, value);
         if (mRowValue == null) {
           mLogger.warn(getId() + ": rowValue not defined");

@@ -227,7 +227,7 @@ public class Gui4jLabelForm extends Gui4jJComponent {
     int vSpacing = 0;
     if (vspCall != null) {
       Integer vspCallResult =
-          (Integer) vspCall.getValue(gui4jCallBase, Collections.EMPTY_MAP, new Integer(0));
+          (Integer) vspCall.getValue(gui4jCallBase, Collections.EMPTY_MAP, Integer.valueOf(0));
       if (vspCallResult != null) {
         vSpacing = vspCallResult.intValue();
       }
@@ -239,7 +239,7 @@ public class Gui4jLabelForm extends Gui4jJComponent {
     int hSpacing = 0;
     if (hspCall != null) {
       Integer hspCallResult =
-          (Integer) hspCall.getValue(gui4jCallBase, Collections.EMPTY_MAP, new Integer(0));
+          (Integer) hspCall.getValue(gui4jCallBase, Collections.EMPTY_MAP, Integer.valueOf(0));
       if (hspCallResult != null) {
         hSpacing = hspCallResult.intValue();
       }

@@ -42,7 +42,7 @@ public class Gui4jActionListenerButton extends Gui4jActionListener {
       }
 
       boolean selected = button.isSelected();
-      Map paramMap = new Gui4jMap1(Const.PARAM_VALUE, new Boolean(selected));
+      Map paramMap = new Gui4jMap1(Const.PARAM_VALUE, Boolean.valueOf(selected));
       mGui4jThreadManager.performWork(
           mGui4jController, mActionPerformed, paramMap, mGui4jComponentInstance);
     }

@@ -45,10 +45,10 @@ public final class Gui4jListFactory extends Gui4jJComponentFactory {
 
   static {
     mSelectionMode = new HashMap();
-    mSelectionMode.put("multiple", new Integer(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION));
+    mSelectionMode.put("multiple", Integer.valueOf(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION));
     mSelectionMode.put(
-        "single_interval", new Integer(ListSelectionModel.SINGLE_INTERVAL_SELECTION));
-    mSelectionMode.put("single", new Integer(ListSelectionModel.SINGLE_SELECTION));
+        "single_interval", Integer.valueOf(ListSelectionModel.SINGLE_INTERVAL_SELECTION));
+    mSelectionMode.put("single", Integer.valueOf(ListSelectionModel.SINGLE_SELECTION));
   }
 
   public static String listSelectionModeType() {

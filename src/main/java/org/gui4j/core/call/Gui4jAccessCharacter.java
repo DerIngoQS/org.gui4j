@@ -10,7 +10,7 @@ final class Gui4jAccessCharacter extends Gui4jAccessImpl {
     int startIndex = parseCtx.i;
     startIndex++; // accessPath.charAt(startIndex)='%'
     if (startIndex >= accessPath.length()) {
-      Object[] args = {accessPath, new Integer(startIndex)};
+      Object[] args = {accessPath, Integer.valueOf(startIndex)};
       throw new Gui4jUncheckedException.ResourceError(
           parseCtx.getConfigurationName(),
           parseCtx.getLineNumber(),
@@ -18,7 +18,7 @@ final class Gui4jAccessCharacter extends Gui4jAccessImpl {
           args);
     }
 
-    mValue = new Character(accessPath.charAt(startIndex));
+    mValue = Character.valueOf(accessPath.charAt(startIndex));
     parseCtx.i = startIndex + 1;
   }
 

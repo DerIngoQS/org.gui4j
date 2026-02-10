@@ -9,6 +9,7 @@ import org.gui4j.core.Gui4jComponentContainer;
 import org.gui4j.core.Gui4jReflectionManager;
 
 final class ParseCtx implements Serializable {
+  private static final long serialVersionUID = 1L;
   int i;
   private final Gui4jComponent mGui4jComponent;
   private final Gui4jComponentContainer mGui4jComponentContainer;

@@ -25,11 +25,11 @@ public final class Gui4jFlowLayoutFactory extends Gui4jJComponentFactory {
   private static final Map mAlignment = new HashMap();
 
   static {
-    mAlignment.put("center", new Integer(FlowLayout.CENTER));
-    mAlignment.put("leading", new Integer(FlowLayout.LEADING));
-    mAlignment.put("left", new Integer(FlowLayout.LEFT));
-    mAlignment.put("right", new Integer(FlowLayout.RIGHT));
-    mAlignment.put("trailing", new Integer(FlowLayout.TRAILING));
+    mAlignment.put("center", Integer.valueOf(FlowLayout.CENTER));
+    mAlignment.put("leading", Integer.valueOf(FlowLayout.LEADING));
+    mAlignment.put("left", Integer.valueOf(FlowLayout.LEFT));
+    mAlignment.put("right", Integer.valueOf(FlowLayout.RIGHT));
+    mAlignment.put("trailing", Integer.valueOf(FlowLayout.TRAILING));
   }
 
   /* (non-Javadoc)

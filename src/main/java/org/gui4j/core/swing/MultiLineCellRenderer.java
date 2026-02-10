@@ -16,6 +16,7 @@ import javax.swing.border.*;
 import javax.swing.table.TableCellRenderer;
 
 public class MultiLineCellRenderer extends JTextArea implements TableCellRenderer, Serializable {
+  private static final long serialVersionUID = 1L;
 
   protected static Border noFocusBorder;
 

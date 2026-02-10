@@ -50,6 +50,7 @@ import java.util.StringTokenizer;
  * @author Daniel E. Barbalace
  */
 public class TableLayoutConstraints implements TableLayoutConstants, Serializable {
+  private static final long serialVersionUID = 1L;
 
   /** Cell in which the upper left corner of the component lays */
   public int col1, row1;
@@ -101,12 +102,12 @@ public class TableLayoutConstraints implements TableLayoutConstants, Serializabl
 
       // Get the first column (assume component is in only one column)
       String tokenA = st.nextToken();
-      col1 = new Integer(tokenA).intValue();
+      col1 = Integer.valueOf(tokenA).intValue();
       col2 = col1;
 
       // Get the first row (assume component is in only one row)
       String tokenB = st.nextToken();
-      row1 = new Integer(tokenB).intValue();
+      row1 = Integer.valueOf(tokenB).intValue();
       row2 = row1;
 
       // Get next two tokens
@@ -115,8 +116,8 @@ public class TableLayoutConstraints implements TableLayoutConstants, Serializabl
 
       try {
         // Attempt to use tokens A and B as col2 and row2
-        col2 = new Integer(tokenA).intValue();
-        row2 = new Integer(tokenB).intValue();
+        col2 = Integer.valueOf(tokenA).intValue();
+        row2 = Integer.valueOf(tokenB).intValue();
 
         // Get next two tokens
         tokenA = st.nextToken();

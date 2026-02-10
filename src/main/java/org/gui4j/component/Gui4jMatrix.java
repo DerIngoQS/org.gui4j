@@ -493,6 +493,7 @@ public class Gui4jMatrix extends Gui4jJComponent {
   // ROW
   // *************************************************************************************
   public final class Gui4jRow implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jCall mRowName;
     private final Gui4jTextAttribute mGui4jTextAttribute;
     protected final Class mClassType;
@@ -514,7 +515,7 @@ public class Gui4jMatrix extends Gui4jJComponent {
     protected String getName(Gui4jCallBase gui4jController, int row, Gui4jTableModel model) {
       if (mRowName != null) {
         Map paramMap = new HashMap();
-        paramMap.put(PARAM_ROW, new Integer(row));
+        paramMap.put(PARAM_ROW, Integer.valueOf(row));
         paramMap.put(PARAM_ROWVALUE, model.mRows.get(row));
         return (String) mRowName.getValue(gui4jController, paramMap, null);
       } else {
@@ -528,6 +529,7 @@ public class Gui4jMatrix extends Gui4jJComponent {
   // *************************************************************************************
 
   public final class Gui4jCol implements Serializable {
+    private static final long serialVersionUID = 1L;
     protected final Class mClassType;
     private final Gui4jCall mColName;
     private final Gui4jCall mCharacters;
@@ -570,7 +572,7 @@ public class Gui4jMatrix extends Gui4jJComponent {
     public String getName(Gui4jCallBase gui4jController, int col, Gui4jTableModel model) {
       if (mColName != null) {
         Map paramMap = new HashMap();
-        paramMap.put(PARAM_COL, new Integer(col));
+        paramMap.put(PARAM_COL, Integer.valueOf(col));
         paramMap.put(PARAM_COLVALUE, model.mColumns.get(col));
         return (String) mColName.getValue(gui4jController, paramMap, null);
       } else {
@@ -603,6 +605,7 @@ public class Gui4jMatrix extends Gui4jJComponent {
   // CELL
   // *************************************************************************************
   public final class Gui4jCell implements Serializable {
+    private static final long serialVersionUID = 1L;
     private final Gui4jRow mGui4jRow;
     private final Gui4jCol mGui4jCol;
     private final Gui4jTextAttribute mGui4jTextAttribute;
@@ -866,8 +869,8 @@ public class Gui4jMatrix extends Gui4jJComponent {
         boolean includeListItem,
         Gui4jTableModel model) {
       Map m = new HashMap();
-      m.put(PARAM_COL, new Integer(col));
-      m.put(PARAM_ROW, new Integer(row));
+      m.put(PARAM_COL, Integer.valueOf(col));
+      m.put(PARAM_ROW, Integer.valueOf(row));
       m.put(PARAM_COLVALUE, model.mColumns.get(col));
       m.put(PARAM_ROWVALUE, model.mRows.get(row));
 

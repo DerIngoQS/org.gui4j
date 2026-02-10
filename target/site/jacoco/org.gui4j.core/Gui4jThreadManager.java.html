@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui4jThreadManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.gui4j.core</a> &gt; <span class="el_source">Gui4jThreadManager.java</span></div><h1>Gui4jThreadManager.java</h1><pre class="source lang-java linenums">package org.gui4j.core;
 
 import java.awt.EventQueue;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.SwingUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,22 +29,24 @@ import org.gui4j.exception.Gui4jUncheckedException;
  * thread back into the pool.
  */
 public final class Gui4jThreadManager implements ErrorTags, Serializable {
-<span class="nc" id="L22">  protected static Log mLogger = LogFactory.getLog(Gui4jThreadManager.class);</span>
+  private static final long serialVersionUID = 1L;
+<span class="nc" id="L33">  protected static Log mLogger = LogFactory.getLog(Gui4jThreadManager.class);</span>
 
-<span class="nc" id="L24">  private LinkedList mWorkPackagesNormal = new LinkedList();</span>
-<span class="nc" id="L25">  private LinkedList mWorkPackagesHighPriority = new LinkedList();</span>
-<span class="nc" id="L26">  private Object mSyncObjectCount = new Object();</span>
-<span class="nc" id="L27">  private Object mSyncObjectWorkerWait = new Object();</span>
+  private transient ConcurrentLinkedQueue&lt;WorkPackage&gt; mWorkPackagesNormal;
+  private transient ConcurrentLinkedQueue&lt;WorkPackage&gt; mWorkPackagesHighPriority;
+  private transient ReentrantLock mDispatchLock;
+  private transient ExecutorService mWorkerExecutor;
+  private transient AtomicInteger mCreatedWorkerCount;
+
   protected final Gui4jInternal mGui4j;
-  private int mWorkPackageCountWaitingNormal;
-  private int mWorkPackageCountWaitingHighPriority;
-  private int mWorkPackageCountRunningNormal;
-  private int mWorkPackageCountRunningHighPriority;
-  private int mWorkerCount;
+<span class="nc" id="L42">  private final AtomicInteger mWorkPackageCountWaitingNormal = new AtomicInteger();</span>
+<span class="nc" id="L43">  private final AtomicInteger mWorkPackageCountWaitingHighPriority = new AtomicInteger();</span>
+<span class="nc" id="L44">  private final AtomicInteger mWorkPackageCountRunningNormal = new AtomicInteger();</span>
+<span class="nc" id="L45">  private final AtomicInteger mWorkPackageCountRunningHighPriority = new AtomicInteger();</span>
   private int mMaxWorkerId;
   private int mMaxNumberOfWorkerThreads;
   private boolean mUseWorkerThreads;
-  private boolean mShutdownThreads;
+  private volatile boolean mShutdownThreads;
 
   /**
    * Constructor for Gui4jThreadManager.
@@ -43,10 +55,11 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    * @param numberOfWorkerThreads
    */
   private Gui4jThreadManager(Gui4jInternal gui4j, int numberOfWorkerThreads) {
-<span class="nc" id="L46">    super();</span>
-<span class="nc" id="L47">    mGui4j = gui4j;</span>
-<span class="nc" id="L48">    setNumberOfWorkerThreads(numberOfWorkerThreads);</span>
-<span class="nc" id="L49">  }</span>
+<span class="nc" id="L58">    super();</span>
+<span class="nc" id="L59">    mGui4j = gui4j;</span>
+<span class="nc" id="L60">    initializeTransientState();</span>
+<span class="nc" id="L61">    setNumberOfWorkerThreads(numberOfWorkerThreads);</span>
+<span class="nc" id="L62">  }</span>
 
   /**
    * @param gui4j
@@ -55,7 +68,7 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    *     &lt;/code&gt;.
    */
   public static Gui4jThreadManager getNewInstance(Gui4jInternal gui4j, int numberOfWorkerThreads) {
-<span class="nc" id="L58">    return new Gui4jThreadManager(gui4j, numberOfWorkerThreads);</span>
+<span class="nc" id="L71">    return new Gui4jThreadManager(gui4j, numberOfWorkerThreads);</span>
   }
 
   /**
@@ -69,11 +82,14 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    */
   public void setNumberOfWorkerThreads(int numberOfWorkerThreads) {
     // it is not allowd to dynamically change the number of worker threads
-<span class="nc bnc" id="L72" title="All 2 branches missed.">    assert mWorkerCount == 0;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">    assert mCreatedWorkerCount.get() == 0;</span>
 
-<span class="nc" id="L74">    mMaxNumberOfWorkerThreads = numberOfWorkerThreads;</span>
-<span class="nc bnc" id="L75" title="All 2 branches missed.">    mUseWorkerThreads = mMaxNumberOfWorkerThreads != 0;</span>
-<span class="nc" id="L76">  }</span>
+<span class="nc" id="L87">    mMaxNumberOfWorkerThreads = numberOfWorkerThreads;</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">    mUseWorkerThreads = mMaxNumberOfWorkerThreads != 0;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    if (mUseWorkerThreads) {</span>
+<span class="nc" id="L90">      mWorkerExecutor = createWorkerExecutor();</span>
+    }
+<span class="nc" id="L92">  }</span>
 
   /**
    * Performs the given work. Dependant of the number of maximum worker threads, the work is either
@@ -85,8 +101,8 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    */
   public void performWork(
       final Gui4jCallBase gui4jController, final Gui4jGetValue[] work, final Map paramMap) {
-<span class="nc" id="L88">    performWork(gui4jController, work, paramMap, null);</span>
-<span class="nc" id="L89">  }</span>
+<span class="nc" id="L104">    performWork(gui4jController, work, paramMap, null);</span>
+<span class="nc" id="L105">  }</span>
 
   /**
    * Performs the given work. Dependant of the number of maximum worker threads, the work is either
@@ -102,24 +118,24 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       final Gui4jGetValue[] work,
       final Map paramMap,
       boolean forceExecutionInCurrentThread) {
-<span class="nc" id="L105">    performWork(gui4jController, work, paramMap, null, forceExecutionInCurrentThread);</span>
-<span class="nc" id="L106">  }</span>
+<span class="nc" id="L121">    performWork(gui4jController, work, paramMap, null, forceExecutionInCurrentThread);</span>
+<span class="nc" id="L122">  }</span>
 
   public void performWork(
       final Gui4jCallBase gui4jController,
       final Gui4jGetValue[] work,
       final Map paramMap,
       final Gui4jComponentInstance componentInstance) {
-<span class="nc" id="L113">    performWork(gui4jController, work, paramMap, componentInstance, false);</span>
-<span class="nc" id="L114">  }</span>
+<span class="nc" id="L129">    performWork(gui4jController, work, paramMap, componentInstance, false);</span>
+<span class="nc" id="L130">  }</span>
 
   public void performWorkHighPriority(
       final Gui4jCallBase gui4jController,
       final Gui4jGetValue[] work,
       final Map paramMap,
       final Gui4jComponentInstance componentInstance) {
-<span class="nc" id="L121">    performWorkHighPriority(gui4jController, work, paramMap, componentInstance, false);</span>
-<span class="nc" id="L122">  }</span>
+<span class="nc" id="L137">    performWorkHighPriority(gui4jController, work, paramMap, componentInstance, false);</span>
+<span class="nc" id="L138">  }</span>
 
   /**
    * Performs the given work. Dependant of the number of maximum worker threads, the work is either
@@ -137,9 +153,9 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       final Map paramMap,
       final Gui4jComponentInstance componentInstance,
       boolean forceExecutionInCurrentThread) {
-<span class="nc" id="L140">    performWork(</span>
+<span class="nc" id="L156">    performWork(</span>
         gui4jController, work, paramMap, componentInstance, forceExecutionInCurrentThread, false);
-<span class="nc" id="L142">  }</span>
+<span class="nc" id="L158">  }</span>
 
   /**
    * Performs the specified work and instructs the worker process to use the special success
@@ -157,7 +173,7 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       final Map paramMap,
       final Gui4jComponentInstance componentInstance,
       boolean forceExecutionInCurrentThread) {
-<span class="nc" id="L160">    performWork(</span>
+<span class="nc" id="L176">    performWork(</span>
         gui4jController,
         work,
         paramMap,
@@ -165,7 +181,7 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
         forceExecutionInCurrentThread,
         false,
         true);
-<span class="nc" id="L168">  }</span>
+<span class="nc" id="L184">  }</span>
 
   /**
    * Performs the given work. Dependant of the number of maximum worker threads, the work is either
@@ -187,7 +203,7 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       final Map paramMap,
       final Gui4jComponentInstance componentInstance,
       boolean forceExecutionInCurrentThread) {
-<span class="nc" id="L190">    performWork(</span>
+<span class="nc" id="L206">    performWork(</span>
         gui4jController,
         work,
         paramMap,
@@ -195,7 +211,7 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
         forceExecutionInCurrentThread,
         true,
         true);
-<span class="nc" id="L198">  }</span>
+<span class="nc" id="L214">  }</span>
 
   private void performWork(
       final Gui4jCallBase gui4jController,
@@ -204,7 +220,7 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       final Gui4jComponentInstance componentInstance,
       final boolean forceExecutionInCurrentThread,
       final boolean isHighPriorityThread) {
-<span class="nc" id="L207">    performWork(</span>
+<span class="nc" id="L223">    performWork(</span>
         gui4jController,
         work,
         paramMap,
@@ -212,7 +228,7 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
         forceExecutionInCurrentThread,
         isHighPriorityThread,
         false);
-<span class="nc" id="L215">  }</span>
+<span class="nc" id="L231">  }</span>
 
   /**
    * Perform the given work.
@@ -223,9 +239,9 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    * @param paramMap
    */
   public void performWork(Gui4jCallBase gui4jController, Gui4jGetValue action, Map paramMap) {
-<span class="nc" id="L226">    Gui4jGetValue[] work = {action};</span>
-<span class="nc" id="L227">    performWork(gui4jController, work, paramMap);</span>
-<span class="nc" id="L228">  }</span>
+<span class="nc" id="L242">    Gui4jGetValue[] work = {action};</span>
+<span class="nc" id="L243">    performWork(gui4jController, work, paramMap);</span>
+<span class="nc" id="L244">  }</span>
 
   /**
    * Perform the given work.
@@ -240,9 +256,9 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       Gui4jGetValue action,
       Map paramMap,
       Gui4jComponentInstance componentInstance) {
-<span class="nc" id="L243">    Gui4jGetValue[] work = {action};</span>
-<span class="nc" id="L244">    performWork(gui4jController, work, paramMap, componentInstance);</span>
-<span class="nc" id="L245">  }</span>
+<span class="nc" id="L259">    Gui4jGetValue[] work = {action};</span>
+<span class="nc" id="L260">    performWork(gui4jController, work, paramMap, componentInstance);</span>
+<span class="nc" id="L261">  }</span>
 
   /**
    * Performs the given work. Dependant of the number of maximum worker threads, the work is either
@@ -264,14 +280,15 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
       final boolean forceExecutionInCurrentThread,
       final boolean isHighPriorityThread,
       final boolean specialSuccessHandling) {
-<span class="nc bnc" id="L267" title="All 2 branches missed.">    if (mUseWorkerThreads</span>
-<span class="nc bnc" id="L268" title="All 4 branches missed.">        &amp;&amp; SwingUtilities.isEventDispatchThread()</span>
-        &amp;&amp; !forceExecutionInCurrentThread) {
+<span class="nc bnc" id="L283" title="All 2 branches missed.">    if (mUseWorkerThreads</span>
+<span class="nc bnc" id="L284" title="All 6 branches missed.">        &amp;&amp; SwingUtilities.isEventDispatchThread()</span>
+        &amp;&amp; !forceExecutionInCurrentThread
+        &amp;&amp; !mShutdownThreads) {
       final InvokerCallStack callStack =
-<span class="nc bnc" id="L271" title="All 2 branches missed.">          mGui4j.traceWorkerInvocation()</span>
-<span class="nc" id="L272">              ? new InvokerCallStack(Thread.currentThread().getName())</span>
-<span class="nc" id="L273">              : null;</span>
-<span class="nc" id="L274">      final WorkPackage workPackage =</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">          mGui4j.traceWorkerInvocation()</span>
+<span class="nc" id="L289">              ? new InvokerCallStack(Thread.currentThread().getName())</span>
+<span class="nc" id="L290">              : null;</span>
+<span class="nc" id="L291">      final WorkPackage workPackage =</span>
           new WorkPackage(
               gui4jController,
               work,
@@ -280,90 +297,173 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
               callStack,
               isHighPriorityThread,
               specialSuccessHandling);
-      // put work on working list
-<span class="nc" id="L284">      Runnable run =</span>
-<span class="nc" id="L285">          new Runnable() {</span>
-
+<span class="nc" id="L300">      Runnable run =</span>
+<span class="nc" id="L301">          new Runnable() {</span>
             public void run() {
-<span class="nc bnc" id="L288" title="All 2 branches missed.">              if (isHighPriorityThread) {</span>
-<span class="nc" id="L289">                synchronized (mSyncObjectCount) {</span>
-<span class="nc" id="L290">                  mWorkPackagesHighPriority.add(workPackage);</span>
-<span class="nc" id="L291">                  mWorkPackageCountWaitingHighPriority++;</span>
-<span class="nc" id="L292">                  checkWorkerThreadCount();</span>
-<span class="nc" id="L293">                }</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">              if (isHighPriorityThread) {</span>
+<span class="nc" id="L304">                mWorkPackagesHighPriority.add(workPackage);</span>
+<span class="nc" id="L305">                mWorkPackageCountWaitingHighPriority.incrementAndGet();</span>
               } else {
-<span class="nc" id="L295">                synchronized (mSyncObjectCount) {</span>
-<span class="nc" id="L296">                  mWorkPackagesNormal.add(workPackage);</span>
-<span class="nc" id="L297">                  mWorkPackageCountWaitingNormal++;</span>
-<span class="nc" id="L298">                  checkWorkerThreadCount();</span>
-<span class="nc" id="L299">                }</span>
+<span class="nc" id="L307">                mWorkPackagesNormal.add(workPackage);</span>
+<span class="nc" id="L308">                mWorkPackageCountWaitingNormal.incrementAndGet();</span>
               }
-              // Any worker should do the work
-<span class="nc" id="L302">              wakeupWorker();</span>
-<span class="nc" id="L303">            }</span>
+<span class="nc" id="L310">              dispatchPendingWork();</span>
+<span class="nc" id="L311">            }</span>
           };
-<span class="nc" id="L305">      SwingUtilities.invokeLater(run);</span>
-<span class="nc" id="L306">    } else {</span>
-<span class="nc bnc" id="L307" title="All 2 branches missed.">      for (int i = 0; i &lt; work.length; i++) {</span>
-<span class="nc bnc" id="L308" title="All 2 branches missed.">        if (work[i] != null) {</span>
-<span class="nc" id="L309">          work[i].getValue(gui4jController, paramMap, null);</span>
+<span class="nc" id="L313">      SwingUtilities.invokeLater(run);</span>
+<span class="nc" id="L314">    } else {</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">      for (int i = 0; i &lt; work.length; i++) {</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">        if (work[i] != null) {</span>
+<span class="nc" id="L317">          work[i].getValue(gui4jController, paramMap, null);</span>
         }
       }
     }
-<span class="nc" id="L313">  }</span>
+<span class="nc" id="L321">  }</span>
 
   public void shutdown() {
-<span class="nc" id="L316">    mShutdownThreads = true;</span>
-<span class="nc" id="L317">    wakeupWorkers();</span>
-<span class="nc" id="L318">  }</span>
-
-  private void wakeupWorkers() {
-<span class="nc" id="L321">    synchronized (mSyncObjectWorkerWait) {</span>
-<span class="nc" id="L322">      mSyncObjectWorkerWait.notifyAll();</span>
-<span class="nc" id="L323">    }</span>
-<span class="nc" id="L324">  }</span>
-
-  private void wakeupWorker() {
-<span class="nc" id="L327">    synchronized (mSyncObjectWorkerWait) {</span>
-<span class="nc" id="L328">      mSyncObjectWorkerWait.notify();</span>
-<span class="nc" id="L329">    }</span>
-<span class="nc" id="L330">  }</span>
-
-  protected void checkWorkerThreadCount() {
-<span class="nc" id="L333">    boolean createNewWorker = false;</span>
-    int workPackageCountTotal;
-<span class="nc" id="L335">    synchronized (mSyncObjectCount) {</span>
-<span class="nc" id="L336">      workPackageCountTotal =</span>
-          mWorkPackageCountWaitingHighPriority
-              + mWorkPackageCountWaitingNormal
-              + mWorkPackageCountRunningHighPriority
-              + mWorkPackageCountRunningNormal;
-<span class="nc bnc" id="L341" title="All 2 branches missed.">      if (workPackageCountTotal &gt; mWorkerCount) {</span>
-        // There is more work to do than we have worker threads
-<span class="nc bnc" id="L343" title="All 4 branches missed.">        if (mWorkerCount &lt; mMaxNumberOfWorkerThreads || mMaxNumberOfWorkerThreads == -1) {</span>
-<span class="nc" id="L344">          createNewWorker = true;</span>
-<span class="nc" id="L345">          mWorkerCount++;</span>
-        }
-      }
-<span class="nc" id="L348">    }</span>
-<span class="nc bnc" id="L349" title="All 2 branches missed.">    if (createNewWorker) {</span>
-<span class="nc" id="L350">      WorkerThread workerThread = new WorkerThread(mMaxWorkerId++);</span>
-<span class="nc bnc" id="L351" title="All 2 branches missed.">      if (mLogger.isDebugEnabled()) {</span>
-<span class="nc" id="L352">        mLogger.debug(</span>
-            &quot;Created &quot;
-                + workerThread
-                + &quot;. Current work queue: RunningHighPriority: &quot;
-                + mWorkPackageCountRunningHighPriority
-                + &quot;, WaitingHighPriority: &quot;
-                + mWorkPackageCountWaitingHighPriority
-                + &quot;, RunningNormal: &quot;
-                + mWorkPackageCountRunningNormal
-                + &quot;, WaitingNormal: &quot;
-                + mWorkPackageCountWaitingNormal);
-      }
-<span class="nc" id="L364">      workerThread.start();</span>
+<span class="nc" id="L324">    mShutdownThreads = true;</span>
+<span class="nc" id="L325">    ExecutorService executor = mWorkerExecutor;</span>
+<span class="nc bnc" id="L326" title="All 2 branches missed.">    if (executor != null) {</span>
+<span class="nc" id="L327">      executor.shutdownNow();</span>
     }
-<span class="nc" id="L366">  }</span>
+<span class="nc" id="L329">  }</span>
+
+  private void dispatchPendingWork() {
+<span class="nc bnc" id="L332" title="All 6 branches missed.">    if (!mUseWorkerThreads || mShutdownThreads || mWorkerExecutor == null) {</span>
+<span class="nc" id="L333">      return;</span>
+    }
+<span class="nc bnc" id="L335" title="All 2 branches missed.">    if (!mDispatchLock.tryLock()) {</span>
+<span class="nc" id="L336">      return;</span>
+    }
+    try {
+<span class="nc bnc" id="L339" title="All 2 branches missed.">      while (!mShutdownThreads) {</span>
+<span class="nc" id="L340">        WorkPackage workPackage = pollNextWorkPackage();</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">        if (workPackage == null) {</span>
+<span class="nc" id="L342">          return;</span>
+        }
+<span class="nc" id="L344">        submitWorkPackage(workPackage);</span>
+<span class="nc" id="L345">      }</span>
+    } finally {
+<span class="nc" id="L347">      mDispatchLock.unlock();</span>
+    }
+<span class="nc" id="L349">  }</span>
+
+  private WorkPackage pollNextWorkPackage() {
+<span class="nc bnc" id="L352" title="All 2 branches missed.">    if (mWorkPackageCountRunningHighPriority.get() &gt; 0) {</span>
+<span class="nc" id="L353">      WorkPackage high = mWorkPackagesHighPriority.poll();</span>
+<span class="nc bnc" id="L354" title="All 2 branches missed.">      if (high != null) {</span>
+<span class="nc" id="L355">        mWorkPackageCountWaitingHighPriority.decrementAndGet();</span>
+<span class="nc" id="L356">        mWorkPackageCountRunningHighPriority.incrementAndGet();</span>
+      }
+<span class="nc" id="L358">      return high;</span>
+    }
+
+<span class="nc" id="L361">    WorkPackage high = mWorkPackagesHighPriority.poll();</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">    if (high != null) {</span>
+<span class="nc" id="L363">      mWorkPackageCountWaitingHighPriority.decrementAndGet();</span>
+<span class="nc" id="L364">      mWorkPackageCountRunningHighPriority.incrementAndGet();</span>
+<span class="nc" id="L365">      return high;</span>
+    }
+
+<span class="nc" id="L368">    WorkPackage normal = mWorkPackagesNormal.poll();</span>
+<span class="nc bnc" id="L369" title="All 2 branches missed.">    if (normal != null) {</span>
+<span class="nc" id="L370">      mWorkPackageCountWaitingNormal.decrementAndGet();</span>
+<span class="nc" id="L371">      mWorkPackageCountRunningNormal.incrementAndGet();</span>
+    }
+<span class="nc" id="L373">    return normal;</span>
+  }
+
+  private void submitWorkPackage(final WorkPackage workPackage) {
+<span class="nc bnc" id="L377" title="All 2 branches missed.">    if (mLogger.isDebugEnabled()) {</span>
+<span class="nc" id="L378">      mLogger.debug(</span>
+          &quot;Submitting work package &quot;
+<span class="nc bnc" id="L380" title="All 2 branches missed.">              + (workPackage.mIsHighPriority ? &quot;(high prio)&quot; : &quot;&quot;)</span>
+              + &quot;. Current work queue: RunningHighPriority: &quot;
+<span class="nc" id="L382">              + mWorkPackageCountRunningHighPriority.get()</span>
+              + &quot;, WaitingHighPriority: &quot;
+<span class="nc" id="L384">              + mWorkPackageCountWaitingHighPriority.get()</span>
+              + &quot;, RunningNormal: &quot;
+<span class="nc" id="L386">              + mWorkPackageCountRunningNormal.get()</span>
+              + &quot;, WaitingNormal: &quot;
+<span class="nc" id="L388">              + mWorkPackageCountWaitingNormal.get());</span>
+    }
+
+<span class="nc" id="L391">    mWorkerExecutor.execute(</span>
+<span class="nc" id="L392">        new Runnable() {</span>
+          public void run() {
+<span class="nc" id="L394">            WorkerThread workerThread = null;</span>
+<span class="nc" id="L395">            Thread t = Thread.currentThread();</span>
+<span class="nc bnc" id="L396" title="All 2 branches missed.">            if (t instanceof WorkerThread) {</span>
+<span class="nc" id="L397">              workerThread = (WorkerThread) t;</span>
+<span class="nc" id="L398">              workerThread.setWorkPackage(workPackage);</span>
+            }
+            try {
+<span class="nc bnc" id="L401" title="All 2 branches missed.">              for (int i = 0; i &lt; workPackage.mWork.length; i++) {</span>
+<span class="nc" id="L402">                doWork(workPackage.mWork[i], workPackage, i);</span>
+              }
+<span class="nc bnc" id="L404" title="All 2 branches missed.">              if (mLogger.isDebugEnabled()) {</span>
+<span class="nc" id="L405">                mLogger.debug(Thread.currentThread().getName() + &quot;: work finished.&quot;);</span>
+              }
+            } finally {
+<span class="nc bnc" id="L408" title="All 2 branches missed.">              if (workPackage.mIsHighPriority) {</span>
+<span class="nc" id="L409">                mWorkPackageCountRunningHighPriority.decrementAndGet();</span>
+              } else {
+<span class="nc" id="L411">                mWorkPackageCountRunningNormal.decrementAndGet();</span>
+              }
+<span class="nc bnc" id="L413" title="All 2 branches missed.">              if (workerThread != null) {</span>
+<span class="nc" id="L414">                workerThread.setWorkPackage(null);</span>
+              }
+<span class="nc" id="L416">              dispatchPendingWork();</span>
+            }
+<span class="nc" id="L418">          }</span>
+        });
+<span class="nc" id="L420">  }</span>
+
+  private void doWork(Gui4jGetValue work, WorkPackage workPackage, int i) {
+<span class="nc bnc" id="L423" title="All 2 branches missed.">    if (work == null) {</span>
+<span class="nc" id="L424">      return;</span>
+    }
+<span class="nc bnc" id="L426" title="All 2 branches missed.">    if (mLogger.isDebugEnabled()) {</span>
+<span class="nc" id="L427">      mLogger.trace(</span>
+<span class="nc" id="L428">          Thread.currentThread().getName()</span>
+              + &quot;: performing work &quot;
+<span class="nc bnc" id="L430" title="All 2 branches missed.">              + (workPackage.mIsHighPriority ? &quot;(high prio)&quot; : &quot;&quot;)</span>
+              + &quot;: &quot;
+              + work);
+    }
+    try {
+<span class="nc" id="L435">      work.getValueNoErrorChecking(</span>
+          workPackage.mGui4jController, workPackage.mParamMap, workPackage.mComponentInstance);
+      // Falls verlangt, rufen wir
+      // (nur nach dem ersten Aufruf) die
+      // &lt;code&gt;handleSuccess&lt;/code&gt;
+      // Methode auf.
+      // Beim Edit-Feld wird damit im Ok-Fall der
+      // Inhalt nochmals
+      // angezeigt. Außerdem kann damit Validierung
+      // gemacht werden.
+<span class="nc bnc" id="L445" title="All 6 branches missed.">      if (i == 0 &amp;&amp; workPackage.mSpecialSuccessHandling &amp;&amp; workPackage.mComponentInstance != null) {</span>
+<span class="nc" id="L446">        workPackage.mComponentInstance.handleSuccess();</span>
+      }
+<span class="nc" id="L448">    } catch (Throwable t) {</span>
+      // Analog zum Ok-Fall, rufen wir im Fehlerfall
+      // nach dem ersten
+      // Aufruf die &lt;code&gt;handleException&lt;/code&gt;
+      // Methode auf. Damit
+      // kann beispielsweise Validierung gemacht
+      // werden.
+<span class="nc bnc" id="L455" title="All 6 branches missed.">      if (i == 0 &amp;&amp; workPackage.mSpecialSuccessHandling &amp;&amp; workPackage.mComponentInstance != null) {</span>
+<span class="nc" id="L456">        workPackage.mComponentInstance.handleException(t);</span>
+      } else {
+        // Falls kein ActionHandler definiert wurde,
+        // oder
+        // es sich nicht um den ersten Aufruf
+        // handelt,
+        // erfolgt die normale Fehlerbehandlung.
+<span class="nc" id="L463">        mGui4j.handleException(workPackage.mGui4jController, t, null);</span>
+      }
+<span class="nc" id="L465">    }</span>
+<span class="nc" id="L466">  }</span>
 
   private static class WorkPackage {
     public final Gui4jCallBase mGui4jController;
@@ -381,171 +481,53 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
         Gui4jComponentInstance componentInstance,
         InvokerCallStack callStack,
         boolean isHighPriority,
-<span class="nc" id="L384">        boolean specialSuccessHandling) {</span>
-<span class="nc" id="L385">      mGui4jController = gui4jController;</span>
-<span class="nc" id="L386">      mWork = work;</span>
-<span class="nc" id="L387">      mParamMap = paramMap;</span>
-<span class="nc" id="L388">      mComponentInstance = componentInstance;</span>
-<span class="nc" id="L389">      mCallStack = callStack;</span>
-<span class="nc" id="L390">      mIsHighPriority = isHighPriority;</span>
-<span class="nc" id="L391">      mSpecialSuccessHandling = specialSuccessHandling;</span>
-<span class="nc" id="L392">    }</span>
+<span class="nc" id="L484">        boolean specialSuccessHandling) {</span>
+<span class="nc" id="L485">      mGui4jController = gui4jController;</span>
+<span class="nc" id="L486">      mWork = work;</span>
+<span class="nc" id="L487">      mParamMap = paramMap;</span>
+<span class="nc" id="L488">      mComponentInstance = componentInstance;</span>
+<span class="nc" id="L489">      mCallStack = callStack;</span>
+<span class="nc" id="L490">      mIsHighPriority = isHighPriority;</span>
+<span class="nc" id="L491">      mSpecialSuccessHandling = specialSuccessHandling;</span>
+<span class="nc" id="L492">    }</span>
   }
 
   public class WorkerThread extends Thread {
-    private WorkPackage mWorkPackage;
+    private volatile WorkPackage mWorkPackage;
     private final int mId;
 
-<span class="nc" id="L399">    public WorkerThread(int n) {</span>
-<span class="nc" id="L400">      mId = n;</span>
+<span class="nc" id="L499">    public WorkerThread(int id, Runnable target) {</span>
+<span class="nc" id="L500">      super(target);</span>
+<span class="nc" id="L501">      mId = id;</span>
 
       // This thread will be created by the AWT thread and we have to make
       // sure we don't use the AWT thread's privileged priority.
-<span class="nc" id="L404">      setPriority(NORM_PRIORITY);</span>
+<span class="nc" id="L505">      setPriority(NORM_PRIORITY);</span>
 
-<span class="nc" id="L406">      setName(&quot;Gui4j-Worker &quot; + mId);</span>
-<span class="nc" id="L407">      mLogger.debug(this + &quot;: created&quot;);</span>
-<span class="nc" id="L408">    }</span>
+<span class="nc" id="L507">      setName(&quot;Gui4j-Worker &quot; + mId);</span>
+<span class="nc" id="L508">      mLogger.debug(this + &quot;: created&quot;);</span>
+<span class="nc" id="L509">    }</span>
 
     public Throwable getCallStack() {
-<span class="nc bnc" id="L411" title="All 2 branches missed.">      return mWorkPackage != null ? mWorkPackage.mCallStack : null;</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">      return mWorkPackage != null ? mWorkPackage.mCallStack : null;</span>
     }
+
+    private void setWorkPackage(WorkPackage workPackage) {
+<span class="nc" id="L516">      mWorkPackage = workPackage;</span>
+<span class="nc" id="L517">    }</span>
 
     public String toString() {
-<span class="nc" id="L415">      return getName();</span>
+<span class="nc" id="L520">      return getName();</span>
     }
-
-    public void run() {
-      try {
-<span class="nc" id="L420">        boolean decHighPriority = false;</span>
-<span class="nc" id="L421">        boolean decNormal = false;</span>
-<span class="nc bnc" id="L422" title="All 2 branches missed.">        while (!mShutdownThreads) {</span>
-<span class="nc" id="L423">          mWorkPackage = null;</span>
-<span class="nc" id="L424">          boolean wakeUpOtherWorkers = false;</span>
-<span class="nc" id="L425">          synchronized (mSyncObjectCount) {</span>
-<span class="nc bnc" id="L426" title="All 2 branches missed.">            if (decHighPriority) {</span>
-<span class="nc" id="L427">              mWorkPackageCountRunningHighPriority--;</span>
-<span class="nc" id="L428">              decHighPriority = false;</span>
-<span class="nc bnc" id="L429" title="All 2 branches missed.">              if (mWorkPackageCountWaitingHighPriority + mWorkPackageCountRunningHighPriority == 0</span>
-<span class="nc bnc" id="L430" title="All 2 branches missed.">                  &amp;&amp; mWorkPackageCountWaitingNormal &gt; 1) {</span>
-                // nun kann die restliche Arbeit von anderen
-                // Worken eventuell übernommen werden
-<span class="nc" id="L433">                wakeUpOtherWorkers = true;</span>
-              }
-            }
-<span class="nc bnc" id="L436" title="All 2 branches missed.">            if (decNormal) {</span>
-<span class="nc" id="L437">              mWorkPackageCountRunningNormal--;</span>
-<span class="nc" id="L438">              decNormal = false;</span>
-            }
-
-            // Check for new work
-<span class="nc bnc" id="L442" title="All 2 branches missed.">            if (mWorkPackageCountRunningHighPriority &gt; 0) {</span>
-              // We have to wait until high priority has finished
-            } else {
-<span class="nc bnc" id="L445" title="All 2 branches missed.">              if (mWorkPackageCountWaitingHighPriority &gt; 0) {</span>
-<span class="nc" id="L446">                mWorkPackage = (WorkPackage) mWorkPackagesHighPriority.removeFirst();</span>
-<span class="nc" id="L447">                mWorkPackageCountWaitingHighPriority--;</span>
-<span class="nc" id="L448">                mWorkPackageCountRunningHighPriority++;</span>
-<span class="nc bnc" id="L449" title="All 2 branches missed.">              } else if (mWorkPackageCountWaitingNormal &gt; 0) {</span>
-<span class="nc" id="L450">                mWorkPackage = (WorkPackage) mWorkPackagesNormal.removeFirst();</span>
-<span class="nc" id="L451">                mWorkPackageCountWaitingNormal--;</span>
-<span class="nc" id="L452">                mWorkPackageCountRunningNormal++;</span>
-              } else {
-                // no work available
-                // Terminate Thread
-              }
-            }
-<span class="nc" id="L458">          }</span>
-<span class="nc bnc" id="L459" title="All 2 branches missed.">          if (wakeUpOtherWorkers) {</span>
-<span class="nc" id="L460">            wakeupWorkers();</span>
-          }
-<span class="nc bnc" id="L462" title="All 2 branches missed.">          if (mWorkPackage == null) {</span>
-<span class="nc" id="L463">            synchronized (mSyncObjectWorkerWait) {</span>
-              try {
-<span class="nc" id="L465">                mSyncObjectWorkerWait.wait();</span>
-<span class="nc" id="L466">              } catch (InterruptedException e) {</span>
-<span class="nc" id="L467">                return;</span>
-<span class="nc" id="L468">              }</span>
-<span class="nc" id="L469">            }</span>
-          } else {
-<span class="nc bnc" id="L471" title="All 2 branches missed.">            for (int i = 0; i &lt; mWorkPackage.mWork.length; i++) {</span>
-<span class="nc" id="L472">              doWork(mWorkPackage.mWork[i], mWorkPackage, i);</span>
-            }
-<span class="nc bnc" id="L474" title="All 2 branches missed.">            if (mLogger.isDebugEnabled()) {</span>
-<span class="nc" id="L475">              mLogger.debug(this + &quot;: work finished.&quot;);</span>
-            }
-<span class="nc bnc" id="L477" title="All 2 branches missed.">            if (mWorkPackage.mIsHighPriority) {</span>
-<span class="nc" id="L478">              decHighPriority = true;</span>
-            } else {
-<span class="nc" id="L480">              decNormal = true;</span>
-            }
-          }
-<span class="nc" id="L483">        }</span>
-      } finally {
-<span class="nc" id="L485">        synchronized (mSyncObjectCount) {</span>
-<span class="nc" id="L486">          mWorkerCount--;</span>
-<span class="nc" id="L487">        }</span>
-      }
-<span class="nc" id="L489">    }</span>
-
-    private void doWork(Gui4jGetValue work, WorkPackage workPackage, int i) {
-<span class="nc bnc" id="L492" title="All 2 branches missed.">      if (work == null) {</span>
-<span class="nc" id="L493">        return;</span>
-      }
-<span class="nc bnc" id="L495" title="All 2 branches missed.">      if (mLogger.isDebugEnabled()) {</span>
-<span class="nc" id="L496">        mLogger.trace(</span>
-            this
-                + &quot;: performing work &quot;
-<span class="nc bnc" id="L499" title="All 2 branches missed.">                + (workPackage.mIsHighPriority ? &quot;(high prio)&quot; : &quot;&quot;)</span>
-                + &quot;: &quot;
-                + work);
-      }
-      try {
-<span class="nc" id="L504">        work.getValueNoErrorChecking(</span>
-            workPackage.mGui4jController, workPackage.mParamMap, workPackage.mComponentInstance);
-        // Falls verlangt, rufen wir
-        // (nur nach dem ersten Aufruf) die
-        // &lt;code&gt;handleSuccess&lt;/code&gt;
-        // Methode auf.
-        // Beim Edit-Feld wird damit im Ok-Fall der
-        // Inhalt nochmals
-        // angezeigt. Außerdem kann damit Validierung
-        // gemacht werden.
-<span class="nc bnc" id="L514" title="All 6 branches missed.">        if (i == 0</span>
-            &amp;&amp; workPackage.mSpecialSuccessHandling
-            &amp;&amp; workPackage.mComponentInstance != null) {
-<span class="nc" id="L517">          workPackage.mComponentInstance.handleSuccess();</span>
-        }
-<span class="nc" id="L519">      } catch (Throwable t) {</span>
-        // Analog zum Ok-Fall, rufen wir im Fehlerfall
-        // nach dem ersten
-        // Aufruf die &lt;code&gt;handleException&lt;/code&gt;
-        // Methode auf. Damit
-        // kann beispielsweise Validierung gemacht
-        // werden.
-<span class="nc bnc" id="L526" title="All 6 branches missed.">        if (i == 0</span>
-            &amp;&amp; workPackage.mSpecialSuccessHandling
-            &amp;&amp; workPackage.mComponentInstance != null) {
-<span class="nc" id="L529">          workPackage.mComponentInstance.handleException(t);</span>
-        } else {
-          // Falls kein ActionHandler definiert wurde,
-          // oder
-          // es sich nicht um den ersten Aufruf
-          // handelt,
-          // erfolgt die normale Fehlerbehandlung.
-<span class="nc" id="L536">          mGui4j.handleException(workPackage.mGui4jController, t, null);</span>
-        }
-<span class="nc" id="L538">      }</span>
-<span class="nc" id="L539">    }</span>
   }
 
   private static class InvokerCallStack extends Throwable {
     public InvokerCallStack(String threadName) {
-<span class="nc" id="L544">      super(threadName);</span>
-<span class="nc" id="L545">    }</span>
+<span class="nc" id="L526">      super(threadName);</span>
+<span class="nc" id="L527">    }</span>
 
     public String toString() {
-<span class="nc" id="L548">      return &quot;Thread [&quot; + getMessage() + &quot;]&quot;;</span>
+<span class="nc" id="L530">      return &quot;Thread [&quot; + getMessage() + &quot;]&quot;;</span>
     }
   }
 
@@ -560,20 +542,20 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    */
   public static void executeInSwingThreadAndWait(Runnable run) {
     try {
-<span class="nc bnc" id="L563" title="All 2 branches missed.">      if (EventQueue.isDispatchThread()) {</span>
+<span class="nc bnc" id="L545" title="All 2 branches missed.">      if (EventQueue.isDispatchThread()) {</span>
         // if we already are in the EDT we simply execute the command
-<span class="nc" id="L565">        run.run();</span>
+<span class="nc" id="L547">        run.run();</span>
       } else {
-<span class="nc" id="L567">        EventQueue.invokeAndWait(run);</span>
+<span class="nc" id="L549">        EventQueue.invokeAndWait(run);</span>
       }
-<span class="nc" id="L569">    } catch (InterruptedException ex) {</span>
-<span class="nc" id="L570">      mLogger.warn(&quot;Interrupted&quot;, ex);</span>
-<span class="nc" id="L571">    } catch (InvocationTargetException ex) {</span>
-<span class="nc" id="L572">      Gui4jReflectionManager.handleInvocationTargetException(ex);</span>
-<span class="nc" id="L573">      throw new Gui4jUncheckedException.ProgrammingError(</span>
+<span class="nc" id="L551">    } catch (InterruptedException ex) {</span>
+<span class="nc" id="L552">      mLogger.warn(&quot;Interrupted&quot;, ex);</span>
+<span class="nc" id="L553">    } catch (InvocationTargetException ex) {</span>
+<span class="nc" id="L554">      Gui4jReflectionManager.handleInvocationTargetException(ex);</span>
+<span class="nc" id="L555">      throw new Gui4jUncheckedException.ProgrammingError(</span>
           PROGRAMMING_ERROR_invocation_target_exception, ex);
-<span class="nc" id="L575">    }</span>
-<span class="nc" id="L576">  }</span>
+<span class="nc" id="L557">    }</span>
+<span class="nc" id="L558">  }</span>
 
   /**
    * The given task is executed in the GUI thread as soon as possible. There are two cases: &lt;br&gt;
@@ -586,11 +568,55 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    * @param run task to be scheduled in the GUI thread
    */
   public static void executeInSwingThreadAndContinue(final Runnable run) {
-<span class="nc bnc" id="L589" title="All 2 branches missed.">    if (EventQueue.isDispatchThread()) {</span>
-<span class="nc" id="L590">      run.run();</span>
+<span class="nc bnc" id="L571" title="All 2 branches missed.">    if (EventQueue.isDispatchThread()) {</span>
+<span class="nc" id="L572">      run.run();</span>
     } else {
-<span class="nc" id="L592">      EventQueue.invokeLater(run);</span>
+<span class="nc" id="L574">      EventQueue.invokeLater(run);</span>
     }
-<span class="nc" id="L594">  }</span>
+<span class="nc" id="L576">  }</span>
+
+  private ExecutorService createWorkerExecutor() {
+<span class="nc" id="L579">    ThreadFactory workerFactory =</span>
+<span class="nc" id="L580">        new ThreadFactory() {</span>
+          public Thread newThread(Runnable runnable) {
+<span class="nc" id="L582">            mCreatedWorkerCount.incrementAndGet();</span>
+<span class="nc" id="L583">            return new WorkerThread(mMaxWorkerId++, runnable);</span>
+          }
+        };
+
+<span class="nc bnc" id="L587" title="All 2 branches missed.">    if (mMaxNumberOfWorkerThreads == -1) {</span>
+<span class="nc" id="L588">      return new ThreadPoolExecutor(</span>
+          0,
+          Integer.MAX_VALUE,
+          60L,
+          TimeUnit.SECONDS,
+          new SynchronousQueue&lt;Runnable&gt;(),
+          workerFactory);
+    }
+
+<span class="nc" id="L597">    return new ThreadPoolExecutor(</span>
+        mMaxNumberOfWorkerThreads,
+        mMaxNumberOfWorkerThreads,
+        0L,
+        TimeUnit.MILLISECONDS,
+        new LinkedBlockingQueue&lt;Runnable&gt;(),
+        workerFactory);
+  }
+
+  private void initializeTransientState() {
+<span class="nc" id="L607">    mWorkPackagesNormal = new ConcurrentLinkedQueue&lt;WorkPackage&gt;();</span>
+<span class="nc" id="L608">    mWorkPackagesHighPriority = new ConcurrentLinkedQueue&lt;WorkPackage&gt;();</span>
+<span class="nc" id="L609">    mDispatchLock = new ReentrantLock();</span>
+<span class="nc" id="L610">    mCreatedWorkerCount = new AtomicInteger();</span>
+<span class="nc" id="L611">    mShutdownThreads = false;</span>
+<span class="nc" id="L612">  }</span>
+
+  private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+<span class="nc" id="L615">    in.defaultReadObject();</span>
+<span class="nc" id="L616">    initializeTransientState();</span>
+<span class="nc bnc" id="L617" title="All 2 branches missed.">    if (mUseWorkerThreads) {</span>
+<span class="nc" id="L618">      mWorkerExecutor = createWorkerExecutor();</span>
+    }
+<span class="nc" id="L620">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

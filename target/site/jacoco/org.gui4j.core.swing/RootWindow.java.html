@@ -47,7 +47,7 @@ import javax.swing.SwingUtilities;
  */
 public class RootWindow {
 <span class="nc" id="L49">  public static final Integer DEFAULT_MAXED_LAYER =</span>
-<span class="nc" id="L50">      new Integer(JLayeredPane.PALETTE_LAYER.intValue() - 10);</span>
+<span class="nc" id="L50">      Integer.valueOf(JLayeredPane.PALETTE_LAYER.intValue() - 10);</span>
 <span class="nc" id="L51">  private static final HashMap MAP_BY_ROOT_CONTAINER = new HashMap();</span>
   private LayoutManager maxedLayout;
   private Integer maximizationLayer;
