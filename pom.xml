@@ -175,7 +175,7 @@
           <skipProvidedScope>true</skipProvidedScope>
           <skipTestScope>true</skipTestScope>
           <nvdApiKey>${nvdApiKey}</nvdApiKey>
-				  <ossIndexServerId>ossindex</ossIndexServerId>
+          <ossIndexServerId>ossindex</ossIndexServerId>
           <nvdApiDelay>6500</nvdApiDelay> <!-- Increased from default 3000 -->
           <connectionTimeout>30000</connectionTimeout>
           <readTimeout>60000</readTimeout>
