@@ -32,7 +32,20 @@ mvn clean verify
 
 # Javadoc generieren
 mvn javadoc:javadoc
+
+# Lokal installieren
+mvn install
 ```
+
+Für die lokale Installation in die pom.xml eintragen:
+```xml
+<dependency>
+  <groupId>org.gui4j</groupId>
+  <artifactId>gui4j</artifactId>
+  <version>2.0.0</version>
+</dependency>
+```
+
 
 ---
 
