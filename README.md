@@ -89,6 +89,6 @@ Dieses Tool führt folgende Prüfungen durch:
 * [Modernization Agenda](MODERNIZATION_AGENDA.md) – Historie der Modernisierung mit allen KPI-Messwerten von Phase 0 bis 3.
 
 ---
-**Organisation**: beck et al. projects GmbH
-**Initial Inception**: 2002
+**Organisation**: beck et al. projects GmbH  
+**Initial Inception**: 2002  
 **Modernisiert**: 2026 (Phase 0-3 abgeschlossen)
