@@ -360,6 +360,7 @@ abstract class Gui4jWindowImpl extends Gui4jSwingContainer
    */
   // Note: this method should be protected and not part of the
   // Gui4jWindow interface.
+  @Deprecated
   public abstract void changeWindowTitle(String title);
 
   public void setTitle(String title) {

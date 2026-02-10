@@ -28,20 +28,20 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.util.HashMap;
 import java.util.HashSet;
-import javax.swing.JApplet;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JRootPane;
 import javax.swing.JWindow;
+import javax.swing.RootPaneContainer;
 import javax.swing.SwingUtilities;
 
 /**
  * This class provides an abstraction of root containers used in Swing. It allows transparent use of
- * methods common to <code>JFrame</code>, <code>JApplet</code>, <code>JWindow</code>, and <code>
- * JDialog</code> without making an outward distinction between the different container types. This
- * is accomplished by wrapping the root component.
+ * methods common to <code>JFrame</code>, <code>JWindow</code>, and <code>JDialog</code> without
+ * making an outward distinction between the different container types. This is accomplished by
+ * wrapping the root component.
  *
  * @author Chris Butler
  */
@@ -95,7 +95,6 @@ public class RootWindow {
   public static boolean isValidRootContainer(Component c) {
     return c != null
         && (c instanceof JFrame
-            || c instanceof JApplet
             || c instanceof JWindow
             || c instanceof JDialog);
   }
@@ -131,11 +130,8 @@ public class RootWindow {
    * @return the <code>contentPane</code> property
    */
   public Container getContentPane() {
-    if (root instanceof JFrame) return ((JFrame) root).getContentPane();
-    if (root instanceof JApplet) return ((JApplet) root).getContentPane();
-    if (root instanceof JWindow) return ((JWindow) root).getContentPane();
-    if (root instanceof JDialog) return ((JDialog) root).getContentPane();
-    return null;
+    RootPaneContainer rpc = getRootPaneContainer();
+    return rpc != null ? rpc.getContentPane() : null;
   }
 
   /**
@@ -144,11 +140,8 @@ public class RootWindow {
    * @return the <code>glassPane</code> property
    */
   public Component getGlassPane() {
-    if (root instanceof JFrame) return ((JFrame) root).getGlassPane();
-    if (root instanceof JApplet) return ((JApplet) root).getGlassPane();
-    if (root instanceof JWindow) return ((JWindow) root).getGlassPane();
-    if (root instanceof JDialog) return ((JDialog) root).getGlassPane();
-    return null;
+    RootPaneContainer rpc = getRootPaneContainer();
+    return rpc != null ? rpc.getGlassPane() : null;
   }
 
   /**
@@ -157,11 +150,8 @@ public class RootWindow {
    * @return the <code>layeredPane</code> property
    */
   public JLayeredPane getLayeredPane() {
-    if (root instanceof JFrame) return ((JFrame) root).getLayeredPane();
-    if (root instanceof JApplet) return ((JApplet) root).getLayeredPane();
-    if (root instanceof JWindow) return ((JWindow) root).getLayeredPane();
-    if (root instanceof JDialog) return ((JDialog) root).getLayeredPane();
-    return null;
+    RootPaneContainer rpc = getRootPaneContainer();
+    return rpc != null ? rpc.getLayeredPane() : null;
   }
 
   /**
@@ -173,7 +163,6 @@ public class RootWindow {
    */
   public Point getLocationOnScreen() {
     if (root instanceof JFrame) return ((JFrame) root).getLocationOnScreen();
-    else if (root instanceof JApplet) return ((JApplet) root).getLocationOnScreen();
     else if (root instanceof JWindow) return ((JWindow) root).getLocationOnScreen();
     else if (root instanceof JDialog) return ((JDialog) root).getLocationOnScreen();
     return null;
@@ -200,7 +189,7 @@ public class RootWindow {
   }
 
   /**
-   * Returns the the wrapped component. (<code>JFrame</code>, <code>JApplet</code>, etc...)
+   * Returns the the wrapped component. (<code>JFrame</code>, <code>JDialog</code>, etc...)
    *
    * @return the wrapped root container
    */
@@ -214,11 +203,8 @@ public class RootWindow {
    * @return the <code>rootPane</code> property
    */
   public JRootPane getRootPane() {
-    if (root instanceof JFrame) return ((JFrame) root).getRootPane();
-    else if (root instanceof JApplet) return ((JApplet) root).getRootPane();
-    else if (root instanceof JWindow) return ((JWindow) root).getRootPane();
-    else if (root instanceof JDialog) return ((JDialog) root).getRootPane();
-    return null;
+    RootPaneContainer rpc = getRootPaneContainer();
+    return rpc != null ? rpc.getRootPane() : null;
   }
 
   /**
@@ -236,10 +222,10 @@ public class RootWindow {
    * @param contentPane the <code>contentPane</code> object for the wrapped component
    */
   public void setContentPane(Container contentPane) {
-    if (root instanceof JFrame) ((JFrame) root).setContentPane(contentPane);
-    else if (root instanceof JApplet) ((JApplet) root).setContentPane(contentPane);
-    else if (root instanceof JWindow) ((JWindow) root).setContentPane(contentPane);
-    else if (root instanceof JDialog) ((JDialog) root).setContentPane(contentPane);
+    RootPaneContainer rpc = getRootPaneContainer();
+    if (rpc != null) {
+      rpc.setContentPane(contentPane);
+    }
   }
 
   /**
@@ -248,10 +234,10 @@ public class RootWindow {
    * @param glassPane the <code>glassPane</code> object for the wrapped component
    */
   public void setGlassPane(Component glassPane) {
-    if (root instanceof JFrame) ((JFrame) root).setGlassPane(glassPane);
-    else if (root instanceof JApplet) ((JApplet) root).setGlassPane(glassPane);
-    else if (root instanceof JWindow) ((JWindow) root).setGlassPane(glassPane);
-    else if (root instanceof JDialog) ((JDialog) root).setGlassPane(glassPane);
+    RootPaneContainer rpc = getRootPaneContainer();
+    if (rpc != null) {
+      rpc.setGlassPane(glassPane);
+    }
   }
 
   /**
@@ -260,10 +246,10 @@ public class RootWindow {
    * @param layeredPane the <code>layeredPane</code> object for the wrapped component
    */
   public void setLayeredPane(JLayeredPane layeredPane) {
-    if (root instanceof JFrame) ((JFrame) root).setLayeredPane(layeredPane);
-    else if (root instanceof JApplet) ((JApplet) root).setLayeredPane(layeredPane);
-    else if (root instanceof JWindow) ((JWindow) root).setLayeredPane(layeredPane);
-    else if (root instanceof JDialog) ((JDialog) root).setLayeredPane(layeredPane);
+    RootPaneContainer rpc = getRootPaneContainer();
+    if (rpc != null) {
+      rpc.setLayeredPane(layeredPane);
+    }
   }
 
   public Window[] getOwnedWindows() {
@@ -338,9 +324,12 @@ public class RootWindow {
 
   public Rectangle getBounds() {
     if (root instanceof JFrame) return ((JFrame) root).getBounds();
-    if (root instanceof JApplet) return ((JApplet) root).getBounds();
     else if (root instanceof JWindow) return ((JWindow) root).getBounds();
     else if (root instanceof JDialog) return ((JDialog) root).getBounds();
     return null;
+  }
+
+  private RootPaneContainer getRootPaneContainer() {
+    return root instanceof RootPaneContainer ? (RootPaneContainer) root : null;
   }
 }

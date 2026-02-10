@@ -49,6 +49,7 @@ public final class Day implements Comparable, Nameable {
    * @return (see {@link #isWorkday()})
    * @deprecated replaced by english named method {@link #isWorkday()}.
    */
+  @Deprecated
   public boolean isWerktag() {
     int day = calendar.get(Calendar.DAY_OF_WEEK);
     return day != Calendar.SATURDAY && day != Calendar.SUNDAY;
@@ -78,6 +79,7 @@ public final class Day implements Comparable, Nameable {
    * @return (see {@link #getMonth()})
    * @deprecated replaced by the english named method {@link #getMonth()}.
    */
+  @Deprecated
   public int getMonat() {
     return calendar.get(Calendar.MONTH);
   }
@@ -105,6 +107,7 @@ public final class Day implements Comparable, Nameable {
   /**
    * @deprecated use the english named method {@link #getYear()} instead.
    */
+  @Deprecated
   public int getJahr() {
     return calendar.get(Calendar.YEAR);
   }
@@ -125,6 +128,7 @@ public final class Day implements Comparable, Nameable {
    * @return (see {@link #getYearForWeek()}).
    * @deprecated use the english named method {@link #getYearForWeek()} instead.
    */
+  @Deprecated
   public int getJahrForWeek() {
     int week = getWeek();
     if (week == 1) {

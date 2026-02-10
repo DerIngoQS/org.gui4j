@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.net.URL;
 import org.gui4j.Gui4j;
 import org.gui4j.Gui4jFactory;
-import org.gui4j.Gui4jView;
+import org.gui4j.Gui4jFactoryV2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,19 +30,18 @@ class ModernGui4jExampleTest {
   }
 
   @Test
-  void validatesAndBuildsViewWithModernController() {
+  void validatesAndBuildsFluentLoaderWithModernController() {
     ModernExampleController controller =
         new ModernExampleController(gui4j, null, () -> true, () -> {}, () -> "Hello from test");
 
     assertTrue(gui4j.createValidator().validateResourceFile(ModernExampleController.class, "modern-view.xml"));
 
-    Gui4jView view =
+    Gui4jFactoryV2.ViewLoader loader =
         Gui4jFactory.v2(gui4j)
             .loadView("modern-view.xml")
             .withController(controller)
-            .withTitle("Test Title")
-            .create();
+            .withTitle("Test Title");
 
-    assertNotNull(view);
+    assertNotNull(loader);
   }
 }

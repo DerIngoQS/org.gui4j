@@ -71,6 +71,7 @@ public interface Gui4jWindow {
    * @deprecated Use {@link #setTitle(String)} instead.
    * @param title
    */
+  @Deprecated
   void changeWindowTitle(String title);
 
   /**
