@@ -92,3 +92,7 @@ Dieses Tool führt folgende Prüfungen durch:
 **Organisation**: beck et al. projects GmbH  
 **Initial Inception**: 2002  
 **Modernisiert**: 2026 (Phase 0-3 abgeschlossen)
+
+
+---
+A fork of gui4j project at sourceforge based at the code snapshot version 1.2.3
