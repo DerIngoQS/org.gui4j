@@ -312,8 +312,8 @@ gui4j,org.gui4j.core.impl,Gui4jWindowImpl.new Runnable() {...},10,0,0,0,3,0,2,0,
 gui4j,org.gui4j.core.impl,Gui4jWindowImpl.WindowHandler,77,0,6,0,26,0,12,0,9,0
 gui4j,org.gui4j.core.impl,Gui4jValidatorImpl,214,0,22,0,68,0,14,0,3,0
 gui4j,org.dom4j.io,LDocumentFactory,21,0,0,0,5,0,5,0,5,0
-gui4j,org.dom4j.io,LNSAXContentHandler,38,0,0,0,14,0,5,0,5,0
-gui4j,org.dom4j.io,LNSAXReader,34,0,0,0,13,0,7,0,7,0
+gui4j,org.dom4j.io,LNSAXContentHandler,43,0,2,0,14,0,6,0,5,0
+gui4j,org.dom4j.io,LNSAXReader,126,0,0,0,43,0,13,0,13,0
 gui4j,org.gui4j.core,Gui4jComponentPropertyGetter.new Runnable() {...},45,0,0,0,9,0,2,0,2,0
 gui4j,org.gui4j.core,Gui4jTypeManager,110,0,12,0,32,0,14,0,8,0
 gui4j,org.gui4j.core,Gui4jSwingContainer,592,0,50,0,172,0,51,0,26,0

@@ -35,7 +35,7 @@ public class LNSAXContentHandler extends SAXContentHandler {
   public void startElement(
       String namespaceURI, String localName, String qualifiedName, Attributes attributes)
       throws SAXException {
-    int lineNumber = locator.getLineNumber();
+    int lineNumber = locator != null ? locator.getLineNumber() : -1;
     super.startElement(namespaceURI, localName, qualifiedName, attributes);
     LElement element = (LElement) getElementStack().getCurrent();
     element.setLineNumber(lineNumber);

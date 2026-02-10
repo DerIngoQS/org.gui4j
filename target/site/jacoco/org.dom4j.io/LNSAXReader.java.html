@@ -1,43 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LNSAXReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">gui4j</a> &gt; <a href="index.source.html" class="el_package">org.dom4j.io</a> &gt; <span class="el_source">LNSAXReader.java</span></div><h1>LNSAXReader.java</h1><pre class="source lang-java linenums">package org.dom4j.io;
 
+import java.io.StringReader;
+import org.dom4j.DocumentException;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
 
 public class LNSAXReader extends SAXReader {
+  private static final String FEATURE_DISALLOW_DOCTYPE_DECL =
+      &quot;http://apache.org/xml/features/disallow-doctype-decl&quot;;
+  private static final String FEATURE_EXTERNAL_GENERAL_ENTITIES =
+      &quot;http://xml.org/sax/features/external-general-entities&quot;;
+  private static final String FEATURE_EXTERNAL_PARAMETER_ENTITIES =
+      &quot;http://xml.org/sax/features/external-parameter-entities&quot;;
+  private static final String FEATURE_LOAD_EXTERNAL_DTD =
+      &quot;http://apache.org/xml/features/nonvalidating/load-external-dtd&quot;;
+<span class="nc" id="L20">  private static final EntityResolver NO_EXTERNAL_ENTITIES_RESOLVER =</span>
+<span class="nc" id="L21">      (publicId, systemId) -&gt; new InputSource(new StringReader(&quot;&quot;));</span>
 
   public LNSAXReader() {
-<span class="nc" id="L9">    super();</span>
-<span class="nc" id="L10">  }</span>
+<span class="nc" id="L24">    super();</span>
+<span class="nc" id="L25">    hardenXmlParser();</span>
+<span class="nc" id="L26">  }</span>
 
   /**
    * @param validating
    */
   public LNSAXReader(boolean validating) {
-<span class="nc" id="L16">    super(validating);</span>
-<span class="nc" id="L17">  }</span>
+<span class="nc" id="L32">    super(validating);</span>
+<span class="nc" id="L33">    hardenXmlParser();</span>
+<span class="nc" id="L34">  }</span>
 
   /**
    * @param xmlReader
    */
   public LNSAXReader(XMLReader xmlReader) {
-<span class="nc" id="L23">    super(xmlReader);</span>
-<span class="nc" id="L24">  }</span>
+<span class="nc" id="L40">    super(xmlReader);</span>
+<span class="nc" id="L41">    hardenXmlParser();</span>
+<span class="nc" id="L42">  }</span>
 
   /**
    * @param xmlReader
    * @param validating
    */
   public LNSAXReader(XMLReader xmlReader, boolean validating) {
-<span class="nc" id="L31">    super(xmlReader, validating);</span>
-<span class="nc" id="L32">  }</span>
+<span class="nc" id="L49">    super(xmlReader, validating);</span>
+<span class="nc" id="L50">    hardenXmlParser();</span>
+<span class="nc" id="L51">  }</span>
 
   /**
    * @param xmlReaderClassName
    * @throws org.xml.sax.SAXException
    */
   public LNSAXReader(String xmlReaderClassName) throws SAXException {
-<span class="nc" id="L39">    super(xmlReaderClassName);</span>
-<span class="nc" id="L40">  }</span>
+<span class="nc" id="L58">    super(xmlReaderClassName);</span>
+<span class="nc" id="L59">    hardenXmlParser();</span>
+<span class="nc" id="L60">  }</span>
 
   /**
    * @param xmlReaderClassName
@@ -45,14 +65,49 @@ public class LNSAXReader extends SAXReader {
    * @throws org.xml.sax.SAXException
    */
   public LNSAXReader(String xmlReaderClassName, boolean validating) throws SAXException {
-<span class="nc" id="L48">    super(xmlReaderClassName, validating);</span>
-<span class="nc" id="L49">  }</span>
+<span class="nc" id="L68">    super(xmlReaderClassName, validating);</span>
+<span class="nc" id="L69">    hardenXmlParser();</span>
+<span class="nc" id="L70">  }</span>
 
   /* (non-Javadoc)
    * @see org.dom4j.io.SAXReader#createContentHandler(org.xml.sax.XMLReader)
    */
   protected SAXContentHandler createContentHandler(XMLReader reader) {
-<span class="nc" id="L55">    return new LNSAXContentHandler(new LDocumentFactory(), getDispatchHandler());</span>
+<span class="nc" id="L76">    return new LNSAXContentHandler(new LDocumentFactory(), getDispatchHandler());</span>
   }
+
+  protected void configureReader(XMLReader reader, DefaultHandler handler) throws DocumentException {
+<span class="nc" id="L80">    super.configureReader(reader, handler);</span>
+<span class="nc" id="L81">    reader.setEntityResolver(NO_EXTERNAL_ENTITIES_RESOLVER);</span>
+<span class="nc" id="L82">    setSecureFeature(reader, FEATURE_DISALLOW_DOCTYPE_DECL, true);</span>
+<span class="nc" id="L83">    setSecureFeature(reader, FEATURE_EXTERNAL_GENERAL_ENTITIES, false);</span>
+<span class="nc" id="L84">    setSecureFeature(reader, FEATURE_EXTERNAL_PARAMETER_ENTITIES, false);</span>
+<span class="nc" id="L85">    setSecureFeature(reader, FEATURE_LOAD_EXTERNAL_DTD, false);</span>
+<span class="nc" id="L86">  }</span>
+
+  private void hardenXmlParser() {
+<span class="nc" id="L89">    setIncludeExternalDTDDeclarations(false);</span>
+<span class="nc" id="L90">    setEntityResolver(NO_EXTERNAL_ENTITIES_RESOLVER);</span>
+<span class="nc" id="L91">    setSecureFeature(this, FEATURE_DISALLOW_DOCTYPE_DECL, true);</span>
+<span class="nc" id="L92">    setSecureFeature(this, FEATURE_EXTERNAL_GENERAL_ENTITIES, false);</span>
+<span class="nc" id="L93">    setSecureFeature(this, FEATURE_EXTERNAL_PARAMETER_ENTITIES, false);</span>
+<span class="nc" id="L94">    setSecureFeature(this, FEATURE_LOAD_EXTERNAL_DTD, false);</span>
+<span class="nc" id="L95">  }</span>
+
+  private void setSecureFeature(SAXReader reader, String feature, boolean value) {
+    try {
+<span class="nc" id="L99">      reader.setFeature(feature, value);</span>
+<span class="nc" id="L100">    } catch (SAXException ex) {</span>
+      // Ignore unsupported parser features; supported ones are still enforced.
+<span class="nc" id="L102">    }</span>
+<span class="nc" id="L103">  }</span>
+
+  private void setSecureFeature(XMLReader reader, String feature, boolean value) {
+    try {
+<span class="nc" id="L107">      reader.setFeature(feature, value);</span>
+<span class="nc" id="L108">    } catch (SAXException ex) {</span>
+      // Ignore unsupported parser features; supported ones are still enforced.
+<span class="nc" id="L110">    }</span>
+<span class="nc" id="L111">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

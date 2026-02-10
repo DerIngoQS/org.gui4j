@@ -23,6 +23,10 @@
 * **Dependency Updates**: 
     * Absicherung von `dom4j` (Schutz vor XXE-Angriffen).
     * Ablösung/Brücke für `commons-logging`.
+* **Ergebnis (abgeschlossen)**:
+    * `dom4j` auf `2.1.4` aktualisiert, lokale Erweiterungen (`LElement`, `LNSAXReader`) kompatibel gehalten.
+    * `LNSAXReader` explizit gegen XXE gehärtet (DOCTYPE deaktiviert, externe Entities/DTD-Loading deaktiviert, blockierender `EntityResolver`).
+    * `commons-logging` entfernt und durch `jcl-over-slf4j` + `slf4j-simple` ersetzt.
 * **Java Modernisierung**:
     * Ersatz von `Class.newInstance()` durch Constructor-Reflection.
     * Vorbereitung auf starke Kapselung (Java 9+): Audit von `setAccessible(true)`.
@@ -38,12 +42,12 @@
 * **V2 API**: Optionale Einführung eines modernisierten API-Layers mit klaren Typen.
 
 ## 3. Management-KPIs
-| Kennzahl | Tooling | Status Quo (Phase 0) | Ziel |
-| :--- | :--- | :--- | :--- |
-| **Sicherheitsrisiko** | OWASP Dependency-Check | Critical: 1, High: 1 (`dom4j:1.6.1`: CVE-2020-10683, CVE-2018-1000632) | 0 kritische Lücken (CVEs) |
-| **Code-Qualität** | SonarQube | n/a | Reduzierung der technischen Schuld (Debt) |
-| **Testabdeckung** | JaCoCo | Parser-Regressionstest für Reflection-Kernpfad aktiv (`Gui4jCallParserTest`) | > 40% für Core-Komponenten |
-| **Build-Stabilität** | GitHub Actions / CI | `mvn clean verify` lokal erfolgreich (inkl. Tests + OWASP-Report) | Automatisierter Build auf Java 17/21 |
+| Kennzahl | Tooling | Status Quo (Phase 0) | Phase 1 | Ziel |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sicherheitsrisiko** | OWASP Dependency-Check | Critical: 1, High: 1 (`dom4j:1.6.1`: CVE-2020-10683, CVE-2018-1000632) | Critical: 0, High: 0 (`mvn clean verify`, Report vom 10.02.2026) | 0 kritische Lücken (CVEs) |
+| **Code-Qualität** | SonarQube | n/a | n/a | Reduzierung der technischen Schuld (Debt) |
+| **Testabdeckung** | JaCoCo | Parser-Regressionstest für Reflection-Kernpfad aktiv (`Gui4jCallParserTest`) | `Gui4jCallParserTest` grün mit `dom4j:2.1.4` (4/4) | > 40% für Core-Komponenten |
+| **Build-Stabilität** | GitHub Actions / CI | `mvn clean verify` lokal erfolgreich (inkl. Tests + OWASP-Report) | `mvn clean verify` lokal erfolgreich (10.02.2026) | Automatisierter Build auf Java 17/21 |
 
 ## 4. Kritische Erfolgsfaktoren (Input benötigt)
 * Bereitstellung von Kunden-Konfigurationen (`gui4jComponent.properties`).

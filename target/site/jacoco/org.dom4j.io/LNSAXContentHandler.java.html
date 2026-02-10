@@ -35,7 +35,7 @@ public class LNSAXContentHandler extends SAXContentHandler {
   public void startElement(
       String namespaceURI, String localName, String qualifiedName, Attributes attributes)
       throws SAXException {
-<span class="nc" id="L38">    int lineNumber = locator.getLineNumber();</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">    int lineNumber = locator != null ? locator.getLineNumber() : -1;</span>
 <span class="nc" id="L39">    super.startElement(namespaceURI, localName, qualifiedName, attributes);</span>
 <span class="nc" id="L40">    LElement element = (LElement) getElementStack().getCurrent();</span>
 <span class="nc" id="L41">    element.setLineNumber(lineNumber);</span>

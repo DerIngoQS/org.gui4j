@@ -25,30 +25,56 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <jacoco.version>0.8.11</jacoco.version>
     <dependency-check.version>12.1.9</dependency-check.version>
+    <dom4j.version>2.1.4</dom4j.version>
+    <slf4j.version>1.7.36</slf4j.version>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>dom4j</groupId>
+      <groupId>org.dom4j</groupId>
       <artifactId>dom4j</artifactId>
-      <version>1.6.1</version>
+      <version>${dom4j.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.2</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>5.11.3</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>5.14.2</version>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
