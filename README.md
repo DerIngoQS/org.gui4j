@@ -5,7 +5,7 @@
 [![Build Status](https://img.shields.io/badge/Build-Success-brightgreen.svg)]()
 [![Security Scan](https://img.shields.io/badge/CVE-None-brightgreen.svg)]()
 
-`gui4j` ist ein Hochleistungs-Framework zur Beschreibung von **Java Swing GUIs vollständig in XML**. [cite_start]Durch die Trennung von UI-Definition (XML) und Anwendungslogik (Java) ermöglicht es ein sauberes MVC-Pattern für Desktop-Anwendungen[cite: 1].
+`gui4j` ist ein Hochleistungs-Framework zur Beschreibung von **Java Swing GUIs vollständig in XML**. Durch die Trennung von UI-Definition (XML) und Anwendungslogik (Java) ermöglicht es ein sauberes MVC-Pattern für Desktop-Anwendungen.
 
 Ursprünglich im Jahr 2002 entwickelt, wurde diese Version im Jahr 2026 **vollständig modernisiert**, um heutigen Sicherheits- und Performance-Standards gerecht zu werden.
 
@@ -14,9 +14,9 @@ Ursprünglich im Jahr 2002 entwickelt, wurde diese Version im Jahr 2026 **vollst
 ## 🚀 Wichtige Modernisierungs-Features (v2.0)
 
 * **Security First**: Vollständig gehärtete XML-Pipeline. Schutz gegen XXE-Angriffe (CVE-2020-10683) durch Deaktivierung externer Entities im `LNSAXReader`.
-* **Modernes Java**: Optimiert für **Java 21 (LTS)**. [cite_start]Keine Abhängigkeiten mehr zu Java 1.4 Legacy-Strukturen[cite: 1, 9].
-* [cite_start]**Fluent API**: Neue `Gui4jFactoryV2` für intuitives, flüssiges Laden von Views[cite: 8].
-* [cite_start]**Lambda Support**: Native Unterstützung für funktionale Interfaces in Controllern und Validatoren[cite: 8].
+* **Modernes Java**: Optimiert für **Java 21 (LTS)**. Keine Abhängigkeiten mehr zu Java 1.4 Legacy-Strukturen.
+* **Fluent API**: Neue `Gui4jFactoryV2` für intuitives, flüssiges Laden von Views.
+* **Lambda Support**: Native Unterstützung für funktionale Interfaces in Controllern und Validatoren.
 * **Hohe Performance**: Thread-Management migriert auf den modernen `ExecutorService` (ThreadPoolExecutor).
 * **Beseitigung technischer Schulden**: Entfernung von Applet-Support, "Raw Types" (Generifizierung) und veraltetem Boxing.
 
@@ -89,6 +89,6 @@ Dieses Tool führt folgende Prüfungen durch:
 * [Modernization Agenda](MODERNIZATION_AGENDA.md) – Historie der Modernisierung mit allen KPI-Messwerten von Phase 0 bis 3.
 
 ---
-[cite_start]**Organisation**: beck et al. projects GmbH [cite: 1]  
-[cite_start]**Initial Inception**: 2002 [cite: 1]  
+**Organisation**: beck et al. projects GmbH
+**Initial Inception**: 2002
 **Modernisiert**: 2026 (Phase 0-3 abgeschlossen)
