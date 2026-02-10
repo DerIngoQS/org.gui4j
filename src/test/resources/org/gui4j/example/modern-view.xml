@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<View top="TOP" title="getTitle">
+  <label guiId="TOP" text="getMessage" />
+</View>

@@ -126,6 +126,17 @@ public final class Gui4jReflectionManager implements ErrorTags, Serializable {
     return getMethod(context, c, methodName, argumentsInit, true);
   }
 
+  /**
+   * Checks whether at least one public method with the given name exists on the specified class.
+   *
+   * @param c class to inspect
+   * @param methodName method name to resolve
+   * @return {@code true} if at least one matching method exists, otherwise {@code false}
+   */
+  public boolean hasMethodName(Class<?> c, String methodName) {
+    return getMethods(c, methodName).length > 0;
+  }
+
   private List<Object> arr2List(Object[] arr) {
     List<Object> l = new ArrayList<Object>();
     for (int i = 0; i < arr.length; i++) {

@@ -45,5 +45,9 @@ public class Gui4jFactory {
     }
   }
 
+  public static Gui4jFactoryV2 v2(Gui4j gui4j) {
+    return Gui4jFactoryV2.of(gui4j);
+  }
+
   private Gui4jFactory() {}
 }

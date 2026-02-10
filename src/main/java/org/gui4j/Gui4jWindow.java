@@ -6,7 +6,13 @@ import javax.swing.JComponent;
 
 /** */
 public interface Gui4jWindow {
-  /** Wait until all gui events are executed. */
+  /**
+   * Wait until all gui events are executed.
+   *
+   * @deprecated Since 1.3. Prefer explicit EDT coordination with {@code EventQueue.invokeAndWait}
+   *     in calling code.
+   */
+  @Deprecated
   void waitForGUI();
 
   /**
@@ -26,11 +32,25 @@ public interface Gui4jWindow {
   /** This method closes the view. If the view is not open, nothing happens */
   void close();
 
-  /** Show the window. */
-  void show();
+  /**
+   * Show the window.
+   *
+   * @deprecated Use {@link #setVisible(boolean)} instead.
+   */
+  @Deprecated
+  default void show() {
+    setVisible(true);
+  }
 
-  /** Hide the window. */
-  void hide();
+  /**
+   * Hide the window.
+   *
+   * @deprecated Use {@link #setVisible(boolean)} instead.
+   */
+  @Deprecated
+  default void hide() {
+    setVisible(false);
+  }
 
   /**
    * @return true if the window is closed
@@ -123,11 +143,25 @@ public interface Gui4jWindow {
    */
   void setBusy(final boolean busy);
 
-  /** Sets the gui to enabled false */
-  void disable();
+  /**
+   * Sets the gui to enabled false.
+   *
+   * @deprecated Use {@link #setEnabled(boolean)} instead.
+   */
+  @Deprecated
+  default void disable() {
+    setEnabled(false);
+  }
 
-  /** Sets the gui to enabled true */
-  void enable();
+  /**
+   * Sets the gui to enabled true.
+   *
+   * @deprecated Use {@link #setEnabled(boolean)} instead.
+   */
+  @Deprecated
+  default void enable() {
+    setEnabled(true);
+  }
 
   /**
    * Sets the enabled state.

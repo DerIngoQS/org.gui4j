@@ -467,15 +467,11 @@ abstract class Gui4jWindowImpl extends Gui4jSwingContainer
   }
 
   public void disable() {
-    if (getWindow() != null) {
-      getWindow().setEnabled(false);
-    }
+    setEnabled(false);
   }
 
   public void enable() {
-    if (getWindow() != null) {
-      getWindow().setEnabled(true);
-    }
+    setEnabled(true);
   }
 
   public void setEnabled(boolean flag) {
@@ -499,9 +495,7 @@ abstract class Gui4jWindowImpl extends Gui4jSwingContainer
     private boolean windowClosingInProgress = false;
 
     public void windowActivated(WindowEvent e) {
-      // TODO delegate calls to Gui4jControllerAdvanced if super's
-      // mGui4jController is of this type.
-      // see method windowOpened
+      invokeAdvancedControllerMethod("windowActivated()");
     }
 
     public void windowClosed(WindowEvent e) {
@@ -548,24 +542,22 @@ abstract class Gui4jWindowImpl extends Gui4jSwingContainer
     }
 
     public void windowDeactivated(WindowEvent e) {
-      // TODO delegate calls to Gui4jControllerAdvanced if super's
-      // mGui4jController is of this type.
-      // see method windowOpened
+      invokeAdvancedControllerMethod("windowDeactivated()");
     }
 
     public void windowDeiconified(WindowEvent e) {
-      // TODO delegate calls to Gui4jControllerAdvanced if super's
-      // mGui4jController is of this type.
-      // see method windowOpened
+      invokeAdvancedControllerMethod("windowDeiconified()");
     }
 
     public void windowIconified(WindowEvent e) {
-      // TODO delegate calls to Gui4jControllerAdvanced if super's
-      // mGui4jController is of this type.
-      // see method windowOpened
+      invokeAdvancedControllerMethod("windowIconified()");
     }
 
     public void windowOpened(WindowEvent e) {
+      invokeAdvancedControllerMethod("windowOpened()");
+    }
+
+    private void invokeAdvancedControllerMethod(final String methodName) {
       Gui4jController gui4jController = getGui4jController();
       if (gui4jController == null) {
         return;
@@ -580,7 +572,17 @@ abstract class Gui4jWindowImpl extends Gui4jSwingContainer
       Gui4jGetValue work =
           new Gui4jGetValue() {
             public Object getValue(Gui4jCallBase gui4jCallBase, Map paramMap, Object defaultValue) {
-              gui4jControllerAdvanced.windowOpened();
+              if ("windowOpened()".equals(methodName)) {
+                gui4jControllerAdvanced.windowOpened();
+              } else if ("windowIconified()".equals(methodName)) {
+                gui4jControllerAdvanced.windowIconified();
+              } else if ("windowDeiconified()".equals(methodName)) {
+                gui4jControllerAdvanced.windowDeiconified();
+              } else if ("windowActivated()".equals(methodName)) {
+                gui4jControllerAdvanced.windowActivated();
+              } else if ("windowDeactivated()".equals(methodName)) {
+                gui4jControllerAdvanced.windowDeactivated();
+              }
               return null;
             }
 
@@ -592,7 +594,7 @@ abstract class Gui4jWindowImpl extends Gui4jSwingContainer
             }
 
             public String toString() {
-              return gui4jControllerAdvanced.getClass().getName() + ".windowOpened()";
+              return gui4jControllerAdvanced.getClass().getName() + "." + methodName;
             }
           };
       getGui4j().getGui4jThreadManager().performWork(null, work, null);

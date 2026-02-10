@@ -45,12 +45,17 @@
 ### Phase 3: API & Ecosystem
 * **Abwärtskompatibilität**: Erhalt der legacy API (z.B. `show()`, `hide()`) via Fassaden.
 * **V2 API**: Optionale Einführung eines modernisierten API-Layers mit klaren Typen.
+* **Ergebnis (abgeschlossen)**:
+    * Neues Utility `Gui4jXmlValidator` ergänzt für UI-freie XML-Validierung.
+    * Schema-/DTD-Check über die bestehende gui4j-Parsingpipeline ohne Fensterinitialisierung umgesetzt.
+    * Zusätzlicher statischer Reflection-Check auf Controller-Methodenreferenzen implementiert (unter Nutzung von `Gui4jReflectionManager`).
 
 ## 3. Management-KPIs
 | Kennzahl | Tooling | Status Quo (Phase 0) | Phase 1 | Phase 2 | Ziel |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Sicherheitsrisiko** | OWASP Dependency-Check | Critical: 1, High: 1 (`dom4j:1.6.1`: CVE-2020-10683, CVE-2018-1000632) | Critical: 0, High: 0 (`mvn clean verify`, Report vom 10.02.2026) | weiterhin Critical: 0, High: 0 (keine Regression nach Refactoring) | 0 kritische Lücken (CVEs) |
 | **Code-Qualität** | SonarQube | n/a | n/a | Technische Schuld reduziert (Raw Types/Legacy-Reflection/Wrapper-Konstruktoren bereinigt, Typsicherheit erhöht) | Reduzierung der technischen Schuld (Debt) |
+| **XML-Validierungsfähigkeit** | `Gui4jXmlValidator` + JUnit | n/a | n/a | n/a | Schema-/Reflection-Validierung ohne UI-Start verfügbar (erreicht in Phase 3, 10.02.2026) |
 | **Testabdeckung** | JaCoCo | Parser-Regressionstest für Reflection-Kernpfad aktiv (`Gui4jCallParserTest`) | `Gui4jCallParserTest` grün mit `dom4j:2.1.4` (4/4) | `Gui4jCallParserTest` weiterhin grün nach Threading-/Syntax-Refactoring | > 40% für Core-Komponenten |
 | **Build-Stabilität** | GitHub Actions / CI | `mvn clean verify` lokal erfolgreich (inkl. Tests + OWASP-Report) | `mvn clean verify` lokal erfolgreich (10.02.2026) | `mvn clean verify` lokal erfolgreich nach Phase-2-Refactorings | Automatisierter Build auf Java 17/21 |
 

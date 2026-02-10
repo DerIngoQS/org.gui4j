@@ -3,16 +3,16 @@ package org.gui4j;
 public interface Gui4jControllerAdvanced extends Gui4jController {
 
   /** Invoked the first time a window is made visible. */
-  public void windowOpened();
+  default void windowOpened() {}
 
   /**
    * Invoked when a window is changed from a normal to a minimized state. For many platforms, a
    * minimized window is displayed as the icon specified in the window's iconImage property.
    */
-  public void windowIconified();
+  default void windowIconified() {}
 
   /** Invoked when a window is changed from a minimized to a normal state. */
-  public void windowDeiconified();
+  default void windowDeiconified() {}
 
   /**
    * Invoked when the Window is set to be the active Window. Only a Frame or a Dialog can be the
@@ -20,7 +20,7 @@ public interface Gui4jControllerAdvanced extends Gui4jController {
    * special decorations, such as a highlighted title bar. The active Window is always either the
    * focused Window, or the first Frame or Dialog that is an owner of the focused Window.
    */
-  public void windowActivated();
+  default void windowActivated() {}
 
   /**
    * Invoked when a Window is no longer the active Window. Only a Frame or a Dialog can be the
@@ -28,5 +28,5 @@ public interface Gui4jControllerAdvanced extends Gui4jController {
    * special decorations, such as a highlighted title bar. The active Window is always either the
    * focused Window, or the first Frame or Dialog that is an owner of the focused Window.
    */
-  public void windowDeactivated();
+  default void windowDeactivated() {}
 }

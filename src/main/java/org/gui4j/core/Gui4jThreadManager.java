@@ -539,7 +539,10 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    * completed the queued task.
    *
    * @param run task to be scheduled in the GUI thread
+   * @deprecated Since 1.3. Prefer {@link SwingUtilities#isEventDispatchThread()} together with
+   *     {@link EventQueue#invokeAndWait(Runnable)} (or direct execution on EDT) in new code.
    */
+  @Deprecated
   public static void executeInSwingThreadAndWait(Runnable run) {
     try {
       if (EventQueue.isDispatchThread()) {
@@ -566,7 +569,10 @@ public final class Gui4jThreadManager implements ErrorTags, Serializable {
    * synchronously, i.e. this call will not return until the task is completed.
    *
    * @param run task to be scheduled in the GUI thread
+   * @deprecated Since 1.3. Prefer {@link EventQueue#invokeLater(Runnable)} directly (with an EDT
+   *     check if immediate execution is required).
    */
+  @Deprecated
   public static void executeInSwingThreadAndContinue(final Runnable run) {
     if (EventQueue.isDispatchThread()) {
       run.run();
